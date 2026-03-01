@@ -131,11 +131,11 @@ function RegisterPerk(itemName, getFunc, specialtyName) {
 }
 
 //General/Universal gives
-function give_500Points()
+function give_1500Points()
 {
     foreach (player in getPlayers())
     {
-        player zm_score::add_to_player_score(500);
+        player zm_score::add_to_player_score(1500);
     }
 }
 
@@ -147,11 +147,11 @@ function give_50000Points()
     }
 }
 
-function give_50Points()
+function give_200Points()
 {
     foreach (player in getPlayers())
     {
-        player zm_score::add_to_player_score(50);
+        player zm_score::add_to_player_score(200);
     }
 }
 
@@ -195,9 +195,9 @@ function give_ProgressivePap()
     }
 }
 
+
 function give_Pap()
 {
-    level.archi.pap_active = true;
     level notify("Pack_A_Punch_on");
 }
 

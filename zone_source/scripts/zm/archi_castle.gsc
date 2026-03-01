@@ -21,6 +21,7 @@
 
 #insert scripts\shared\shared.gsh;
 #insert scripts\shared\version.gsh;
+#insert scripts\zm\_zm_perks.gsh;
 
 #insert scripts\zm\archi_core.gsh;
 
@@ -29,6 +30,9 @@
 
 function save_state_manager()
 {
+    // Keep perk machine fx behaving
+    callback::on_connect(&_player_connect);
+
     if (level.archi.difficulty_ee_checkpoints >= 3)
     {
         level thread easy_checkpoint_trigger();
@@ -590,5 +594,82 @@ function restore_map_state()
         wait(1);
         button = struct::get("death_ray_button");
         button notify("trigger_activated");
+    }
+}
+
+function _player_connect()
+{
+    sync_perk_exploders();
+}
+
+function sync_perk_exploders()
+{
+    wait(0.2);
+    if (isdefined(level.archi.active_perk_machines))
+    {
+        perk_keys = GetArrayKeys(level.archi.active_perk_machines);
+        foreach (perk in perk_keys)
+        {
+            if (level.archi.active_perk_machines[perk] == true)
+            {
+                switch (perk)
+                {
+                    case PERK_JUGGERNOG:
+                    	level clientfield::set("perk_light_juggernaut", 1);
+                        exploder::exploder("lgt_vending_juggernaut_castle");
+                        break;
+                    case PERK_DOUBLETAP2:
+                    	level clientfield::set("perk_light_doubletap", 1);
+                        exploder::exploder("lgt_vending_doubletap2_castle");
+                        break;
+                    case PERK_ADDITIONAL_PRIMARY_WEAPON:
+                    	level clientfield::set("perk_light_mule_kick", 1);
+                        exploder::exploder("lgt_vending_mule_kick_castle");
+                        break;
+                    case PERK_QUICK_REVIVE:
+                    	level clientfield::set("perk_light_quick_revive", 1);
+                        exploder::exploder("lgt_vending_quick_revive_castle");
+                        break;
+                    case PERK_SLEIGHT_OF_HAND:
+                    	level clientfield::set("perk_light_speed_cola", 1);
+                        exploder::exploder("lgt_vending_sleight_of_hand_castle");
+                        break;
+                    case PERK_STAMINUP:
+                    	level clientfield::set("perk_light_staminup", 1);
+                        exploder::exploder("lgt_vending_stamina_up_castle");
+                        break;
+                }
+            }
+            else
+            {
+                switch (perk)
+                {
+                    case PERK_JUGGERNOG:
+                        level clientfield::set("perk_light_juggernaut", 0);
+                        exploder::exploder_stop("lgt_vending_juggernaut_castle");
+                        break;
+                    case PERK_DOUBLETAP2:
+                    	level clientfield::set("perk_light_doubletap", 0);
+                        exploder::exploder_stop("lgt_vending_doubletap2_castle");
+                        break;
+                    case PERK_ADDITIONAL_PRIMARY_WEAPON:
+                    	level clientfield::set("perk_light_mule_kick", 0);
+                        exploder::exploder_stop("lgt_vending_mule_kick_castle");
+                        break;
+                    case PERK_QUICK_REVIVE:
+                    	level clientfield::set("perk_light_quick_revive", 0);
+                        exploder::exploder_stop("lgt_vending_quick_revive_castle");
+                        break;
+                    case PERK_SLEIGHT_OF_HAND:
+                    	level clientfield::set("perk_light_speed_cola", 0);
+                        exploder::exploder_stop("lgt_vending_sleight_of_hand_castle");
+                        break;
+                    case PERK_STAMINUP:
+                    	level clientfield::set("perk_light_staminup", 0);
+                        exploder::exploder_stop("lgt_vending_stamina_up_castle");
+                        break;
+                }
+            }
+        }
     }
 }

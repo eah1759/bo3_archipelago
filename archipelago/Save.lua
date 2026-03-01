@@ -379,6 +379,9 @@ function map_save_zm_factory(mapData)
   save_round_number(mapData)
   save_power_on(mapData)
   save_doors_and_debris(mapData)
+  save_flag(mapData, "teleporter_pad_link_1")
+  save_flag(mapData, "teleporter_pad_link_2")
+  save_flag(mapData, "teleporter_pad_link_3")
 
   save_player_func = function (xuid, playerData)
     save_player_score(xuid, playerData)
@@ -395,6 +398,9 @@ function map_restore_zm_factory(mapData)
   restore_round_number(mapData)
   restore_power_on(mapData)
   restore_doors_and_debris(mapData)
+  restore_flag(mapData, "teleporter_pad_link_1")
+  restore_flag(mapData, "teleporter_pad_link_2")
+  restore_flag(mapData, "teleporter_pad_link_3")
 
   restore_player_func = function (xuid, playerData)
     restore_player_score(xuid, playerData)
@@ -750,6 +756,10 @@ function restore_universal(uniData)
         Engine.SetDvar("ARCHIPELAGO_LOAD_DATA_UNIVERSAL_XUID_DOWNS_" .. xuid, playerData["downs"])
       end
     end
+  end
+
+  if uniData["mapItems"] then
+    Engine.SetDvar("ARCHIPELAGO_INIT_MAP_ITEMS", table.concat(uniData["mapItems"], ";"))
   end
 end
 

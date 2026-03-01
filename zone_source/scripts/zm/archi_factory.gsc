@@ -50,6 +50,8 @@ function save_state()
 
     archi_save::save_players(&save_player_data);
 
+    save_map_state();
+
     archi_save::send_save_data("zm_factory");
 
     if (level.archi.save_checkpoint == true)
@@ -78,6 +80,8 @@ function load_state()
 
     archi_save::restore_players(&restore_player_data);
 
+    restore_map_state();
+
     wait(10);
     level flag::clear("ap_prevent_checkpoints");
 }
@@ -99,4 +103,61 @@ function clear_state()
 {
     SetDvar("ARCHIPELAGO_CLEAR_DATA", "zm_factory");
     LUINotifyEvent(&"ap_clear_data", 0);
+}
+
+function setup_locations()
+{
+    level flag::wait_till("initial_blackscreen_passed");
+
+    level thread _track_music_boa();
+    level thread _any_teleporter_linked();
+    level thread _all_teleporters_linked();
+    level thread _flytrap_targets_shot();
+    level thread _flag_to_location_thread("snow_ee_completed", level.archi.mapString + " Reveal the Secret Perk Machine");
+}
+
+function _track_music_boa()
+{
+    level waittill("hash_a1b1dadb");
+    archi_core::send_location(level.archi.mapString + " Music EE - Beauty of Annihilation Remix");
+}
+
+function _any_teleporter_linked()
+{
+    level flag::wait_till_any(array("teleporter_pad_link_1", "teleporter_pad_link_2", "teleporter_pad_link_3"));
+    archi_core::send_location(level.archi.mapString + " Link a Teleporter");
+}
+
+function _all_teleporters_linked()
+{
+    level flag::wait_till_all(array("teleporter_pad_link_1", "teleporter_pad_link_2", "teleporter_pad_link_3"));
+    archi_core::send_location(level.archi.mapString + " Link All 3 Teleporters");
+}
+
+function _flytrap_targets_shot()
+{
+    level flag::wait_till_all(array("ee_perk_bear", "ee_bowie_bear", "ee_exp_monkey"));
+    archi_core::send_location(level.archi.mapString + " Link a Teleporter");
+}
+
+function _flag_to_location_thread(flag, location)
+{
+    level endon("end_game");
+
+    level flag::wait_till(flag);
+    archi_core::send_location(location);
+}
+
+function save_map_state()
+{
+    archi_save::save_flag("teleporter_pad_link_1");
+    archi_save::save_flag("teleporter_pad_link_2");
+    archi_save::save_flag("teleporter_pad_link_3");
+}
+
+function restore_map_state()
+{
+    archi_save::restore_flag("teleporter_pad_link_1");
+    archi_save::restore_flag("teleporter_pad_link_2");
+    archi_save::restore_flag("teleporter_pad_link_3");
 }

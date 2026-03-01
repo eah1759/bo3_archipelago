@@ -11,6 +11,7 @@ EnableGlobals();
 local settings_file = require("Archipelago.SettingsFile")
 local savedServer
 local savedSlot
+-- local savedPassword
 
 UpdateConnectionStatus = function(update)
 	Engine.SetModelValue(Engine.GetModel(Engine.GetModel( Engine.GetGlobalModel(), "archipelago" ), "connectionValidated"),"Connection: "..update)
@@ -38,7 +39,7 @@ local ConnectArchi = function(savedServer, savedSlot)
 		end)
 	end
 
-	Archipelago.CheckConnection(savedServer,savedSlot,".\\mods\\bo3_archipelago\\zone\\")
+	Archipelago.CheckConnection(savedServer,savedSlot,"zone\\")
 	--
 	
 end
@@ -59,6 +60,13 @@ local PostLoadFunc = function ( menu, controller )
 			Engine.SetDvar( "ARCHIPELAGO_SLOT", modelValue )
 		end
 	end )
+	-- menu.passwordInput.subscription = menu.passwordInput:subscribeToModel( Engine.GetModel( apModel, "password" ), function ( model )
+	-- 	local modelValue = Engine.GetModelValue( model )
+	-- 	if modelValue then
+	-- 		menu.passwordInput.verticalScrollingTextBox.textBox:setText( modelValue )
+	-- 		Engine.SetDvar( "ARCHIPELAGO_PASSWORD" , modelValue )
+	-- 	end
+	-- end )
 	menu.ConnectionText.subscription = menu.ConnectionText:subscribeToModel(Engine.GetModel( apModel, "connectionValidated" ), function ( model )
 		local modelValue = Engine.GetModelValue( model )
 		if modelValue then
@@ -76,6 +84,7 @@ local PreLoadFunc = function ( self, controller )
 	local apModel = Engine.CreateModel( Engine.GetGlobalModel(), "archipelago" )
 	Engine.SetModelValue( Engine.CreateModel( apModel, "serverName" ), savedServer)
 	Engine.SetModelValue( Engine.CreateModel( apModel, "slotName" ), savedSlot)
+	-- Engine.SetModelValue( Engine.CreateModel( apModel, "password" ),  "************")
 	Engine.SetModelValue( Engine.CreateModel( apModel, "connectionValidated" ), Engine.DvarString(nil,"ARCHIPELAGO_CONNECTION_VALIDATED"))
 end
 
@@ -205,6 +214,49 @@ LUI.createMenu.ArchipelagoSettings = function ( controller )
 	self:addElement( slotInput )
 	self.slotInput = slotInput
 
+	-- local passwordTitle = CoD.GroupsSubTitle.new( Menu, controller )
+	-- passwordTitle:setLeftRight( true, false, 93, 261 )
+	-- passwordTitle:setTopBottom( true, false, 288, 320 )
+	-- passwordTitle.weaponNameLabel:setText("Password")
+	-- self:addElement( passwordTitle )
+	-- self.passwordTitle = passwordTitle
+
+	-- local passwordInput = CoD.GroupsInputButtonScroll.new( Menu, controller )
+	-- passwordInput:setLeftRight( true, false, 93, 478 )
+	-- passwordInput:setTopBottom( true, false, 326, 358 )
+	-- passwordInput.verticalScrollingTextBox.textBox:setAlignment( Enum.LUIAlignment.LUI_ALIGNMENT_LEFT )
+	-- passwordInput:registerEventHandler( "gain_focus", function ( element, event )
+	-- 	local f21_local0 = nil
+	-- 	--
+	-- 	EnableGlobals()
+	-- 	APActiveField = 2
+	-- 	--
+	-- 	if element.gainFocus then
+	-- 		f21_local0 = element:gainFocus( event )
+	-- 	elseif element.super.gainFocus then
+	-- 		f21_local0 = element.super:gainFocus( event )
+	-- 	end
+	-- 	CoD.Menu.UpdateButtonShownState( element, Menu, controller, Enum.LUIButton.LUI_KEY_XBA_PSCROSS )
+	-- 	return f21_local0
+	-- end )
+	-- passwordInput:registerEventHandler( "lose_focus", function ( element, event )
+	-- 	local f22_local0 = nil
+	-- 	if element.loseFocus then
+	-- 		f22_local0 = element:loseFocus( event )
+	-- 	elseif element.super.loseFocus then
+	-- 		f22_local0 = element.super:loseFocus( event )
+	-- 	end
+	-- 	return f22_local0
+	-- end )
+	-- Menu:AddButtonCallbackFunction( passwordInput, controller, Enum.LUIButton.LUI_KEY_XBA_PSCROSS, "ENTER", function ( f23_arg0, f23_arg1, f23_arg2, f23_arg3 )
+	-- 	Engine.Exec(0, "ui_keyboard_new 17 \"Enter Password\" \"\" 128"); 
+	-- 	return true
+	-- end, function ( f24_arg0, f24_arg1, f24_arg2 )
+	-- 	CoD.Menu.SetButtonLabel( f24_arg1, Enum.LUIButton.LUI_KEY_XBA_PSCROSS, "MENU_SELECT" )
+	-- 	return true
+	-- end, false )
+	-- self:addElement( passwordInput )
+	-- self.passwordInput = passwordInput
 
 	--Connection Status Indicator
     local ConnectionText = CoD.GroupsSubTitle.new( Menu, controller )
@@ -219,6 +271,9 @@ LUI.createMenu.ArchipelagoSettings = function ( controller )
 	slotInput.navigation = {
 		up = serverInput
 	}
+	-- passwordInput.navigation = {
+	-- 	up = slotInput
+	-- }
 
     CoD.Menu.AddNavigationHandler( Menu, self, controller )
 	self:registerEventHandler( "ui_keyboard_input", function ( element, event )
@@ -232,6 +287,10 @@ LUI.createMenu.ArchipelagoSettings = function ( controller )
 			Engine.SetModelValue( Engine.GetModel( apModel, "slotName" ), event.input )
 			savedSlot = event.input
 		end
+			-- elseif APActiveField == 3 then
+		-- 	Engine.SetModelValue( Engine.GetModel( apModel, "password" ), event.input )
+		-- 	savedPassword = event.input
+		-- end
 	end )
     Menu:AddButtonCallbackFunction( self, controller, Enum.LUIButton.LUI_KEY_XBB_PSCIRCLE, nil, function ( f20_arg0, f20_arg1, f20_arg2, f20_arg3 )
 		GoBack( self, f20_arg2 )
@@ -252,6 +311,7 @@ LUI.createMenu.ArchipelagoSettings = function ( controller )
     MenuFrame:setModel( self.buttonModel, controller )
 	serverInput.id = "serverInput"
 	slotInput.id = "slotInput"
+	-- passwordInput.id = "passwordInput"
 
 	self:processEvent( {
 		name = "menu_loaded",
@@ -276,6 +336,8 @@ LUI.createMenu.ArchipelagoSettings = function ( controller )
 		element.serverInput:close()
 		element.slotTitle:close()
 		element.slotInput:close()
+		-- element.passwordTitle:close()
+		-- element.passwordInput:close()
 		element.ConnectionText:close()
 		Engine.UnsubscribeAndFreeModel( Engine.GetModel( Engine.GetModelForController( controller ), "ArchipelagoSettings.buttonPrompts" ) )
 

@@ -22,7 +22,7 @@ function save_settings(server, slot)
 	
 	local settings = {
 		server = server or "archipelago.gg",
-		slot = slot or "Player"
+		slot = slot or "Player",
 	}
 	
 	local content = json.encode(settings)

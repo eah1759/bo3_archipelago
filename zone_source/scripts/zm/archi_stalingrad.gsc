@@ -182,6 +182,8 @@ function setup_side_ee()
     level thread _flag_to_location_thread("dragon_wings_items_aquired", level.archi.mapString + " Unlock the Dragon Wings");
     level thread _wearable_mangler_helmet(level.archi.mapString + " Unlock the Mangler Helmet");
     level thread _wearable_valkyrie_helmet(level.archi.mapString + " Unlock the Valkyrie Helmet");
+    level thread _track_music_aceofspades();
+    level thread _track_music_deadended();
 }
 
 function track_player_challenges()
@@ -226,6 +228,33 @@ function track_player_challenge_monkey_bombs(location)
     archi_core::send_location(location);
 }
 
+function _track_music_aceofspades()
+{
+    cards = struct::get_array("side_ee_song_card", "targetname");
+	while(true)
+	{
+		level waittill("hash_ce64d360");
+		if(level.var_62e63d78 == cards.size)
+		{
+			break;
+		}
+	}
+    archi_core::send_location(level.archi.mapString + " Music EE - Ace of Spades");
+}
+
+function _track_music_deadended()
+{
+    bottles = struct::get_array("side_ee_song_vodka", "targetname");
+	while(true)
+	{
+		level waittill("hash_9727ab41");
+		if(level.var_c128c3f5 == bottles.size)
+		{
+			break;
+		}
+	}
+    archi_core::send_location(level.archi.mapString + " Music EE - Dead Ended");
+}
 
 function _ee_outro(location)
 {

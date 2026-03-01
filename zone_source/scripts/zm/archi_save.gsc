@@ -40,13 +40,18 @@ function setup_map_saving()
     else
     {
         // Just so we don't break flow elsewhere
-        wait(10);
-        level flag::clear("ap_prevent_checkpoints");
+        level thread clear_checkpoint_thread();
     }
 
     level thread save_player_stats_monitor_endgame();
     level thread save_player_stats_monitor();
     restore_universal();
+}
+
+function clear_checkpoint_thread()
+{
+    wait(10);
+    level flag::clear("ap_prevent_checkpoints");
 }
 
 function save_player_stats_monitor_endgame()
@@ -100,6 +105,7 @@ function restore_universal()
         dvar_value = GetDvarString("ARCHIPELAGO_LOAD_DATA", "");
         if (dvar_value == "NONE")
         {
+            level flag::set("ap_universal_restored");
             foreach (player in level.players)
             {
                 player restore_universal_player();

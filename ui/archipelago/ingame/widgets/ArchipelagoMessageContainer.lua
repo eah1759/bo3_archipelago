@@ -43,39 +43,74 @@ CoD.ArchipelagoMessageContainer.new = function (menu, controller)
     
     local ApSendImage = LUI.UIImage.new()
     ApSendImage:setLeftRight(true, false, 30, 70)
-    ApSendImage:setTopBottom(true, false, 93, 133)
+    ApSendImage:setTopBottom(true, false, 93, 141)
     ApSendImage:setImage(RegisterImage("archipelago_logo_up"))
     ApSendImage:setAlpha(0)
     self:addElement(ApSendImage)
     self.ApSendImage = ApSendImage
 
     local ApSendText = LUI.UIText.new()
-    ApSendText:setLeftRight(true, true, 85, 85)
-    ApSendText:setTopBottom(true, false, 103, 133)
+    ApSendText:setLeftRight(true, true, 95, 85)
+    ApSendText:setTopBottom(true, false, 93, 109)
     ApSendText:setAlpha(0)
     ApSendText:setAlignment( Enum.LUIAlignment.LUI_ALIGNMENT_LEFT )
     ApSendText:setText("TEST VALUE LONG STRING YUPPERS")
     self:addElement(ApSendText)
     self.ApSendText = ApSendText
 
-    local FlashNotif = function(Element, Event)
-      Element:setAlpha(1)
-      Element:beginAnimation("keyframe", 4000, false, false, CoD.TweenType.Linear)
-      Element:setAlpha(0)
-      Element:registerEventHandler("transition_complete_keyframe", nil)
+    local ApSendTextSender = LUI.UIText.new()
+    ApSendTextSender:setLeftRight(true, true, 85, 85)
+    ApSendTextSender:setTopBottom(true, false, 111, 141)
+    ApSendTextSender:setAlpha(0)
+    ApSendTextSender:setAlignment( Enum.LUIAlignment.LUI_ALIGNMENT_LEFT )
+    ApSendTextSender:setText("TEST VALUE LONG STRING YUPPERS")
+    self:addElement(ApSendTextSender)
+    self.ApSendTextSender = ApSendTextSender
+
+    local AnimationFrame4 = function( element, event )
+      if not event.interrupted then
+        element:beginAnimation( "keyframe", 1000, false, false, CoD.TweenType.Linear )
+      end
+      element:setAlpha( 0 )
+      if not event.interrupted then
+        element:registerEventHandler( "transition_complete_keyframe", nil )
+      end
+    end
+    
+    local AnimationFrame3 = function( element, event )
+      if event.interrupted then
+        AnimationFrame4( element, event )
+        return
+      else
+        element:beginAnimation( "keyframe", 2900, false, false, CoD.TweenType.Linear )
+        element:registerEventHandler( "transition_complete_keyframe", AnimationFrame4 )
+      end
+    end
+    
+    local AnimationFrame2 = function( element, event )
+      if event.interrupted then
+        AnimationFrame3( element, event )
+        return
+      else
+        element:beginAnimation( "keyframe", 100, false, false, CoD.TweenType.Linear )
+        element:setAlpha( 1 )
+        element:registerEventHandler( "transition_complete_keyframe", AnimationFrame3 )
+      end
     end
 
     local FlashNotifWrap = function(event, networkItem)
       if event == "GET" then
         self.ApGetText:setText( Engine.Localize(networkItem.name) )
-        self.ApGetTextSender:setText( Engine.Localize(networkItem.location .. " in " .. networkItem.sender .. "'s world") )
-        FlashNotif(self.ApGetImage,{})
-        FlashNotif(self.ApGetText,{})
-        FlashNotif(self.ApGetTextSender,{})
+        self.ApGetTextSender:setText( Engine.Localize(networkItem.location .. " in ^8" .. networkItem.sender .. "'s ^7world") )
+        AnimationFrame2(self.ApGetImage,{})
+        AnimationFrame2(self.ApGetText,{})
+        AnimationFrame2(self.ApGetTextSender,{})
       else
         self.ApSendText:setText( Engine.Localize(networkItem.location) )
-        FlashNotif(self.ApSendImage,{})
-        FlashNotif(self.ApSendText,{})
+        self.ApSendTextSender:setText( Engine.Localize("^8" .. networkItem.sender .. "'s ^7" ..networkItem.name) )
+        AnimationFrame2(self.ApSendImage,{})
+        AnimationFrame2(self.ApSendText,{})
+        AnimationFrame2(self.ApSendTextSender,{})
       end
     end
 
@@ -90,6 +125,7 @@ CoD.ArchipelagoMessageContainer.new = function (menu, controller)
         element.ApGetTextSender:close()
         element.ApSendImage:close()
         element.ApSendText:close()
+        element.ApSendTextSender:close()
         if Archi then
           Archi.UnregisterNotifyFunc()
         end

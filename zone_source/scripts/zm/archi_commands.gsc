@@ -43,7 +43,10 @@ function init_commands()
     level thread _debug_magicbox_response();
     level thread _basic_trigger("ap_grand_tour", &_start_grand_tour);
     level thread _basic_trigger("ap_sv_cheats", &_enable_cheats);
+    level thread _basic_trigger("ap_get_flag", &_get_flag);
     level thread _basic_trigger("ap_set_flag", &_set_flag);
+    level thread _basic_trigger("ap_set_cf", &_set_cf);
+    level thread _basic_trigger("ap_get_cf", &_get_cf);
     level thread _basic_trigger("ap_set_player_flag", &_set_player_flag);
     level thread _basic_trigger("ap_testkit", &_give_testkit);
     level thread _basic_trigger("ap_debug_dragonheads", &_dragonhead_debug);
@@ -359,6 +362,38 @@ function _set_flag(val)
   }
 }
 
+function _get_flag(val)
+{
+  if (val != "")
+  {
+    if (level flag::get(val))
+    {
+      IPrintLn("True");
+    }
+    else
+    {
+      IPrintLn("False");
+    }
+  }
+}
+
+function _set_cf(val)
+{
+  if (val != "")
+  {
+    level clientfield::set(val, 1);
+  }
+}
+
+function _get_cf(val)
+{
+  if (val != "")
+  {
+    cf_val = level clientfield::get(val);
+    IPrintLn(cf_val);
+  }
+}
+
 function _give_testkit(val)
 {
   if (val != "")
@@ -478,21 +513,3 @@ function bgb_get_gumball_anim_weapon(bgb, activating)
 //     player incrementplayerstat("headshots", 1);
 //   }
 // }
-
-function jiggle_bodies()
-{
-  flip = true;
-  while(true)
-  {
-    if (flip) 
-    {
-      SetDvar("phys_gravity_dir", (0, 0, -1));
-      flip = false;
-    }
-    else
-    {
-      SetDvar("phys_gravity_dir", (0, 0, 1));
-    }
-    wait(0.2);
-  }
-}

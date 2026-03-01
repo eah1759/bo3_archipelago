@@ -26,8 +26,9 @@ Archi.CheckedLocations = {}
 --
 
 oneTimeItems = {
-  ["50 Points"] = true,
-  ["500 Points"] = true,
+  ["200 Points"] = true,
+  ["1500 Points"] = true,
+  ["Gift - Unlimited Sprint (2 Minutes)"] = true,
   ["Gift - Carpenter Powerup"] = true,
   ["Gift - Double Points Powerup"] = true,
   ["Gift - InstaKill Powerup"] = true,
@@ -36,12 +37,18 @@ oneTimeItems = {
   ["Gift - Free Perk Powerup"] = true,
   ["Trap - Third Person Mode"] = true,
   ["Trap - Nuke Powerup"] = true,
+  ["Trap - Grenade Party"] = true,
+  ["Trap - Knuckle Crack"] = true,
 }
 instanceItemState = {}
 connectionItemState = {}
 
 saveData = nil
 local seed = nil
+
+function startsWith(String,Start)
+  return string.sub(String,1,#Start)==Start
+end
 
 Archi.SocketDisconnected = function ()
   ItemQueue = List.new()
@@ -126,7 +133,8 @@ Archi.FromGSC = function (model)
 
     if not saveData["universal"] then
       saveData["universal"] = {
-        players = {}
+        players = {},
+        mapItems = {}
       }
     end
 
@@ -145,7 +153,8 @@ Archi.FromGSC = function (model)
 
     if not saveData["universal"] then
       saveData["universal"] = {
-        players = {}
+        players = {},
+        mapItems = {}
       }
     end
 
@@ -301,6 +310,10 @@ Archi.CheckGoalCond = function()
   end
 end
 
+Archi.LocationScoutCb = function(name, sender, location)
+  notifyFunc("SEND", { name = name, sender = sender, location = location })
+end
+
 Archi.LocationNotifyLoop = function()
   local UIRootFull = LUI.roots.UIRootFull;
 	UIRootFull.LocHUDRefreshTimer = LUI.UITimer.newElementTimer(200, false, function()
@@ -310,7 +323,9 @@ Archi.LocationNotifyLoop = function()
         saveData["universal"]["locationsFound"][code] = true
         local name = locations.IDToLocation[code] or "Unknown Location"
         if notifyFunc then
-          notifyFunc("SEND", { location = name })
+          -- Send scout to get notify data
+          Archipelago.SendLocationScout(code)
+          -- notifyFunc("SEND", { location = name })
         end
       end
     end
@@ -325,6 +340,20 @@ Archi.GiveItemsLoop = function()
     if (not List.isEmpty(ItemQueue)) and item == "NONE" and goalCondInitialized and saveLoaded then
       local networkItem = List.popleft(ItemQueue)
       local toSend = networkItem.name
+
+      if startsWith(toSend, "Map Unlock") then
+        local alreadyExists = false
+        for _, item in ipairs(saveData["universal"]["mapItems"]) do
+          if item == toSend then
+            alreadyExists = true
+            break
+          end
+        end
+
+        if not alreadyExists then
+          table.insert(saveData["universal"]["mapItems"], toSend)
+        end
+      end
 
       -- How many times awarded this current game
       instanceItemState[toSend] = instanceItemState[toSend] or 0
@@ -360,6 +389,10 @@ Archi.GiveItemsLoop = function()
 
       -- UI notification
       if isNewItem and notifyFunc then
+        if startsWith(toSend, "Map Unlock - ") then
+          local mapName = string.sub(toSend, 13)
+          Engine.SetDvar("ARCHIPELAGO_MAP_UNLOCK_NOTIFY", mapName)
+        end
         notifyFunc("GET", networkItem)
       end
 
@@ -393,10 +426,10 @@ Archi.LogMessageLoop = function()
 end
 
 Archi.KeepConnected = function ()
-  local server, slot = settings_file.load_settings();
+  local server, slot, password = settings_file.load_settings();
   if Archipelago then
     --TODO: change the \zone (base path) when its workshop
-    Archipelago.Connect(server, slot, "zone\\")
+    Archipelago.Connect(server, slot, "zone\\", password)
     --TODO: only do this on an actual connect
     Engine.SetDvar( "ARCHIPELAGO_CONNECTED", "TRUE" )
   end
@@ -419,8 +452,13 @@ Archi.LoadData = function ()
 
   if not saveData["universal"] then
     saveData["universal"] = {
-      players = {}
+      players = {},
+      mapItems = {}
     }
+  end
+
+  if not saveData["universal"]["mapItems"] then
+    saveData["universal"]["mapItems"] = {}
   end
 
   if not saveData["universal"]["itemsReceived"] then

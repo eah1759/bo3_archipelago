@@ -122,6 +122,7 @@ function setup_main_quest()
     level thread _any_power_station(level.archi.mapString + " Main Quest - Override a Corruption Engine");
     level thread _all_power_stations(level.archi.mapString + " Main Quest - Override all 4 Corruption Engines");
     level thread _flag_to_location_thread("apotho_pack_freed", level.archi.mapString + " Main Quest - Free the Pack-A-Punch");
+    level thread _track_music_thegift();
 }
 
 function setup_main_ee_quest()
@@ -248,6 +249,20 @@ function easy_checkpoint_trigger()
     level.archi.save_checkpoint = true;
     save_state();
     level.archi.save_checkpoint = false;
+}
+
+function _track_music_thegift()
+{
+    bears = struct::get_array("side_ee_song_bear", "targetname");
+	while(true)
+	{
+		level waittill("hash_c3f82290");
+		if(level.var_51d5c50c == bears.size)
+		{
+			break;
+		}
+	}
+    archi_core::send_location(level.archi.mapString + " Music EE - The Gift");
 }
 
 function hope_wallbuy_override()

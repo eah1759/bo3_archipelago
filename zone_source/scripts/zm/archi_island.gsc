@@ -24,11 +24,15 @@
 
 #insert scripts\shared\shared.gsh;
 #insert scripts\shared\version.gsh;
+#insert scripts\zm\_zm_perks.gsh;
 
 #insert scripts\zm\archi_core.gsh;
 
 function save_state_manager()
 {
+    // Keep perk machine fx behaving
+    callback::on_connect(&_player_connect);
+
     if (level.archi.difficulty_ee_checkpoints >= 3)
     {
         level thread easy_checkpoint_trigger();
@@ -236,6 +240,11 @@ function setup_weapon_quests()
     level thread _skull_room_defense(level.archi.mapString + " Skull of Nan'Sapwe - Survive the Skull Room Assault");
 }
 
+function setup_side_ee()
+{
+    level thread _track_music_deadflowers();
+}
+
 function setup_challenges()
 {
     level thread _flag_to_location_thread("all_challenges_completed", level.archi.mapString + " Complete all Challenges");
@@ -265,6 +274,20 @@ function adjust_host_bgb_pack()
     }
 
     e_player.bgb_pack[4] = "zm_bgb_anywhere_but_here";
+}
+
+function _track_music_deadflowers()
+{
+    puppets = struct::get_array("side_ee_song_bear", "targetname");
+	while(true)
+	{
+		level waittill("hash_c3f82290");
+		if(level.var_51d5c50c == puppets.size)
+		{
+			break;
+		}
+	}
+    archi_core::send_location(level.archi.mapString + " Music EE - Dead Flowers");
 }
 
 function _first_skull_cleanse(location)
@@ -555,5 +578,70 @@ function restore_power_on()
         level flag::set("power_on4");
         WAIT_SERVER_FRAME
         level flag::set("power_on");
+    }
+}
+
+function _player_connect()
+{
+    sync_perk_exploders();
+}
+
+function sync_perk_exploders()
+{
+    wait(0.2);
+    if (isdefined(level.archi.active_perk_machines))
+    {
+        perk_keys = GetArrayKeys(level.archi.active_perk_machines);
+        foreach (perk in perk_keys)
+        {
+            if (level.archi.active_perk_machines[perk] == true)
+            {
+                switch (perk)
+                {
+                    case PERK_JUGGERNOG:
+                    	level clientfield::set("perk_light_juggernog", 1);
+                        break;
+                    case PERK_DOUBLETAP2:
+                    	level clientfield::set("perk_light_doubletap", 1);
+                        break;
+                    case PERK_ADDITIONAL_PRIMARY_WEAPON:
+                    	level clientfield::set("perk_light_mule_kick", 1);
+                        break;
+                    case PERK_QUICK_REVIVE:
+                    	level clientfield::set("perk_light_quick_revive", 1);
+                        break;
+                    case PERK_SLEIGHT_OF_HAND:
+                    	level clientfield::set("perk_light_speed_cola", 1);
+                        break;
+                    case PERK_STAMINUP:
+                    	level clientfield::set("perk_light_staminup", 1);
+                        break;
+                }
+            }
+            else
+            {
+                switch (perk)
+                {
+                    case PERK_JUGGERNOG:
+                        level clientfield::set("perk_light_juggernog", 0);
+                        break;
+                    case PERK_DOUBLETAP2:
+                    	level clientfield::set("perk_light_doubletap", 0);
+                        break;
+                    case PERK_ADDITIONAL_PRIMARY_WEAPON:
+                    	level clientfield::set("perk_light_mule_kick", 0);
+                        break;
+                    case PERK_QUICK_REVIVE:
+                    	level clientfield::set("perk_light_quick_revive", 0);
+                        break;
+                    case PERK_SLEIGHT_OF_HAND:
+                    	level clientfield::set("perk_light_speed_cola", 0);
+                        break;
+                    case PERK_STAMINUP:
+                    	level clientfield::set("perk_light_staminup", 0);
+                        break;
+                }
+            }
+        }
     }
 }

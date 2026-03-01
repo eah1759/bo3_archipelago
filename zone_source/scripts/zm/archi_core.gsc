@@ -60,6 +60,7 @@ function __init__()
     level flag::init("ap_prevent_checkpoints", 1);
     level flag::init("ap_attachment_rando_ready");
     level flag::init("ap_loaded_save_data");
+    level flag::init("ap_universal_restored");
 
     // Some maps make requirements harder if not in a ranked match
     level.rankedmatch = 1;
@@ -71,6 +72,7 @@ function __init__()
     SetDvar("scr_firstGumFree", 1);
     
     //Message Passing Dvars
+    SetDvar("ARCHIPELAGO_MAP_UNLOCK_NOTIFY", "NONE");
     SetDvar("ARCHIPELAGO_ITEM_GET", "NONE");
     SetDvar("ARCHIPELAGO_LOCATION_SEND", "NONE");
     SetDvar("ARCHIPELAGO_SAY_SEND", "NONE"); 
@@ -138,30 +140,6 @@ function init_string_mappings()
 {
     level.archi.perk_strings_to_names = [];
     level.archi.active_perk_machines = [];
-
-    perk_mappings = [];
-    perk_mappings[PERK_JUGGERNOG] = ARCHIPELAGO_ITEM_PERK_JUGGERNOG;
-    perk_mappings[PERK_QUICK_REVIVE] = ARCHIPELAGO_ITEM_PERK_QUICK_REVIVE;
-    perk_mappings[PERK_SLEIGHT_OF_HAND] = ARCHIPELAGO_ITEM_PERK_SLEIGHT_OF_HAND;
-    perk_mappings[PERK_DOUBLETAP2] = ARCHIPELAGO_ITEM_PERK_DOUBLETAP2;
-    perk_mappings[PERK_STAMINUP] = ARCHIPELAGO_ITEM_PERK_STAMINUP;
-    perk_mappings[PERK_PHDFLOPPER] = ARCHIPELAGO_ITEM_PERK_PHDFLOPPER;
-    perk_mappings[PERK_DEAD_SHOT] = ARCHIPELAGO_ITEM_PERK_DEAD_SHOT;
-    perk_mappings[PERK_ADDITIONAL_PRIMARY_WEAPON] = ARCHIPELAGO_ITEM_PERK_ADDITIONAL_PRIMARY_WEAPON;
-    perk_mappings[PERK_ELECTRIC_CHERRY] = ARCHIPELAGO_ITEM_PERK_ELECTRIC_CHERRY;
-    perk_mappings[PERK_TOMBSTONE] = ARCHIPELAGO_ITEM_PERK_TOMBSTONE;
-    perk_mappings[PERK_WHOSWHO] = ARCHIPELAGO_ITEM_PERK_WHOSWHO;
-    perk_mappings[PERK_VULTUREAID] = ARCHIPELAGO_ITEM_PERK_VULTUREAID;
-    perk_mappings[PERK_WIDOWS_WINE] = ARCHIPELAGO_ITEM_PERK_WIDOWS_WINE;
-
-	foreach (perk, ap_item in perk_mappings) 
-    {
-        ap_hint_string = "'" + ap_item + "' is required";
-        if (IS_TRUE(level.archi.map_specific_machines)) {
-            ap_hint_string = "'" + level.archi.mapString + " " + ap_item + "' is required";
-        }
-        level thread keep_perk_machine_locked(perk, ap_hint_string);
-    }
 
     if (isdefined(level.pack_a_punch.custom_validation))
     {
@@ -243,6 +221,8 @@ function game_start()
         level.archi.ap_box_keys = [];
         level.archi.ap_box_states = [];
         level.archi.ap_weapon_bits = [];
+        level flag::init("ap_map_locked");
+        level.archi.map_key_item = undefined;
 
         zombie_doors = GetEntArray("zombie_door", "targetname");
         for (i = 0; i < zombie_doors.size; i++)
@@ -271,8 +251,8 @@ function game_start()
         level.archi.progressive_perk_limit = 0;
         level.archi.craftable_parts = [];
 
-        archi_items::RegisterUniversalItem("50 Points",&archi_items::give_50Points);
-        archi_items::RegisterUniversalItem("500 Points",&archi_items::give_500Points);
+        archi_items::RegisterUniversalItem("200 Points",&archi_items::give_200Points);
+        archi_items::RegisterUniversalItem("1500 Points",&archi_items::give_1500Points);
         archi_items::RegisterUniversalItem("50000 Points",&archi_items::give_50000Points);
 
         // Traps
@@ -303,6 +283,8 @@ function game_start()
         if (mapName == "zm_zod")
         {
             level.archi.mapString = ARCHIPELAGO_MAP_SHADOWS_OF_EVIL;
+            level.archi.map_key_item = "Map Unlock - Shadows of Evil";
+            level.archi.sync_perk_exploders = &archi_zod::sync_perk_exploders;
 
             replace_craftable_onPickup("craft_shield_zm");
             level.archi.craftable_piece_to_location["craft_shield_zm_dolly"] = level.archi.mapString + " Shield Part Pickup - Dolly";
@@ -373,6 +355,8 @@ function game_start()
         if (mapName == "zm_castle")
         {
             level.archi.mapString = ARCHIPELAGO_MAP_CASTLE;
+            level.archi.map_key_item = "Map Unlock - Castle"; 
+            level.archi.sync_perk_exploders = &archi_castle::sync_perk_exploders;
 
             // Replace craftable logic with AP locations
             replace_craftable_onPickup("craft_shield_zm");
@@ -440,6 +424,8 @@ function game_start()
         if (mapName == "zm_island")
         {
             level.archi.mapString = ARCHIPELAGO_MAP_ZETSUBOU;
+            level.archi.map_key_item = "Map Unlock - Zetsubou No Shima";
+            level.archi.sync_perk_exploders = &archi_island::sync_perk_exploders;
 
             // 2 underwater
             level thread setup_spare_change_trackers(5);
@@ -473,6 +459,7 @@ function game_start()
             archi_island::setup_weapon_quests();
             archi_island::setup_challenges();
             archi_island::adjust_host_bgb_pack();
+            archi_island::setup_side_ee();
 
             // TODO
             archi_items::RegisterItem("Gasmask Part - Visor",&archi_island::give_GasmaskPart_Visor,undefined,true);
@@ -510,6 +497,7 @@ function game_start()
         if (mapName == "zm_stalingrad")
         {
             level.archi.mapString = ARCHIPELAGO_MAP_GOROD_KROVI;
+            level.archi.map_key_item = "Map Unlock - Gorod Krovi";
 
             // Mule Kick is underwater
             level thread setup_spare_change_trackers(5);
@@ -584,6 +572,7 @@ function game_start()
         if (mapName == "zm_genesis")
         {
             level.archi.mapString = ARCHIPELAGO_MAP_REVELATIONS;
+            level.archi.map_key_item = "Map Unlock - Revelations";
 
             level thread setup_spare_change_trackers(7);
 
@@ -652,9 +641,12 @@ function game_start()
         if (mapName == "zm_factory")
         {
             level.archi.mapString = ARCHIPELAGO_MAP_THE_GIANT;
+            level.archi.map_key_item = "Map Unlock - The Giant";
 
             // 7 possible machines, 6 will spawn
-            level thread setup_spare_change_trackers(6);
+            level thread setup_spare_change_trackers(5);
+
+            archi_factory::setup_locations();
             
             if (level.archi.mystery_box_special_items == 1) {
                 archi_items::RegisterBoxWeapon("Mystery Box - Monkey Bombs","cymbal_monkey",0);
@@ -690,6 +682,8 @@ function game_start()
             level.archi.load_state_manager = &archi_factory::load_state;
         }
 
+        level thread map_lock();
+
         level thread init_attachment_rando();
         WAIT_SERVER_FRAME
         level thread archi_save::setup_map_saving();
@@ -700,9 +694,11 @@ function game_start()
         level thread setup_can_player_purchase_perk();
 
         //Server-wide thread to get items from the Lua/LUI
+        level thread map_unlock_text();
         level thread item_get_from_lua();
 
     }
+
 
     if (level.archi.deathlink_enabled == 1)
     {
@@ -722,22 +718,25 @@ function setup_can_player_purchase_perk()
 
 	if(isdefined(level.get_player_perk_purchase_limit))
     {
-        level.original_get_player_perk_purchase_limit = level.get_player_purchase_limit;
+        level.archi.original_get_player_perk_purchase_limit = level.get_player_purchase_limit;
     }
-    level.get_player_perk_purchase_limit = &can_player_purchase_perk;
+    level.get_player_perk_purchase_limit = &get_player_perk_purchase_limit;
 }
 
-function can_player_purchase_perk()
+function get_player_perk_purchase_limit()
 {
     // Run levels original perk limit check first
     purchase_limit = level.perk_purchase_limit;
-    if (isdefined(level.original_get_player_perk_purchase_limit))
+    //IPrintLn("Basic limit - " + purchase_limit);
+    if (isdefined(level.archi.original_get_player_perk_purchase_limit))
     {
-        purchase_limit = self [[ level.original_get_player_perk_purchase_limit ]]();
+        purchase_limit = self [[ level.archi.original_get_player_perk_purchase_limit ]]();
     }
+    //IPrintLn("Limit after map - " + purchase_limit);
     // Add ours on top of the maps original perk limit
     purchase_limit += level.archi.perk_limit_default_modifier;
     purchase_limit += level.archi.progressive_perk_limit;
+    //IPrintLn("True perk limit - " + purchase_limit);
     return purchase_limit;
 }
 
@@ -781,7 +780,7 @@ function round_start_location()
         //Round 1 Location Check
         if (level.round_number == 1)
         {
-            send_location(level.archi.mapString + " Round 01");
+            // send_location(level.archi.mapString + " Round 01");
         }
     }
 }
@@ -876,6 +875,20 @@ function item_get_from_lua()
             
         }
         wait (0.1);
+    }
+}
+
+function map_unlock_text()
+{
+    while(true)
+    {
+        dvar_value = GetDvarString("ARCHIPELAGO_MAP_UNLOCK_NOTIFY", "NONE");
+        if (dvar_value != "NONE")
+        {
+            IPrintLnBold("Map Unlocked - " + dvar_value);
+            SetDvar("ARCHIPELAGO_MAP_UNLOCK_NOTIFY", "NONE");
+        }
+        wait(1);
     }
 }
 
@@ -1010,6 +1023,7 @@ function _remove_piece()
     if (!isdefined(level.archi.craftable_parts[id]))
     {
         WAIT_SERVER_FRAME
+        self.piece_owner = undefined;
         self.in_shared_inventory = 0; // Not sure if this bit actually does anything right now
         level clientfield::set(self.piecestub.client_field_id, 0);
     }
@@ -1106,7 +1120,6 @@ function track_debris_open()
 
 function keep_pap_locked()
 {
-    level thread keep_pap_hint_string();
     vending_weapon_upgrade_trigger = zm_pap_util::get_triggers();
 
     foreach(t_machine in vending_weapon_upgrade_trigger)
@@ -1129,109 +1142,25 @@ function keep_pap_locked()
             t_machine.powered [[t_machine.powered.power_off_func]](undefined, undefined);
         }
         wait(0.5);
-        foreach(t_machine in vending_weapon_upgrade_trigger)
-        {
-            t_machine SetHintString("'Progressive - Pack-A-Punch Machine' is required");
-        }
-    }
-}
-
-// This fixes the teleporting PaP from Castle
-function keep_pap_hint_string()
-{
-    level endon("end_game");
-
-    while(true)
-    {
-        level.pap_machine.zbarrier waittill("zbarrier_state_change");
-        wait(0.1);
-        if (IS_TRUE(level.archi.pap_active))
-        {
-            // Pap active, don't keep changing hint string
-            break;
-        }
-        vending_weapon_upgrade_trigger = zm_pap_util::get_triggers();
-        foreach(t_machine in vending_weapon_upgrade_trigger)
-        {
-            t_machine SetHintString("'Progressive - Pack-A-Punch Machine' is required");
-        }
-    }
-}
-
-function keep_perk_machine_locked(perk, ap_hint_string)
-{
-    s_custom_perk = level._custom_perks[perk];
-    if (!isdefined( s_custom_perk ))
-    {
-        return;
-    }
-
-    // Turn off perk if it's already on
-    machines = getentarray(s_custom_perk.radiant_machine_name, "targetname");
-    machine_triggers = GetEntArray( s_custom_perk.radiant_machine_name, "target" );
-    if (machine_triggers.size > 0 && isdefined(machine_triggers[0].power_on) && machine_triggers[0].power_on)
-    {
-        level notify(s_custom_perk.alias + "_off");
-        // Turn (later map) light and jingle back off
-        foreach(machine in machines)
-        {
-            machine notify("stop_loopsound");
-            machine zm_perks::perk_fx(undefined, 1);
-        }
-    }
-    t_perk = undefined;
-
-    while(true)
-    {
-        // Find the new machine and set our AP hint string
-        while(true)
-        {
-            wait (0.1);
-            t_perk = GetEntArray(perk, "script_noteworthy");
-            if (isdefined(t_perk))
-            {
-                foreach(t_perky in t_perk)
-                {
-                    t_perky SetHintString(ap_hint_string);
-                    break;
-                }
-            }
-        }
-
-        // Wait until something powers the machine on
-        level waittill(perk + "_power_on");
-        if (IS_TRUE(level.archi.active_perk_machines[perk]))
-        {
-            // We've got the AP item, we can stop turning it off
-            if (isdefined(t_perk)) 
-            {
-                foreach(t_perky in t_perk)
-                {
-                    t_perky zm_perks::reset_vending_hint_string();
-                    break;
-                }
-            }
-            break;
-        }
-        wait(0.5);
-        level notify(s_custom_perk.alias + "_off");
-        machines = getentarray(s_custom_perk.radiant_machine_name, "targetname");
-        // Turn (later map) light and jingle back off
-        foreach(machine in machines)
-        {
-            machine notify("stop_loopsound");
-            machine zm_perks::perk_fx(undefined, 1);
-        }
     }
 }
 
 // self is something pap related
 function custom_pap_validation(player)
 {
-    if (!IS_TRUE(level.archi.pap_active))
+    item = level.archi.items["Progressive - Pack-A-Punch Machine"];
+    if (item.count == 0)
     {
         return false;
     }
+
+	current_weapon = player GetCurrentWeapon();
+    weapon_supports_aat = zm_weapons::weapon_supports_aat( current_weapon );
+    if (item.count < 2 && weapon_supports_aat)
+    {
+        return false;
+    }
+
     if (isdefined(level.archi.original_pap_custom_validation))
     {
         return self [[level.archi.original_pap_custom_validation]](player);
@@ -1728,5 +1657,70 @@ function deathlink_any_player_death()
     while(true) {
         self waittill("death");
         LUINotifyEvent(&"ap_deathlink_triggered", 0);
+    }
+}
+
+function give_Map_Unlock()
+{
+    level flag::clear("ap_map_locked");
+
+}
+
+function map_lock()
+{
+    level flag::clear("spawn_zombies");
+
+    level flag::wait_till("ap_universal_restored");
+
+    if (isdefined(level.archi.map_key_item))
+    {
+        dvar_value = GetDvarString("ARCHIPELAGO_INIT_MAP_ITEMS", "");
+        if (dvar_value != "")
+        {
+            maps = strtok(dvar_value, ";");
+            foreach (map in maps)
+            {
+                if (map == level.archi.map_key_item)
+                {
+                    level flag::set("spawn_zombies");
+                    return;
+                }
+            }
+        }
+        archi_items::RegisterUniversalItem(level.archi.map_key_item,&give_Map_Unlock);
+        level flag::set("ap_map_locked");
+        // Check if we're pre-unlocked
+
+
+        // Add locks
+        level thread map_lock_text();
+        foreach (player in level.players)
+        {
+            player thread map_lock_player();
+        }
+        callback::on_spawned(&map_lock_player);
+
+        // Allow spawns are unlock
+        level flag::wait_till_clear("ap_map_locked");
+        level flag::set("spawn_zombies");
+    }
+}
+
+function map_lock_text()
+{
+    while(level flag::get("ap_map_locked")) {
+        IPrintLnBold("Item Required: " + level.archi.map_key_item);
+        wait(5.1);
+    }
+}
+
+function map_lock_player()
+{
+    if (level flag::get("ap_map_locked"))
+    {
+        wait(3);
+        self DisableWeapons();
+        level flag::wait_till_clear("ap_map_locked");
+        self EnableWeapons();
     }
 }

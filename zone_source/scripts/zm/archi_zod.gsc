@@ -21,11 +21,14 @@
 
 #insert scripts\shared\shared.gsh;
 #insert scripts\shared\version.gsh;
+#insert scripts\zm\_zm_perks.gsh;
 
 #insert scripts\zm\archi_core.gsh;
 
 function save_state_manager()
 {
+    callback::on_connect(&_player_connect);
+
     level.archi.save_state = &save_state;
     level thread archi_save::save_on_round_change();
     level thread archi_save::round_checkpoints();
@@ -119,6 +122,11 @@ function setup_locations()
 function setup_side_ee()
 {
     level thread _laundry_ticket();
+    level thread _track_music_snakeskin();
+    level thread _track_music_coldhardcash();
+    level thread _track_margwa_head();
+    level thread _octobomb_upgraded();
+    level thread _doughnut_mines();
 }
 
 function setup_main_quest()
@@ -151,6 +159,34 @@ function setup_sword_quest()
     callback::on_connect(&_player_sword_quest_monitor);
 }
 
+function _track_music_snakeskin()
+{
+    radios = getentarray("hs_radio", "targetname");
+    while(true)
+	{
+		level waittill("hash_da6d056e");
+		if(level.var_89ad28cd == radios.size)
+		{
+			break;
+		}
+	}
+    archi_core::send_location(level.archi.mapString + " Music EE - Snakeskin Boots");
+}
+
+function _track_music_coldhardcash()
+{
+    stage_items = getentarray("hs_item", "targetname");
+	while(true)
+	{
+		level waittill("hash_bcead67a");
+		if(level.var_d98fa1f1 == stage_items.size)
+		{
+			break;
+		}
+	}
+    archi_core::send_location(level.archi.mapString + " Music EE - Cold Hard Cash");
+}
+
 function _player_sword_quest_monitor()
 {
     while(true)
@@ -169,6 +205,35 @@ function _player_sword_quest_monitor()
             }
         } 
     }
+}
+
+// function _track_gobblegum_quest()
+// {
+//     level flag::wait_till_any("awarded_lion_gumball1", "awarded_lion_gumball2", "awarded_lion_gumball3", "awarded_lion_gumball4");
+//     archi_core::send_location(level.archi.mapString + " Grow a Mega Gobblegum");
+// }
+
+function _track_margwa_head()
+{
+    counter = 0;
+    while (counter < 6)
+    {
+        level waittill("hash_1a2d33d7");
+        counter++;
+    }
+    archi_core::send_location(level.archi.mapString + " Unlock the Margwa's Head");
+}
+
+function _octobomb_upgraded()
+{
+    level waittill("hash_21edb6b6");
+    archi_core::send_location(level.archi.mapString + " Upgrade the Li'l Arnies");
+}
+
+function _doughnut_mines()
+{
+    level waittill("hash_25ff6e8", entity);
+    archi_core::send_location(level.archi.mapString + " Unlock the Doughnut or Cream Cake Mines");
 }
 
 function _patch_player_requirement()
@@ -316,13 +381,9 @@ function restore_map_state()
         mdl_key ghost();
         level.quest_key_can_be_picked_up = 0;
         level clientfield::set("quest_key", 1);
-        foreach (ritual_str in ritual_array)
+        foreach(o_defend_area in level.a_o_defend_areas)
         {
-            if (!(level flag::get("ritual_" + ritual_str + "_complete")))
-            {
-                thread [[ level.a_o_defend_area[ritual_str] ]]->set_availability(1);
-
-            }
+            thread [[ o_defend_area ]]->set_availability(1);
         }
         foreach (player in level.players)
         {
@@ -449,4 +510,75 @@ function get_worm_basin(str_flag)
 			return e_basin;
 		}
 	}
+}
+
+function _player_connect()
+{
+    sync_perk_exploders();
+}
+
+function sync_perk_exploders()
+{
+    wait(0.2);
+    if (isdefined(level.archi.active_perk_machines))
+    {
+        perk_keys = GetArrayKeys(level.archi.active_perk_machines);
+        foreach (perk in perk_keys)
+        {
+            if (level.archi.active_perk_machines[perk] == true)
+            {
+                switch (perk)
+                {
+                    case PERK_JUGGERNOG:
+                    	level clientfield::set("perk_light_juggernog", 1);
+                        break;
+                    case PERK_DOUBLETAP2:
+                    	level clientfield::set("perk_light_doubletap", 1);
+                        break;
+                    case PERK_ADDITIONAL_PRIMARY_WEAPON:
+                    	level clientfield::set("perk_light_mule_kick", 1);
+                        break;
+                    case PERK_QUICK_REVIVE:
+                    	level clientfield::set("perk_light_quick_revive", 1);
+                        break;
+                    case PERK_SLEIGHT_OF_HAND:
+                    	level clientfield::set("perk_light_speed_cola", 1);
+                        break;
+                    case PERK_STAMINUP:
+                    	level clientfield::set("perk_light_staminup", 1);
+                        break;
+                    case PERK_WIDOWS_WINE:
+                        level clientfield::set("perk_light_widows_wine", 1);
+                        break;
+                }
+            }
+            else
+            {
+                switch (perk)
+                {
+                    case PERK_JUGGERNOG:
+                        level clientfield::set("perk_light_juggernog", 0);
+                        break;
+                    case PERK_DOUBLETAP2:
+                    	level clientfield::set("perk_light_doubletap", 0);
+                        break;
+                    case PERK_ADDITIONAL_PRIMARY_WEAPON:
+                    	level clientfield::set("perk_light_mule_kick", 0);
+                        break;
+                    case PERK_QUICK_REVIVE:
+                    	level clientfield::set("perk_light_quick_revive", 0);
+                        break;
+                    case PERK_SLEIGHT_OF_HAND:
+                    	level clientfield::set("perk_light_speed_cola", 0);
+                        break;
+                    case PERK_STAMINUP:
+                    	level clientfield::set("perk_light_staminup", 0);
+                        break;
+                    case PERK_WIDOWS_WINE:
+                        level clientfield::set("perk_light_widows_wine", 0);
+                        break;
+                }
+            }
+        }
+    }
 }
