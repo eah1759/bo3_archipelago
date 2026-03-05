@@ -286,10 +286,16 @@ Archi.FromGSC = function (model)
         Archi.LogMessage("No restore func found for '" .. mapName .. "'")
       end
 
-      -- Load attachment rando data
+      -- Preload reticle info so we know to replace sights later
+      reticle_randomized = Engine.DvarInt(0, "ARCHIPELAGO_RETICLE_RANDOMIZED")
+      reticle_pap_randomized = Engine.DvarInt(0, "ARCHIPELAGO_RETICLE_PAP_RANDOMIZED")
+      reticle_joined = Engine.DvarInt(0, "ARCHIPELAGO_RETICLE_JOINED")
+      reticle_is_rando = reticle_randomized ~= 0 or reticle_pap_randomized ~= 0
+
+      -- Load attachment data
       sight_weight = Engine.DvarInt(0,"ARCHIPELAGO_ATTACHMENT_RANDO_SIGHT_SIZE_WEIGHT")
 
-      attachment_data = attachment_rando.generate_weapon_attachments_for_seed(seed, sight_weight)
+      attachment_data = attachment_rando.generate_weapon_attachments_for_seed(seed, sight_weight, reticle_is_rando)
       attachment_rando.load_attachments_into_gsc(attachment_data)
       
       -- Load camo data
@@ -303,12 +309,6 @@ Archi.FromGSC = function (model)
       attachment_rando.load_camos_into_gsc(camo_data)
 
       -- Load reticle data
-      reticle_randomized = Engine.DvarInt(0, "ARCHIPELAGO_RETICLE_RANDOMIZED")
-      reticle_pap_randomized = Engine.DvarInt(0, "ARCHIPELAGO_RETICLE_PAP_RANDOMIZED")
-      reticle_joined = Engine.DvarInt(0, "ARCHIPELAGO_RETICLE_JOINED")
-
-      Archi.LogMessage("Reticle Settings - Base: " .. reticle_randomized .. ", PAP: " .. reticle_pap_randomized .. ", Joined: " .. reticle_joined)
-
       reticle_data = attachment_rando.generate_weapon_reticles_for_seed(seed, reticle_randomized, reticle_pap_randomized, reticle_joined)
       attachment_rando.load_reticles_into_gsc(reticle_data)
         

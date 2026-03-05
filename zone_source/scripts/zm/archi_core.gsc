@@ -134,7 +134,8 @@ function get_ap_settings()
     {
         dvar_value = GetDvarString("ARCHIPELAGO_SETTINGS_READY", "");
         if (dvar_value != "")
-        {
+        {   
+            SetDvar("ARCHIPELAGO_SETTINGS_READY", "");
             LUINotifyEvent(&"ap_init_goal_cond", 0);
             wait(0.1);
             break;
@@ -346,7 +347,7 @@ function game_start()
         archi_items::RegisterWeapon("Wallbuy - VMP",&archi_items::give_Weapon_VMP,"smg_versatile");
         archi_items::RegisterWeapon("Wallbuy - Vesper",&archi_items::give_Weapon_Vesper,"smg_fastfire");
         archi_items::RegisterWeapon("Wallbuy - KN-44",&archi_items::give_Weapon_KN44,"ar_standard");
-        archi_items::RegisterWeapon("Wallbuy - Bootlegger",&archi_items::give_Weapon_BRM,"smg_sten");
+        archi_items::RegisterWeapon("Wallbuy - Bootlegger",&archi_items::give_Weapon_Bootlegger,"smg_sten");
         archi_items::RegisterWeapon("Wallbuy - Bowie Knife",&archi_items::give_Weapon_BowieKnife,"melee_bowie");
 
         level thread archi_zod::setup_locations();

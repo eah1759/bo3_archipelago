@@ -54,6 +54,7 @@ function init_commands()
     level thread _basic_trigger("ap_gum", &_test_general);
     level thread _basic_trigger("ap_stats", &_test_scoreboard);
     level thread _basic_trigger("ap_give_weapon", &_give_weapon);
+    level thread _basic_trigger("ap_camo", &_set_camo);
     level thread _basic_trigger("ap_reticle", &_set_reticle);
     level thread _basic_trigger("ap_get_dvar", &_get_dvar);
     level thread _basic_trigger("ap_spawn_model", &_spawn_model);
@@ -541,23 +542,38 @@ function _set_reticle(val)
 {
   if (val != "")
   {
-    val = Int(val);
-    level.players[0] _set_player_reticle(val);
+    vals = StrTok(val, " ");
+    reticle = Int(vals[0]);
+    color = 0;
+    if (vals.size > 1)
+    {
+      color = Int(vals[1]);
+    }
+    level.players[0] _set_player_reticle(reticle, color);
   }
 }
 
-function _set_player_reticle(reticle)
+function _set_camo(val)
+{
+  if (val != "")
+  {
+    val = Int(val);
+    level.players[0] _set_player_camo(val);
+  }
+}
+
+function _set_player_reticle(reticle, color)
 {
   weapon = self GetCurrentWeapon();
   base_weapon = zm_weapons::get_base_weapon( weapon );
   force_attachments = zm_weapons::get_force_attachments( base_weapon.rootweapon );
   if( isdefined( force_attachments ) && force_attachments.size )
 	{
-		weapon_options = self CalcWeaponOptions( 1, 0, reticle );
+		weapon_options = self CalcWeaponOptions( 1, 0, reticle, color );
 	}
   else
   {
-    weapon_options = self CalcWeaponOptions( 1, 0, reticle );
+    weapon_options = self CalcWeaponOptions( 1, 0, reticle, color );
     weapon = self GetBuildKitWeapon( weapon, zm_weapons::is_weapon_upgraded( weapon ) );
   }
   if( IsSubStr( weapon.name, "+dualoptic" ) )
@@ -571,6 +587,32 @@ function _set_player_reticle(reticle)
 
   }
 }
+
+function _set_player_camo(camo)
+{
+  weapon = self GetCurrentWeapon();
+  base_weapon = zm_weapons::get_base_weapon( weapon );
+  force_attachments = zm_weapons::get_force_attachments( base_weapon.rootweapon );
+  if( isdefined( force_attachments ) && force_attachments.size )
+	{
+		weapon_options = self CalcWeaponOptions( camo, 0, 0 );
+	}
+  else
+  {
+    weapon_options = self CalcWeaponOptions( camo, 0, 0 );
+    weapon = self GetBuildKitWeapon( weapon, zm_weapons::is_weapon_upgraded( weapon ) );
+  }
+  if( IsSubStr( weapon.name, "+dualoptic" ) )
+  {
+    self TakeWeapon(self GetCurrentWeapon());
+    self GiveWeapon(weapon, weapon_options);
+  }
+  else
+  {
+    self UpdateWeaponOptions( weapon, weapon_options );
+  }
+}
+
 
 function _get_dvar(val)
 {

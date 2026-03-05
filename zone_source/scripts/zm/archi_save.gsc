@@ -390,9 +390,12 @@ function can_restore_player(xuid)
 {
     can_restore = GetDvarString("ARCHIPELAGO_LOAD_DATA_XUID_READY_" + xuid, "");
     if (can_restore != "") {
-        return true;
         SetDvar("ARCHIPELAGO_LOAD_DATA_XUID_READY_" + xuid, "");
+        return true;
     }
+    // No saved data, update the starting weapon
+    self zm_weapons::weapon_take(level.start_weapon);
+    self zm_weapons::weapon_give(level.start_weapon, 0, 0, 1);
     return false;
 }
 
@@ -483,6 +486,12 @@ function restore_player_loadout(xuid)
                 self SetWeaponAmmoStock(weapon.altweapon, weapon_alt_stock);
             }
         } else {
+            if (i == 0)
+            {
+                // No saved kit, update the starting weapon
+                self zm_weapons::weapon_take(level.start_weapon);
+                self zm_weapons::weapon_give(level.start_weapon, 0, 0, 1);
+            }
             break;
         }
         i++;

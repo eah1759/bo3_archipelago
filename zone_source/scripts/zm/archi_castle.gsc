@@ -159,7 +159,7 @@ function restore_player_data()
 {
     xuid = self GetXuid();
 
-    if (archi_save::can_restore_player(xuid))
+    if (self archi_save::can_restore_player(xuid))
     {
         self archi_save::restore_player_score(xuid);
         self archi_save::restore_player_perks(xuid);

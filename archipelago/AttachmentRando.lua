@@ -73,38 +73,36 @@ local camo_table = {
     --{ models = { image = "menu_camo_placeholder_pattern_04", name = "MPUI_CAMO_PLACEHOLDER_04", camoIndex = 72 } },
     --{ models = { image = "menu_camo_placeholder_pattern_05", name = "MPUI_CAMO_PLACEHOLDER_05", camoIndex = 73 } },
     { models = { image = "menu_camo_BGB74_pattern", name = "MPUI_CAMO_BGB74", camoIndex = 74 } },
-    { models = { image = "menu_camo_nightmare", name = "MPUI_CAMO_NIGHTMARE", camoIndex = 82 } },
-    { models = { image = "menu_camo_loot_section9_emissive_pattern", name = "MPUI_CAMO_LOOT_SECTION9_EMISSIVE", camoIndex = 83 } },
     { models = { image = "menu_camo_codxp", name = "MPUI_CAMO_CODXP", camoIndex = 89 } },
-    --{ models = { image = "menu_camo_cwl_base", name = "MPUI_CAMO_CODCWL", camoIndex = 90 } },
+    { models = { image = "menu_camo_cwl_base", name = "MPUI_CAMO_CODCWL", camoIndex = 90 } },
     --{ models = { image = "menu_camo_cwl_base", name = "MPUI_CAMO_CODCWL", camoIndex = 91 } },
     --{ models = { image = "menu_camo_cwl_base", name = "MPUI_CAMO_CODCWL", camoIndex = 92 } },
-    { models = { image = "menu_camo_cwl_excellence", name = "MPUI_CAMO_CODCWL_ANZ_EXCELLENCE", camoIndex = 93 } },
+    --{ models = { image = "menu_camo_cwl_excellence", name = "MPUI_CAMO_CODCWL_ANZ_EXCELLENCE", camoIndex = 93 } },
     --{ models = { image = "menu_camo_cwl_base", name = "MPUI_CAMO_CODCWL", camoIndex = 94 } },
-    { models = { image = "menu_camo_cwl_mindfreak", name = "MPUI_CAMO_CODCWL_ANZ_MINDFREAK", camoIndex = 95 } },
-    { models = { image = "menu_camo_cwl_nv", name = "MPUI_CAMO_CODCWL_ANZ_NV", camoIndex = 96 } },
-    { models = { image = "menu_camo_cwl_orbit", name = "MPUI_CAMO_CODCWL_ANZ_ORBIT_GG", camoIndex = 97 } },
-    { models = { image = "menu_camo_cwl_tainted_minds", name = "MPUI_CAMO_CODCWL_ANZ_TAINTED_MINDS", camoIndex = 98 } },
-    { models = { image = "menu_camo_cwl_epsilon", name = "MPUI_CAMO_CODCWL_EU_EPSILON", camoIndex = 99 } },
+    --{ models = { image = "menu_camo_cwl_mindfreak", name = "MPUI_CAMO_CODCWL_ANZ_MINDFREAK", camoIndex = 95 } },
+    --{ models = { image = "menu_camo_cwl_nv", name = "MPUI_CAMO_CODCWL_ANZ_NV", camoIndex = 96 } },
+    --{ models = { image = "menu_camo_cwl_orbit", name = "MPUI_CAMO_CODCWL_ANZ_ORBIT_GG", camoIndex = 97 } },
+    --{ models = { image = "menu_camo_cwl_tainted_minds", name = "MPUI_CAMO_CODCWL_ANZ_TAINTED_MINDS", camoIndex = 98 } },
+    --{ models = { image = "menu_camo_cwl_epsilon", name = "MPUI_CAMO_CODCWL_EU_EPSILON", camoIndex = 99 } },
     --{ models = { image = "menu_camo_cwl_base", name = "MPUI_CAMO_CODCWL", camoIndex = 100 } },
     --{ models = { image = "menu_camo_cwl_base", name = "MPUI_CAMO_CODCWL", camoIndex = 101 } },
     --{ models = { image = "menu_camo_cwl_base", name = "MPUI_CAMO_CODCWL", camoIndex = 102 } },
-    { models = { image = "menu_camo_cwl_infused", name = "MPUI_CAMO_CODCWL_EU_INFUSED", camoIndex = 103 } },
-    { models = { image = "menu_camo_cwl_ldlc", name = "MPUI_CAMO_CODCWL_EU_LDLC", camoIndex = 104 } },
-    { models = { image = "menu_camo_cwl_millenium", name = "MPUI_CAMO_CODCWL_EU_MILLENIUM", camoIndex = 105 } },
-    { models = { image = "menu_camo_cwl_splyce", name = "MPUI_CAMO_CODCWL_EU_SPLYCE", camoIndex = 106 } },
-    { models = { image = "menu_camo_cwl_supremacy", name = "MPUI_CAMO_CODCWL_EU_SUPREMACY", camoIndex = 107 } },
+    --{ models = { image = "menu_camo_cwl_infused", name = "MPUI_CAMO_CODCWL_EU_INFUSED", camoIndex = 103 } },
+    --{ models = { image = "menu_camo_cwl_ldlc", name = "MPUI_CAMO_CODCWL_EU_LDLC", camoIndex = 104 } },
+    --{ models = { image = "menu_camo_cwl_millenium", name = "MPUI_CAMO_CODCWL_EU_MILLENIUM", camoIndex = 105 } },
+    --{ models = { image = "menu_camo_cwl_splyce", name = "MPUI_CAMO_CODCWL_EU_SPLYCE", camoIndex = 106 } },
+    --{ models = { image = "menu_camo_cwl_supremacy", name = "MPUI_CAMO_CODCWL_EU_SUPREMACY", camoIndex = 107 } },
     --{ models = { image = "menu_camo_cwl_base", name = "MPUI_CAMO_CODCWL", camoIndex = 108 } },
-    { models = { image = "menu_camo_cwl_cloud9", name = "MPUI_CAMO_CODCWL_NA_CLOUD9", camoIndex = 109 } },
+    --{ models = { image = "menu_camo_cwl_cloud9", name = "MPUI_CAMO_CODCWL_NA_CLOUD9", camoIndex = 109 } },
     --{ models = { image = "menu_camo_cwl_base", name = "MPUI_CAMO_CODCWL", camoIndex = 110 } },
-    { models = { image = "menu_camo_cwl_elevate", name = "MPUI_CAMO_CODCWL_NA_ELEVATE", camoIndex = 111 } },
-    { models = { image = "menu_camo_cwl_envyus", name = "MPUI_CAMO_CODCWL_NA_ENVYUS", camoIndex = 112 } },
-    { models = { image = "menu_camo_cwl_faze", name = "MPUI_CAMO_CODCWL_NA_FAZE", camoIndex = 113 } },
+    -- { models = { image = "menu_camo_cwl_elevate", name = "MPUI_CAMO_CODCWL_NA_ELEVATE", camoIndex = 111 } },
+    -- { models = { image = "menu_camo_cwl_envyus", name = "MPUI_CAMO_CODCWL_NA_ENVYUS", camoIndex = 112 } },
+    -- { models = { image = "menu_camo_cwl_faze", name = "MPUI_CAMO_CODCWL_NA_FAZE", camoIndex = 113 } },
     --{ models = { image = "menu_camo_cwl_base", name = "MPUI_CAMO_CODCWL", camoIndex = 114 } },
     --{ models = { image = "menu_camo_cwl_base", name = "MPUI_CAMO_CODCWL", camoIndex = 115 } },
-    { models = { image = "menu_camo_cwl_opticgaming", name = "MPUI_CAMO_CODCWL_NA_OPTICGAMING", camoIndex = 116 } },
-    { models = { image = "menu_camo_cwl_rise_nation", name = "MPUI_CAMO_CODCWL_NA_RISE_NATION", camoIndex = 117 } },
-    { models = { image = "menu_camo_loot_contract", name = "Ragequit", camoIndex = 118 } },
+    -- { models = { image = "menu_camo_cwl_opticgaming", name = "MPUI_CAMO_CODCWL_NA_OPTICGAMING", camoIndex = 116 } },
+    -- { models = { image = "menu_camo_cwl_rise_nation", name = "MPUI_CAMO_CODCWL_NA_RISE_NATION", camoIndex = 117 } },
+    --{ models = { image = "menu_camo_loot_contract", name = "Ragequit", camoIndex = 118 } },
     { models = { image = "menu_camo_loot_contract_crystals", name = "MPUI_CAMO_LOOT_CONTRACT_CRYSTALS", camoIndex = 119 } },
     --{ models = { image = "menu_camo_cwl_base", name = "MPUI_CAMO_CODCWL", camoIndex = 120 } },
 
@@ -114,11 +112,6 @@ local camo_table = {
     --{ models = { image = "menu_camo_placeholder_pattern_26", name = "MPUI_CAMO_PLACEHOLDER_26", camoIndex = 129 } },
     --{ models = { image = "menu_camo_placeholder_pattern_27", name = "MPUI_CAMO_PLACEHOLDER_27", camoIndex = 130 } },
     { models = { image = "menu_camo_patricks_03", name = "MPUI_MTL_T7_CAMO_LOOT_PATRICKS_03", camoIndex = 131 } },
-
-    { models = { image = "menu_camo_summertime_cherry_fiz", name = "MPUI_CAMO_CHERRY_FIZZ", camoIndex = 134 } },
-    { models = { image = "menu_camo_summertime_vip_bubbles", name = "MPUI_CAMO_EMPIRE", camoIndex = 135 } },
-    { models = { image = "menu_camo_winter_soviet_blue", name = "Permafrost", camoIndex = 136 } },
-    { models = { image = "menu_camo_honeycomb", name = "MPUI_CAMO_HONEYCOMB_AMBER", camoIndex = 137 } },
     { models = { image = "menu_camo_watermelon", name = "MPUI_CAMO_WATERMELON", camoIndex = 138 } },
 }
 
@@ -132,6 +125,8 @@ local pap_camo_table =
     { models = { image = "menu_camo_zm_dlc2_pap05", name = "MPUI_CAMO_DLC5_REWARD_5", camoIndex = 79 } },
     { models = { image = "menu_camo_zm_dlc2_pap06", name = "Selenite", camoIndex = 80 } },
     { models = { image = "menu_camo_pap_island", name = "MPUI_CAMO_ZMHD_PAP_01", camoIndex = 81 } },
+    { models = { image = "menu_camo_nightmare", name = "MPUI_CAMO_NIGHTMARE", camoIndex = 82 } },
+    { models = { image = "menu_camo_loot_section9_emissive_pattern", name = "MPUI_CAMO_LOOT_SECTION9_EMISSIVE", camoIndex = 83 } },
     { models = { image = "menu_camo_dlc3_pap_base", name = "MPUI_CAMO_ZMHD_EVENT_01", camoIndex = 84 } },
     { models = { image = "menu_camo_dlc3_pap_01", name = "Glacial fire", camoIndex = 85 } },
     { models = { image = "menu_camo_dlc3_pap_02", name = "MPUI_CAMO_PROMO_02", camoIndex = 86 } },
@@ -144,6 +139,10 @@ local pap_camo_table =
     { models = { image = "menu_camo_pap_dlc4_05", name = "Nebula", camoIndex = 125 } },
     { models = { image = "menu_camo_pap_bo1", name = "Circuit", camoIndex = 132 } },
     { models = { image = "menu_camo_pap_tomb", name = "Divinium", camoIndex = 133 } },
+    { models = { image = "menu_camo_summertime_cherry_fiz", name = "MPUI_CAMO_CHERRY_FIZZ", camoIndex = 134 } },
+    { models = { image = "menu_camo_summertime_vip_bubbles", name = "MPUI_CAMO_EMPIRE", camoIndex = 135 } },
+    { models = { image = "menu_camo_winter_soviet_blue", name = "Permafrost", camoIndex = 136 } },
+    { models = { image = "menu_camo_honeycomb", name = "MPUI_CAMO_HONEYCOMB_AMBER", camoIndex = 137 } },
 }
 
 local weapon_attachments = {
@@ -402,8 +401,6 @@ function generate_weapon_camos_for_seed(seed, base_enabled, base_mixed, pap_enab
         return shuffled
     end
 
-    local camo_bag = shuffle_array(camo_table)
-
     local camo_data = {}
 
     if base_enabled ~= 0 then
@@ -549,7 +546,7 @@ function generate_weapon_reticles_for_seed(seed, base_enabled, pap_enabled, join
 end
 
 
-function generate_weapon_attachments_for_seed(seed, sight_weight)
+function generate_weapon_attachments_for_seed(seed, sight_weight, reticle_randomized)
     -- Make consistent for seed I guess
     -- Why can't it just take a string smh
     local numeric_seed = 0
@@ -610,6 +607,11 @@ function generate_weapon_attachments_for_seed(seed, sight_weight)
             else
                 sight = weapon_data.sights_small[math.random(#weapon_data.sights_small)]
             end
+
+            if sight == "holo" and reticle_randomized then
+                sight = "reflex"
+            end
+
             table.insert(attachments, sight)
         end
         
