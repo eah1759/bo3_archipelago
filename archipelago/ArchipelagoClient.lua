@@ -52,6 +52,20 @@ function startsWith(String,Start)
   return string.sub(String,1,#Start)==Start
 end
 
+Archi.MapUnlocks = {}
+
+Archi.GetGoalItems = function ()
+  return goalItems
+end
+
+Archi.CheckGoalItemExists = function (itemName)
+  if saveData["universal"]["itemsReceived"][itemName] and saveData["universal"]["itemsReceived"][itemName] > 0 then
+    return true
+  end
+  return false
+end
+
+
 Archi.SocketDisconnected = function ()
   ItemQueue = List.new()
   connectionItemState = {}
@@ -408,6 +422,9 @@ Archi.GiveItemsLoop = function()
       local toSend = networkItem.name
 
       if startsWith(toSend, "Map Unlock") then
+        if not Archi.MapUnlocks[toSend] then
+          Archi.MapUnlocks[toSend] = true
+        end
         local alreadyExists = false
         for _, item in ipairs(saveData["universal"]["mapItems"]) do
           if item == toSend then

@@ -48,6 +48,7 @@ rawfile,ui/uieditor/widgets/StartMenu/ApLocationsTab/StartMenu_ApLocations_ListI
 rawfile,ui/uieditor/widgets/StartMenu/ApLocationsTab/StartMenu_ApLocations.lua
 rawfile,ui/uieditor/widgets/StartMenu/ApItemsTab/StartMenu_ApItems.lua
 rawfile,ui/uieditor/widgets/StartMenu/ApStateTab/StartMenu_ApState.lua
+rawfile,ui/uieditor/widgets/StartMenu/ApSeedTab/StartMenu_ApSeed.lua
 rawfile,ui/uieditor/widgets/StartMenu/TabWidgets/StartMenu_TabList.lua
 rawfile,ui/uieditor/widgets/StartMenu/TabWidgets/StartMenu_TabWidget.lua
 rawfile,ui/uieditor/widgets/StartMenu/StartMenu_GameOptions_ZM.lua

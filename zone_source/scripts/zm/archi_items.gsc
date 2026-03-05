@@ -586,6 +586,7 @@ function _grenadeparty()
     for (i = 0; i < g_count; i++)
     {
         wait(0.3);
+        // Randomize the general direction
         x_dir = RandomIntRange(30, 60);
         y_dir = RandomIntRange(30, 60);
         if (math::cointoss())

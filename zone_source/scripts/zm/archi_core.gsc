@@ -719,6 +719,7 @@ function game_start()
     default_map_changes();
 
     level thread archi_save::state_dvar_monitor();
+    level thread archi_save::state_other_monitor();
 }
 
 function setup_can_player_purchase_perk()

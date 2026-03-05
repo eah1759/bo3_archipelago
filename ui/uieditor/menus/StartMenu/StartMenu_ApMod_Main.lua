@@ -6,6 +6,7 @@ require( "ui.uieditor.widgets.playercard.SelfIdentityBadge" )
 require( "ui.uieditor.menus.StartMenu.StartMenu_ApModSettings_Locations" )
 require( "ui.uieditor.widgets.StartMenu.ApItemsTab.StartMenu_ApItems" )
 require( "ui.uieditor.widgets.StartMenu.ApStateTab.StartMenu_ApState" )
+require( "ui.uieditor.widgets.StartMenu.ApSeedTab.StartMenu_ApSeed" )
 
 local PostLoadFunc = function( self, controller )
 	self:registerEventHandler( "menu_opened", function()
@@ -66,6 +67,11 @@ DataSources.ModSettingsTabs = ListHelper_SetupDataSource( "ModSettingsTabs", fun
 	table.insert( tabList, {
 		models = { tabIcon = CoD.buttonStrings.shoulderl },
 		properties = { m_mouseDisabled = true }
+	} )
+
+	table.insert( tabList, {
+		models = { tabName = "General", tabWidget = "CoD.StartMenu_ApSeed" },
+		properties = { tabId = "gameOptions" }
 	} )
 
 	table.insert( tabList, {

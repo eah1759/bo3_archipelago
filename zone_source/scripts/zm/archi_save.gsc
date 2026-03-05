@@ -719,6 +719,8 @@ function restore_player_flag(flag, xuid)
 
 function state_dvar_monitor()
 {
+    level endon("end_game");
+
     while(true)
     {
         i = 0;
@@ -729,5 +731,16 @@ function state_dvar_monitor()
         }
         wait(2);
     }
+}
 
+function state_other_monitor()
+{
+    level endon("end_game");
+
+    while(true)
+    {
+        perk_limit = level.players[0] archi_core::get_player_perk_purchase_limit();
+        SetDvar("ARCHIPELAGO_MSTATE_PERK_LIMIT", perk_limit);
+        wait(2);
+    }
 }
