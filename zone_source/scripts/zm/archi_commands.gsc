@@ -23,6 +23,7 @@
 #insert scripts\zm\archi_core.gsh;
 
 #using scripts\zm\archi_core;
+#using scripts\zm\archi_shop;
 
 #namespace archi_commands;
 
@@ -58,6 +59,7 @@ function init_commands()
     level thread _basic_trigger("ap_reticle", &_set_reticle);
     level thread _basic_trigger("ap_get_dvar", &_get_dvar);
     level thread _basic_trigger("ap_spawn_model", &_spawn_model);
+    level thread _basic_trigger("ap_spawn_shop", &_spawn_shop);
   }
 }
 
@@ -100,7 +102,7 @@ function private _send_message_response(command_args)
     if(isdefined(dvar_value) && dvar_value != "")
     {
       ModVar("ap", "");
-      SetDvar("ARCHIPELAGO_SAY_SEND", dvar_value);
+      ModVar("ARCHIPELAGO_SAY_SEND", dvar_value);
       LUINotifyEvent(&"ap_notification", 0);
 
       //Send notification for Send UI Image
@@ -286,23 +288,23 @@ function _debug_magicbox_response()
       IPrintLn("Writing data for " + keys.size + " weapons");
       for (i = 0; i < keys.size; i++)
       {
-        SetDvar("ARCHIPELAGO_DEBUG_MAGICBOX_" + i, keys[i].name);
+        ModVar("ARCHIPELAGO_DEBUG_MAGICBOX_" + i, keys[i].name);
         if (level.zombie_weapons[keys[i]].is_in_box)
         {
-          SetDvar("ARCHIPELAGO_DEBUG_MAGICBOX_" + i + "_INSIDE", "true");
+          ModVar("ARCHIPELAGO_DEBUG_MAGICBOX_" + i + "_INSIDE", "true");
         } else
         {
-          SetDvar("ARCHIPELAGO_DEBUG_MAGICBOX_" + i + "_INSIDE", "false");
+          ModVar("ARCHIPELAGO_DEBUG_MAGICBOX_" + i + "_INSIDE", "false");
         }
         if (isdefined(level.limited_weapons[keys[i]]))
         {
           limit = level.limited_weapons[keys[i]];
-          SetDvar("ARCHIPELAGO_DEBUG_MAGICBOX_" + i + "_LIMITED", "true");
-          SetDvar("ARCHIPELAGO_DEBUG_MAGICBOX_" + i + "_QUOTA", limit);
+          ModVar("ARCHIPELAGO_DEBUG_MAGICBOX_" + i + "_LIMITED", "true");
+          ModVar("ARCHIPELAGO_DEBUG_MAGICBOX_" + i + "_QUOTA", limit);
         }
         else
         {
-          SetDvar("ARCHIPELAGO_DEBUG_MAGICBOX_" + i + "_LIMITED", "false");
+          ModVar("ARCHIPELAGO_DEBUG_MAGICBOX_" + i + "_LIMITED", "false");
         }
       }
       LUINotifyEvent(&"ap_debug_magicbox", 0);
@@ -345,7 +347,7 @@ function _start_grand_tour(val)
 
 function _enable_cheats(val)
 {
-  SetDvar("sv_cheats", 1);
+  ModVar("sv_cheats", 1);
 }
 
 function _set_player_flag(val)
@@ -407,6 +409,10 @@ function _give_testkit(val)
     player zm_utility::give_player_all_perks();
     player zm_score::add_to_player_score(100000);
     SetDvar("player_SprintUnlimited", 1);
+    if (val == "2")
+    {
+        player EnableInvulnerability();
+    }
   }
 }
 
@@ -627,8 +633,27 @@ function _spawn_model(val)
 {
   if (val != "")
   {
+    vals = StrTok(val, " ");
+    offset = 0;
+    if (vals.size > 1)
+    {
+      offset = Int(vals[1]);
+    }
     player = level.players[0];
-    spawn_point = (player.origin[0], player.origin[1], player.origin[2] + 12);
-    util::spawn_model(val, spawn_point, player.angles);
+    spawn_point = (player.origin[0], player.origin[1], player.origin[2] + offset);
+    util::spawn_model(vals[0], spawn_point, player.angles);
+  }
+}
+
+function _spawn_shop(val)
+{
+  if (val != "")
+  {
+    player = level.players[0];
+    shop = SpawnStruct();
+    shop.origin = player.origin;
+    shop.angles = (0, 0, 0);
+    shop.model = "archipelago_shop";
+    shop thread archi_shop::shop_spawn_init();
   }
 }

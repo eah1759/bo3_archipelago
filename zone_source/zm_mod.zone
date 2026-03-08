@@ -30,6 +30,7 @@ scriptparsetree,scripts/zm/archi_commands.gsc
 scriptparsetree,scripts/zm/_zm_pack_a_punch.gsc
 scriptparsetree,scripts/zm/_zm_perks.gsc
 scriptparsetree,scripts/zm/_zm_weapons.gsc
+scriptparsetree,scripts/zm/craftables/_zm_craftables.gsc
 
 //The point our UI injects its widget
 rawfile,ui/archipelago/hudInject.lua
@@ -53,6 +54,18 @@ rawfile,ui/uieditor/widgets/StartMenu/TabWidgets/StartMenu_TabList.lua
 rawfile,ui/uieditor/widgets/StartMenu/TabWidgets/StartMenu_TabWidget.lua
 rawfile,ui/uieditor/widgets/StartMenu/StartMenu_GameOptions_ZM.lua
 
+//AP Shop
+scriptparsetree,scripts/zm/archi_shop.csc
+scriptparsetree,scripts/zm/archi_shop.gsc
+image,i_ap_gum_regular
+image,i_ap_gum_mega
+image,i_ap_gum_rare
+image,i_ap_gum_legendary
+
+rawfile,ui/uieditor/menus/ApShop/ApShop_Main.lua
+rawfile,ui/uieditor/widgets/ApShop/ApShopButton1ListItem.lua
+rawfile,ui/uieditor/widgets/ApShop/ApShopButton2ListItem.lua
+
 //Archipelago Client
 rawfile,archipelago/ArchipelagoClient.lua
 rawfile,archipelago/JsonUtils/Decoder.lua
@@ -72,5 +85,10 @@ image,archipelago_power_switch_perk
 image,archipelago_wallbuys_perk
 image,archipelago_wunderfizz_perk
 
+//Reticles
+image,i_t7_attach_optic_reflex_reticle_fun02_c
+image,i_t7_attach_optic_reflex_reticle_loot_10_fun_c
+
 //Models
 xmodel,archipelago_logo
+xmodel,archipelago_shop

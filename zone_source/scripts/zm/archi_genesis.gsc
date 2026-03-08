@@ -410,30 +410,31 @@ function reset_summoning_key_listener()
 {
     level endon("end_game");
 
-    ModVar("ARCHIPELAGO_GENESIS_RESET_SUMMONING_KEY", "");
+    SetDvar("ARCHIPELAGO_GENESIS_RESET_SUMMONING_KEY", "");
 
     while(true)
     {  
         dvar_value = GetDvarString("ARCHIPELAGO_GENESIS_RESET_SUMMONING_KEY", "");
         if(isdefined(dvar_value) && dvar_value != "")
         {
-            ModVar("ARCHIPELAGO_GENESIS_RESET_SUMMONING_KEY", "");
+            SetDvar("ARCHIPELAGO_GENESIS_RESET_SUMMONING_KEY", "");
             if (level flag::get("grand_tour"))
             {
                 e_player = level.players[0];
+                IPrintLn("Moving ball to " + e_player.name);
                 ball = level.ball;
                 ball.visuals[0] clientfield::set("ball_on_ground_fx", 0);
                 ball.trigger.baseorigin = e_player.origin;
                 foreach (visual in ball.visuals)
                 {
-                visual.baseorigin = e_player.origin;
+                    visual.baseorigin = e_player.origin;
                 }
                 ball.isresetting = 1;
-                prev_origin = self.trigger.origin;
+                prev_origin = ball.trigger.origin;
                 ball notify("reset");
                 ball gameobjects::move_visuals_to_base();
                 ball.trigger.origin = ball.trigger.baseorigin;
-                ball.curorigin = self.trigger.origin;
+                ball.curorigin = ball.trigger.origin;
                 ball [[ball.onreset]](prev_origin, 1, 1);
                 ball gameobjects::clear_carrier();
                 ball.isresetting = 0;
@@ -537,6 +538,8 @@ function restore_map_state()
     }
     wait(0.1);
     // phased_sophia_start should flag auto
+    level flag::wait_till("phased_sophia_start");
+    wait(0.1);
     archi_save::restore_flag("sophia_beam_locked");
     wait(0.1);
     archi_save::restore_flag("book_picked_up");
@@ -594,6 +597,7 @@ function restore_map_state()
             level notify("widget_ui_override");
         }
     }
+    wait(0.1);
     archi_save::restore_flag("toys_collected");
     // If step in progress, teleport to arena to collect key first
     archi_save::restore_flag_cb("grand_tour", &set_arena_teleport);
@@ -617,12 +621,7 @@ function set_arena_teleport()
     }
     else 
     {
-        wait(0.1);
-        // Already done step, delete key
-        s_loc = struct::get("arena_reward_pickup", "targetname");
-	    zm_unitrigger::unregister_unitrigger(s_loc.unitrigger_stub);
-        ball_visual = level.ball.visuals[0];
-        ball_visual.origin = (10000,10000,10000);
+        level thread delayed_ball_deleter();
     }
 }
 
@@ -650,4 +649,13 @@ function _restore_map_state_player()
     self archi_save::restore_player_flag("flag_player_collected_reward_1", xuid);
     self archi_save::restore_player_flag("flag_player_collected_reward_2", xuid);
     self archi_save::restore_player_flag("flag_player_collected_reward_3", xuid);
+}
+
+function delayed_ball_deleter()
+{
+    wait(5);
+    s_loc = struct::get("arena_reward_pickup", "targetname");
+    zm_unitrigger::unregister_unitrigger(s_loc.unitrigger_stub);
+    ball_visual = level.ball.visuals[0];
+    ball_visual.origin = (10000,10000,10000);
 }

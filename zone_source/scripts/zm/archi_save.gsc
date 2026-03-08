@@ -638,7 +638,7 @@ function save_player_perks(xuid)
 function save_player_loadout(xuid)
 {
     hero_weapon = self zm_utility::get_player_hero_weapon();
-    if (hero_weapon != level.weaponnone) 
+    if (hero_weapon != level.weaponnone && hero_weapon.name != "ball") 
     {
         SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_WEAPON_" + xuid + "_HEROWEAPON", hero_weapon.name);
         SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_WEAPON_" + xuid + "_HEROWEAPON_POWER", math::clamp(self.hero_power, 0, 100));

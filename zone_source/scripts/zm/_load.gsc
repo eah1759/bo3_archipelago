@@ -69,6 +69,7 @@
 
 //AP Mod Load
 #using scripts\zm\archi_core;
+#using scripts\zm\archi_shop;
 
 #precache( "fx", "_t6/bio/player/fx_footstep_dust" );
 #precache( "fx", "_t6/bio/player/fx_footstep_sand" );

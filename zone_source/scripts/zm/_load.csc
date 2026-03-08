@@ -45,6 +45,7 @@
 
 //AP Mod Load
 #using scripts\zm\archi_core;
+#using scripts\zm\archi_shop;
 
 #namespace load;
 

@@ -544,7 +544,7 @@ function give_ShieldPart_Clamp()
 function give_piece(craftableName, pieceName)
 {
     level.archi.craftable_parts[craftableName + "_" + pieceName] = true;
-    zm_craftables::player_get_craftable_piece(craftableName, pieceName);
+    zm_craftables::player_get_craftable_piece(craftableName, pieceName, true);
 }
 
 // function give_PackAPunch()

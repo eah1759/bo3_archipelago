@@ -277,7 +277,6 @@ function game_start()
     archi_items::RegisterUniversalItem("Gift - Free Perk Powerup",&archi_items::give_Gift_FreePerkPowerup);
 
     // Progressives
-    patch_pap();
     archi_items::RegisterUniversalItem("Progressive - Pack-A-Punch Machine",&archi_items::give_ProgressivePap);
     archi_items::RegisterUniversalItem("Progressive - Perk Limit Increase",&archi_items::give_ProgressivePerkLimit);
 
@@ -292,17 +291,14 @@ function game_start()
         level.archi.map_key_item = "Map Unlock - Shadows of Evil";
         level.archi.sync_perk_exploders = &archi_zod::sync_perk_exploders;
 
-        replace_craftable_onPickup("craft_shield_zm");
         level.archi.craftable_piece_to_location["craft_shield_zm_dolly"] = level.archi.mapString + " Shield Part Pickup - Dolly";
         level.archi.craftable_piece_to_location["craft_shield_zm_door"] = level.archi.mapString + " Shield Part Pickup - Door";
         level.archi.craftable_piece_to_location["craft_shield_zm_clamp"] = level.archi.mapString + " Shield Part Pickup - Clamp";
 
-        replace_craftable_onPickup("idgun");
         level.archi.craftable_piece_to_location["idgun_part_heart"] = level.archi.mapString + " Apothicon Servant Part Pickup - Margwa Heart";
         level.archi.craftable_piece_to_location["idgun_part_skeleton"] = level.archi.mapString + " Apothicon Servant Part Pickup - Margwa Tentacle";
         level.archi.craftable_piece_to_location["idgun_part_xenomatter"] = level.archi.mapString + " Apothicon Servant Part Pickup - Xenomatter";
 
-        replace_craftable_onPickup("police_box");
         level.archi.craftable_piece_to_location["police_box_fuse_01"] = level.archi.mapString + " Civil Protector Part Pickup - Waterfront Fuse";
         level.archi.craftable_piece_to_location["police_box_fuse_02"] = level.archi.mapString + " Civil Protector Part Pickup - Canals Fuse";
         level.archi.craftable_piece_to_location["police_box_fuse_03"] = level.archi.mapString + " Civil Protector Part Pickup - Footlight Fuse";
@@ -365,12 +361,10 @@ function game_start()
         level.archi.sync_perk_exploders = &archi_castle::sync_perk_exploders;
 
         // Replace craftable logic with AP locations
-        replace_craftable_onPickup("craft_shield_zm");
         level.archi.craftable_piece_to_location["craft_shield_zm_dolly"] = level.archi.mapString + " Shield Part Pickup - Dolly";
         level.archi.craftable_piece_to_location["craft_shield_zm_door"] = level.archi.mapString + " Shield Part Pickup - Door";
         level.archi.craftable_piece_to_location["craft_shield_zm_clamp"] = level.archi.mapString + " Shield Part Pickup - Clamp";
 
-        replace_craftable_onPickup("gravityspike");
         level.archi.craftable_piece_to_location["gravityspike_part_body"] = level.archi.mapString + " Ragnarok DG-4 Part Pickup - Body";
         level.archi.craftable_piece_to_location["gravityspike_part_guards"] = level.archi.mapString + " Ragnarok DG-4 Part Pickup - Guards";
         level.archi.craftable_piece_to_location["gravityspike_part_handle"] = level.archi.mapString + " Ragnarok DG-4 Part Pickup - Handle";
@@ -436,12 +430,10 @@ function game_start()
         // 2 underwater
         level thread setup_spare_change_trackers(5);
 
-        replace_craftable_onPickup("craft_shield_zm");
         level.archi.craftable_piece_to_location["craft_shield_zm_dolly"] = level.archi.mapString + " Shield Part Pickup - Dolly";
         level.archi.craftable_piece_to_location["craft_shield_zm_door"] = level.archi.mapString + " Shield Part Pickup - Door";
         level.archi.craftable_piece_to_location["craft_shield_zm_clamp"] = level.archi.mapString + " Shield Part Pickup - Clamp";
 
-        replace_craftable_onPickup("gasmask");
         level.archi.craftable_piece_to_location["gasmask_part_visor"] = level.archi.mapString + " Gasmask Part Pickup - Visor";
         level.archi.craftable_piece_to_location["gasmask_part_filter"] = level.archi.mapString + " Gasmask Part Pickup - Filter";
         level.archi.craftable_piece_to_location["gasmask_part_strap"] = level.archi.mapString + " Gasmask Part Pickup - Strap";
@@ -511,12 +503,10 @@ function game_start()
         level thread archi_stalingrad::setup_locations();
         level thread archi_stalingrad::setup_patches();
 
-        replace_craftable_onPickup("craft_shield_zm");
         level.archi.craftable_piece_to_location["craft_shield_zm_dolly"] = level.archi.mapString + " Shield Part Pickup - Dolly";
         level.archi.craftable_piece_to_location["craft_shield_zm_door"] = level.archi.mapString + " Shield Part Pickup - Door";
         level.archi.craftable_piece_to_location["craft_shield_zm_clamp"] = level.archi.mapString + " Shield Part Pickup - Clamp";
 
-        replace_craftable_onPickup("dragonride");
         level.archi.craftable_piece_to_location["dragonride_part_transmitter"] = level.archi.mapString + " Main Quest - Dragonride Part Pickup - Transmitter";
         level.archi.craftable_piece_to_location["dragonride_part_codes"] = level.archi.mapString + " Main Quest - Dragonride Part Pickup - Codes";
         level.archi.craftable_piece_to_location["dragonride_part_map"] = level.archi.mapString + " Main Quest - Dragonride Part Pickup - Map";
@@ -591,7 +581,6 @@ function game_start()
 
         level thread archi_genesis::patch_sword_quest();
 
-        replace_craftable_onPickup("craft_shield_zm");
         level.archi.craftable_piece_to_location["craft_shield_zm_dolly"] = level.archi.mapString + " Shield Part Pickup - Dolly";
         level.archi.craftable_piece_to_location["craft_shield_zm_door"] = level.archi.mapString + " Shield Part Pickup - Door";
         level.archi.craftable_piece_to_location["craft_shield_zm_clamp"] = level.archi.mapString + " Shield Part Pickup - Clamp";
@@ -976,203 +965,6 @@ function location_check_to_lua()
     }
 }
 
-function replace_craftable_onPickup( craftableName )
-{
-    if ( isdefined(level.zombie_include_craftables) && isdefined(level.zombie_include_craftables[ craftableName ]) )
-    {
-        craftable_struct = level.zombie_include_craftables[ craftableName ];
-        foreach (index, piece in craftable_struct.a_pieceStubs)
-        {
-            if (isdefined(piece.onPickup))
-            {
-                piece.original_onPickup = piece.onPickup;
-                piece.onPickup = &wrapped_craftable_onPickup;
-            } 
-            else
-            {
-                IPrintLn("No pickup defined for piece?");
-            }
-        }
-    }
-} 
-
-function replace_piece_with_model( str_craftable, str_piece, str_model, location )
-{
-    piecespawn = zm_craftables::get_craftable_piece(str_craftable, str_piece);
-    if (isdefined(piecespawn) && isdefined(piecespawn.model))
-    {
-        IPrintLn("Found model to replace");
-        part_pickup = SpawnStruct();
-        
-        // Create piece model
-        part_pickup.model = Spawn("script_model", piecespawn.model.origin);
-        part_pickup.model.angles = piecespawn.model.angles;
-
-        // Create piece unitrigger
-        unitrigger_offset = vectorscale((0, 0, 1), 12);
-        part_pickup.unitrigger = generate_part_pickup_unitrigger("trigger_radius_use", piecespawn.origin + unitrigger_offset, piecespawn.angles, 0, piecespawn.radius, piecespawn.height, "Take Archipelago Item", false);
-        part_pickup.unitrigger.location = location;
-        part_pickup.unitrigger.origin_parent = part_pickup.model;
-        part_pickup.unitrigger.piece = part_pickup;
-
-        piecespawn.model delete();
-        level thread zm_unitrigger::unregister_unitrigger(piecespawn.unitrigger);
-        piecespawn.model = undefined;
-        piecespawn.unitrigger = undefined;
-    }
-}
-
-function generate_part_pickup_unitrigger(classname, origin, angles, flags, radius = 64, script_height = 64, hint_string, moving, b_nolook)
-{
-	script_width = script_height;
-	script_length = script_height;
-	unitrigger_stub = spawnstruct();
-	unitrigger_stub.origin = origin;
-	if(isdefined(script_length))
-	{
-		unitrigger_stub.script_length = script_length;
-	}
-	else
-	{
-		unitrigger_stub.script_length = 13.5;
-	}
-	if(isdefined(script_width))
-	{
-		unitrigger_stub.script_width = script_width;
-	}
-	else
-	{
-		unitrigger_stub.script_width = 27.5;
-	}
-	if(isdefined(script_height))
-	{
-		unitrigger_stub.script_height = script_height;
-	}
-	else
-	{
-		unitrigger_stub.script_height = 24;
-	}
-	unitrigger_stub.radius = radius;
-	unitrigger_stub.cursor_hint = "HINT_NOICON";
-    unitrigger_stub.hint_string = hint_string;
-	unitrigger_stub.script_unitrigger_type = "unitrigger_box_use";
-	if(isdefined(b_nolook) && (isdefined(int(b_nolook)) && int(b_nolook)))
-	{
-		unitrigger_stub.require_look_toward = 0;
-	}
-	unitrigger_stub.require_look_at = 0;
-	switch(classname)
-	{
-		case "trigger_radius":
-		{
-			unitrigger_stub.script_unitrigger_type = "unitrigger_radius";
-			break;
-		}
-		case "trigger_radius_use":
-		{
-			unitrigger_stub.script_unitrigger_type = "unitrigger_radius_use";
-			break;
-		}
-		case "trigger_box":
-		{
-			unitrigger_stub.script_unitrigger_type = "unitrigger_box";
-			break;
-		}
-		case "trigger_box_use":
-		{
-			unitrigger_stub.script_unitrigger_type = "unitrigger_box_use";
-			break;
-		}
-	}
-	unitrigger_stub.originfunc = &zm_craftables::piecestub_get_unitrigger_origin;
-	if(isdefined(moving) && moving)
-	{
-		zm_unitrigger::register_unitrigger(unitrigger_stub, &part_pickup_think);
-	}
-	else
-	{
-		zm_unitrigger::register_static_unitrigger(unitrigger_stub, &part_pickup_think);
-	}
-	return unitrigger_stub;
-}
-
-function part_pickup_unspawn()
-{
-    self.model delete();
-    self.model = undefined;
-    thread zm_unitrigger::unregister_unitrigger(self.unitrigger);
-    self.unitrigger = undefined;
-}
-
-function part_pickup_think()
-{
-    self endon("kill_trigger");
-    location = self.stub.location;
-    flag = self.stub.flag;
-    piece = self.stub.piece;
-    while(true)
-    {
-        self waittill("trigger", player);
-        self.stub notify("trigger", player);
-        if (zm_utility::is_player_valid(player))
-        {
-            if (isdefined(flag))
-            {
-                level flag::set(flag);
-            }
-            send_location(location);
-            piece thread part_pickup_unspawn();
-            break;
-        }
-    }
-}
-
-// self is piecespawn
-// piecespawn [[piecestub.onpickup]](self);
-function wrapped_craftable_onPickup( player )
-{
-    fullName = self.craftableName + "_" + self.pieceName;
-    if ( isdefined(level.archi.craftable_piece_to_location[fullName]) )
-    {
-        ap_location = level.archi.craftable_piece_to_location[fullName];
-        send_location(ap_location);
-    } else {
-        IPrintLn("No saved location for " + fullName);
-    }
-    if (isdefined(self.piecestub.original_onPickup))
-    {
-        self [[self.piecestub.original_onPickup]](player);
-    }
-    if (self.craftableName == "craft_shield_zm")
-    {
-        if (level.archi.randomized_shield_parts == 1)
-        {
-            self thread _remove_piece();
-        }
-    } 
-    else 
-    {
-        if (!(isdefined(level.archi.excluded_craftable_items) && isdefined(level.archi.excluded_craftable_items[fullName])))
-        {
-            self thread _remove_piece();
-        }
-    }
-}
-
-// Remove a piecespawn from the shared inventory'
-// self is piecespawn
-function _remove_piece()
-{
-    id = self.craftableName + "_" + self.pieceName;
-    if (!isdefined(level.archi.craftable_parts[id]))
-    {
-        WAIT_SERVER_FRAME
-        self.piece_owner = undefined;
-        self.in_shared_inventory = 0; // Not sure if this bit actually does anything right now
-        level clientfield::set(self.piecestub.client_field_id, 0);
-    }
-}
-
 function setup_spare_change_trackers(total_machines)
 {
     // Wait until we're certain the triggers were spawned?
@@ -1266,35 +1058,6 @@ function track_debris_open()
 
     self waittill("kill_debris_prompt_thread");
     level.archi.opened_debris[level.archi.opened_debris.size] = self.id;
-}
-
-function keep_pap_locked()
-{
-    level endon("end_game");
-
-    vending_weapon_upgrade_trigger = zm_pap_util::get_triggers();
-
-    foreach(t_machine in vending_weapon_upgrade_trigger)
-    {
-        t_machine SetHintString("'Progressive - Pack-A-Punch Machine' is required");
-    }
-
-    while(true) 
-    {
-        level waittill("Pack_A_Punch_on");
-        wait (0.5);
-        if (IS_TRUE(level.archi.pap_active))
-        {
-            // Pap active, don't turn back off
-            break;
-        }
-        vending_weapon_upgrade_trigger = zm_pap_util::get_triggers();
-        foreach(t_machine in vending_weapon_upgrade_trigger)
-        {
-            t_machine.powered [[t_machine.powered.power_off_func]](undefined, undefined);
-        }
-        wait(0.5);
-    }
 }
 
 // self is something pap related
@@ -1682,38 +1445,6 @@ function generate_attachments(weapon)
     return attachments;
 }
 
-function patch_pap()
-{
-    // Disable AATs WIP
-    vending_weapon_upgrade_trigger = zm_pap_util::get_triggers();
-    if (vending_weapon_upgrade_trigger.size >= 1)
-    {
-        array::thread_all(vending_weapon_upgrade_trigger, &keep_aats_locked);
-    }
-}
-
-function keep_aats_locked()
-{
-    level endon("end_game");
-    level endon("ap_aats_enabled");
-
-    if(!isdefined(self.powered) || !self.powered.power)
-    {
-        level waittill("pack_a_punch_on");
-    }
-    wait(1);
-
-    while(true)
-    {
-        vending_weapon_upgrade_trigger.aat_cost = 999999;
-        level waittill("hash_ab83a4db");
-        WAIT_SERVER_FRAME
-        vending_weapon_upgrade_trigger.aat_cost = 999999;
-        level waittill("bonfire_sale_off");
-        WAIT_SERVER_FRAME
-    }
-}
-
 function deathlink_recv_monitor()
 {
     level endon("end_game");
@@ -1746,7 +1477,7 @@ function deathlink_recv_monitor()
                 players = array::randomize(level.players);
                 foreach(player in players)
                 {
-                    if (player.sessionstate != "spectator")
+                    if (isdefined(player.sessionstate) && player.sessionstate != "spectator")
                     {
                         player disableinvulnerability();
                         player.lives = 0;
@@ -1829,6 +1560,7 @@ function cleared_restart_ready_montior()
             SetDvar("ARCHIPELAGO_LUA_CLEAR_DATA", "");
             mapName = GetDvarString( "mapname" );
             SetDvar("ARCHIPELAGO_CLEAR_DATA", mapName);
+            SetDvar("ARCHIPELAGO_CLEAR_DATA_CHECKPOINTS", "true");
             LUINotifyEvent(&"ap_clear_data", 0);
             while(true)
             {
@@ -1839,7 +1571,7 @@ function cleared_restart_ready_montior()
                 }
                 wait(0.2);
             }
-            Map_Restart(false);
+            level notify("end_game");
         }
     }
 }

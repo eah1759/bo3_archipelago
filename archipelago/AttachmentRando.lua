@@ -499,6 +499,8 @@ function generate_weapon_reticles_for_seed(seed, base_enabled, pap_enabled, join
     for i = 1, 31 do
         table.insert(reticle_table, i)
     end
+    -- Custom AP reticle
+    table.insert(reticle_table, 39)
 
     local reticle_data = {}
 
