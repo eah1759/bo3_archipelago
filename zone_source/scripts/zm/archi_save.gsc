@@ -21,6 +21,7 @@
 
 #insert scripts\shared\shared.gsh;
 #insert scripts\shared\version.gsh;
+#insert scripts\zm\_zm_perks.gsh;
 
 #insert scripts\zm\archi_core.gsh;
 
@@ -28,6 +29,11 @@
 
 function setup_map_saving()
 {
+    level.archi.perk_whitelist = array(PERK_JUGGERNOG, PERK_QUICK_REVIVE,
+        PERK_SLEIGHT_OF_HAND, PERK_DOUBLETAP2, PERK_STAMINUP, PERK_PHDFLOPPER,
+        PERK_DEAD_SHOT, PERK_ADDITIONAL_PRIMARY_WEAPON, PERK_ELECTRIC_CHERRY,
+        PERK_TOMBSTONE, PERK_WHOSWHO, PERK_VULTUREAID, PERK_WIDOWS_WINE);
+
     if (isdefined(level.archi.save_state_manager))
     {
         level thread [[level.archi.save_state_manager]]();
@@ -629,9 +635,14 @@ function save_player_score(xuid)
 function save_player_perks(xuid)
 {
     perks = self GetPerks();
-    for (i = 0; i < perks.size; i++)
+    i = 0;
+    foreach (perk in perks)
     {
-        SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_PERK_" + xuid + "_" + i, perks[i]);
+        if (IsInArray(level.archi.perk_whitelist, perk))
+        {
+            SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_PERK_" + xuid + "_" + i, perk);
+            i++;
+        }
     }
 }
 
