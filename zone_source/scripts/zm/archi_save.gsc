@@ -275,7 +275,7 @@ function round_checkpoints()
             level.archi.save_checkpoint = true;
             [[level.archi.save_state]]();
             level.archi.save_checkpoint = false;
-            level.archi.save_zombie_couunt = 1;
+            level.archi.save_zombie_count = 1;
         }
     }
 }
@@ -797,7 +797,7 @@ function save_player_loadout(xuid)
             continue;
         }
         // Don't save the death machine
-        if (weapon_data["weapon"].weapon == level.zombie_powerup_weapon["minigun"])
+        if (weapon_data["weapon"].rootWeapon.name == level.zombie_powerup_weapon["minigun"].name)
         {
             continue;
         }
@@ -866,12 +866,18 @@ function save_player_flag(flag, xuid)
 
 function save_player_val(key, value, xuid)
 {
-    SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_" + xuid + "_KVAL_" + ToUpper(key), value);
+    if (isdefined(value))
+    {
+        SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_" + xuid + "_KVAL_" + ToUpper(key), value);
+    }
 }
 
 function save_val(key, value)
 {
-    SetDvar("ARCHIPELAGO_SAVE_DATA_MAP_KVAL_" + key, value);
+    if (isdefined(value))
+    {
+        SetDvar("ARCHIPELAGO_SAVE_DATA_MAP_KVAL_" + key, value);
+    }
 }
 
 function restore_val(key)

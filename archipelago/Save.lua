@@ -556,7 +556,7 @@ function save_players(mapData, uniData, cb)
   if not uniData["players"] then
     uniData["players"] = {}
   end
-  local xuidList = Engine.DvarString(nil,"ARCHIPELAGO_SAVE_DATA_XUIDS")
+  local xuidList = Engine.DvarString("","ARCHIPELAGO_SAVE_DATA_XUIDS")
   for xuid in string.gmatch(xuidList, "[^;]+") do
     playerData = {
       flags = {},
@@ -646,7 +646,7 @@ end
 function save_player_val(xuid, playerData, kval)
   local val = Engine.DvarString("", "ARCHIPELAGO_SAVE_DATA_XUID_" .. xuid .. "_KVAL_" .. string.upper(kval))
   Engine.SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_" .. xuid .. "_KVAL_" .. string.upper(kval), "")
-  if val and val ~= "" then  -- Fixed: Check for empty string
+  if val and val ~= "" then
     playerData["kvals"][kval] = val
   end
 end
@@ -759,7 +759,7 @@ function save_zombie_count(mapData)
 end
 
 function save_player_score(xuid, playerData)
-  local score = Engine.DvarInt(nil, "ARCHIPELAGO_SAVE_DATA_XUID_SCORE_" .. xuid)
+  local score = Engine.DvarInt(0, "ARCHIPELAGO_SAVE_DATA_XUID_SCORE_" .. xuid)
   if score and score > 0 then
     Engine.SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_SCORE_" .. xuid, "")
     playerData.score = score
@@ -781,15 +781,15 @@ function save_player_perks(xuid, playerData)
 end
 
 function save_player_loadout(xuid, playerData)
-  local bgb = Engine.DvarString(nil, "ARCHIPELAGO_SAVE_DATA_XUID_BGB_" .. xuid)
-  if bgb ~= nil then
-    Engine.SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_BGB_" .. xuid, nil)
+  local bgb = Engine.DvarString("", "ARCHIPELAGO_SAVE_DATA_XUID_BGB_" .. xuid)
+  if bgb ~= "" then
+    Engine.SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_BGB_" .. xuid, "")
     playerData.bgb = bgb
   end
 
-  local heroWeaponName = Engine.DvarString(nil, "ARCHIPELAGO_SAVE_DATA_XUID_WEAPON_" .. xuid .. "_HEROWEAPON")
-  if heroWeaponName and heroWeaponName ~= "" then
-    Engine.SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_WEAPON_" .. xuid .. "_HEROWEAPON", nil)
+  local heroWeaponName = Engine.DvarString("", "ARCHIPELAGO_SAVE_DATA_XUID_WEAPON_" .. xuid .. "_HEROWEAPON")
+  if heroWeaponName ~= "" then
+    Engine.SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_WEAPON_" .. xuid .. "_HEROWEAPON", "")
     playerData.heroWeapon = heroWeaponName
     local heroPower = Engine.DvarInt(-1, "ARCHIPELAGO_SAVE_DATA_XUID_WEAPON_" .. xuid .. "_HEROWEAPON_POWER")
     playerData.heroPower = heroPower

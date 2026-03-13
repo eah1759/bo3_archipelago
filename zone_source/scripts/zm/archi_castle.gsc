@@ -960,7 +960,7 @@ function setup_bow_restore()
     wait(0.1);
 
     // Wait until we have bows for the keeper ai to use
-    while(!isdefined(level.a_elements.size) || level.a_elements.size == 0)
+    while(!isdefined(level.a_elements) || level.a_elements.size == 0)
     {
         wait(1);
     }
