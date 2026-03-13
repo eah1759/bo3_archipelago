@@ -22,6 +22,7 @@ scriptparsetree,scripts/zm/archi_genesis.gsc
 scriptparsetree,scripts/zm/archi_factory.gsc
 scriptparsetree,scripts/zm/archi_items.gsc
 scriptparsetree,scripts/zm/archi_save.gsc
+scriptparsetree,scripts/zm/archi_staminup.gsc
 
 //Commands
 scriptparsetree,scripts/zm/archi_commands.gsc

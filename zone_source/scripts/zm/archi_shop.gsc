@@ -270,18 +270,14 @@ function shop_gum_give( selected_bgb )
     if (isdefined(selected_bgb))
     {
         gun = self bgb_anim_start(selected_bgb, 0);
-		IPrintLn("Started gum anim");
 		evt = self util::waittill_any_return("fake_death", "death", "player_downed", "weapon_change_complete", "disconnect");
-		IPrintLn("Event returned");
 		succeeded = 0;
 		if(evt == "weapon_change_complete")
 		{
 			succeeded = 1;
-			IPrintLn("gum switched, giving gum");
 			self thread bgb::give(selected_bgb);
 			self notify("bgb_gumball_anim_give", selected_bgb);
 		}
-		IPrintLn("Ended gum anim");
 		self bgb_anim_end(gun, selected_bgb, 0);
 
 		return succeeded;

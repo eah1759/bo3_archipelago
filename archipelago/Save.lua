@@ -113,6 +113,12 @@ function map_save_zm_zod(mapData, uniData)
   save_flag(mapData, "ritual_pap_complete")
   save_flag(mapData, "pap_door_open")
   save_flag(mapData, "keeper_sword_locker")
+  save_flag(mapData, "ee_book")
+  save_flag(mapData, "ee_keeper_detective_resurrected")
+  save_flag(mapData, "ee_keeper_boxer_resurrected")
+  save_flag(mapData, "ee_keeper_femme_resurrected")
+  save_flag(mapData, "ee_keeper_magician_resurrected")
+
   for i = 0, 29 do
     save_flag(mapData, "power_on" .. i)
   end
@@ -127,6 +133,7 @@ function player_save_zm_zod(xuid, playerData)
   save_player_perks(xuid, playerData)
   save_player_loadout(xuid, playerData)
   save_player_val(xuid, playerData, "fumigator")
+  save_player_val(xuid, playerData, "sword_upgrade_stage")
 end
 
 function map_restore_zm_zod(mapData)
@@ -143,6 +150,12 @@ function map_restore_zm_zod(mapData)
   restore_flag(mapData, "ritual_pap_complete")
   restore_flag(mapData, "pap_door_open")
   restore_flag(mapData, "keeper_sword_locker")
+  restore_flag(mapData, "ee_book")
+  restore_flag(mapData, "ee_keeper_detective_resurrected")
+  restore_flag(mapData, "ee_keeper_boxer_resurrected")
+  restore_flag(mapData, "ee_keeper_femme_resurrected")
+  restore_flag(mapData, "ee_keeper_magician_resurrected")
+
   for i = 0, 29 do
     restore_flag(mapData, "power_on" .. i)
   end
@@ -155,6 +168,7 @@ function player_restore_zm_zod(xuid, playerData)
   restore_player_perks(xuid, playerData)
   restore_player_loadout(xuid, playerData)
   restore_player_val(xuid, playerData, "fumigator")
+  restore_player_val(xuid, playerData, "sword_upgrade_stage")
 end
 
 -- Zetsubou No Shima

@@ -112,6 +112,9 @@ function __init__()
 
 	callback::on_start_gametype( &wait_for_start );
 	callback::on_connect( &on_player_connect );
+    // callback::on_connect( &force_player_spawn );
+    callback::on_spawned( &watch_max_ammo );
+    callback::on_spawned( &watch_carpenter );
 
     //Clientfields (Mostly Tracker stuff)
     //TODO Put this in a library?
@@ -485,7 +488,7 @@ function game_start()
         archi_island::setup_main_ee_quest();
         archi_island::setup_weapon_quests();
         archi_island::setup_challenges();
-        archi_island::adjust_host_bgb_pack();
+        callback::on_connect(&archi_island::adjust_bgb_pack);
         archi_island::setup_side_ee();
 
         // TODO
@@ -1054,6 +1057,17 @@ function track_change_collected_thread()
 		}
 		wait(0.15);
 	}
+}
+
+function get_alive_player()
+{
+    foreach (player in level.players)
+    {
+        if (zm_utility::is_player_valid(player))
+        {
+            return player;
+        }
+    }
 }
 
 function change_to_round(round_number)
@@ -1732,4 +1746,47 @@ function spawn_shop(origin, angles)
     shop.angles = angles;
     shop thread archi_shop::shop_spawn_init();
     level.archi.shops[level.archi.shops.size] = shop;
+}
+
+function watch_max_ammo()
+{
+	self endon("bled_out");
+	self endon("spawned_player");
+	self endon("disconnect");
+
+	while(true)
+    {
+		self waittill("zmb_max_ammo");
+		foreach(weapon in self GetWeaponsList(1))
+		{
+			if(isdefined(weapon.clipsize) && weapon.clipsize > 0)
+			{
+				self SetWeaponAmmoClip(weapon, weapon.clipsize);
+			}
+		}
+	}
+}
+
+function watch_carpenter()
+{
+    self endon("bled_out");
+	self endon("spawned_player");
+	self endon("disconnect");
+
+    while(true)
+    {
+        level waittill("carpenter_finished");
+
+	    if(isdefined(self.hasRiotShield) && self.hasRiotShield)
+        {
+            self DamageRiotShield(-1500); // Reverse the damage 4head
+            self clientfield::set_player_uimodel( "zmInventory.shield_health", 1.0 );
+        }
+    }
+}
+
+function force_player_spawn()
+{
+    wait(5);
+    self zm::spectator_respawn_player();
 }

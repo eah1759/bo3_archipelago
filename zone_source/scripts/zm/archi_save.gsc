@@ -61,7 +61,7 @@ function setup_map_saving()
     level thread save_player_stats_monitor();
 
     array::thread_all(level.players, &restore_player);
-    callback::on_connect(&restore_player);
+    callback::on_spawned(&restore_player);
 
     restore_universal();
 }
@@ -106,6 +106,11 @@ function restore_player()
     level endon("end_game");
     self endon("disconnect");
 
+    if (isdefined(self.ap_restored) && self.ap_restored == 1)
+    {
+        return;
+    }
+
     if (isdefined(level.archi.restore_player_data))
     {
         while (level flag::get("ap_restoring_player"))
@@ -131,14 +136,10 @@ function restore_player()
         }
         level flag::clear("ap_restoring_player");
 
-        // Don't apply flags until the player actually exists
-        self restore_map_player(xuid);
+        self.ap_restored = 1;
         self restore_universal_player(xuid);
-        while(!zm_utility::is_player_valid(self))
-        {
-            wait(0.1);
-        }
-        self thread [[level.archi.restore_player_data]](xuid);
+        self restore_map_player(xuid);
+        self [[level.archi.restore_player_data]](xuid);
     }
 }
 
@@ -545,7 +546,7 @@ function restore_player_perks(xuid)
     }
 }
 
-function restore_player_loadout(xuid)
+function restore_player_loadout(xuid, no_hero_weapon)
 {
     bgb_key = GetDvarString("ARCHIPELAGO_LOAD_DATA_XUID_BGB_" + xuid + "", "");
     SetDvar("ARCHIPELAGO_LOAD_DATA_XUID_BGB_" + xuid + "_HEROWEAPON", "");
@@ -557,12 +558,13 @@ function restore_player_loadout(xuid)
     // Restore Hero Weapon
     hero_weapon_name = GetDvarString("ARCHIPELAGO_LOAD_DATA_XUID_WEAPON_" + xuid + "_HEROWEAPON", "");
     SetDvar("ARCHIPELAGO_LOAD_DATA_XUID_WEAPON_" + xuid + "_HEROWEAPON", "");
-    if (hero_weapon_name != "")
+    hero_power = GetDvarInt("ARCHIPELAGO_LOAD_DATA_XUID_WEAPON_" + xuid + "_HEROWEAPON_POWER" , -1);
+    SetDvar("ARCHIPELAGO_LOAD_DATA_XUID_WEAPON_" + xuid + "_HEROWEAPON_POWER" , "");
+    if (hero_weapon_name != "" && (!isdefined(no_hero_weapon) || no_hero_weapon != true))
     {  
         weapon = GetWeapon(hero_weapon_name);
         self zm_weapons::weapon_give(weapon, 0, 0, 1, 0);
-        hero_power = GetDvarInt("ARCHIPELAGO_LOAD_DATA_XUID_WEAPON_" + xuid + "_HEROWEAPON_POWER" , -1);
-        SetDvar("ARCHIPELAGO_LOAD_DATA_XUID_WEAPON_" + xuid + "_HEROWEAPON_POWER" , "");
+
         if (hero_power >= 0)
         {
             WAIT_SERVER_FRAME
@@ -794,6 +796,12 @@ function save_player_loadout(xuid)
         {
             continue;
         }
+        // Don't save the death machine
+        if (weapon_data["weapon"].weapon == level.zombie_powerup_weapon["minigun"])
+        {
+            continue;
+        }
+
         SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_WEAPON_" + xuid + "_" + i + "_WEAPON", weapon_data["weapon"].rootWeapon.name);
         SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_WEAPON_" + xuid + "_" + i + "_CLIP", weapon_data["clip"]);
         SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_WEAPON_" + xuid + "_" + i + "_STOCK", weapon_data["stock"]);
@@ -868,12 +876,16 @@ function save_val(key, value)
 
 function restore_val(key)
 {
-    return GetDvarString("ARCHIPELAGO_LOAD_DATA_MAP_KVAL_" + key, "");
+    val = GetDvarString("ARCHIPELAGO_LOAD_DATA_MAP_KVAL_" + ToUpper(key), "");
+    SetDvar("ARCHIPELAGO_LOAD_DATA_MAP_KVAL_" + ToUpper(key), "");
+    return val;
 }
 
 function restore_player_val(key, xuid)
 {
-    return GetDvarString("ARCHIPELAGO_LOAD_DATA_XUID_" + xuid + "_KVAL_" + ToUpper(key));
+    val = GetDvarString("ARCHIPELAGO_LOAD_DATA_XUID_" + xuid + "_KVAL_" + ToUpper(key), "");
+    SetDvar("ARCHIPELAGO_LOAD_DATA_XUID_" + xuid + "_KVAL_" + ToUpper(key), "");
+    return val;
 }
 
 // Self is player

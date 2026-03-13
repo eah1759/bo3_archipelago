@@ -266,10 +266,9 @@ function player_challenges()
     self thread _player_flag_to_location_thread("flag_player_completed_challenge_3", level.archi.mapString + " Complete Challenge 3");
 }
 
-function adjust_host_bgb_pack()
+function adjust_bgb_pack()
 {
-    e_player = level.players[0];
-    foreach(gum in e_player.bgb_pack)
+    foreach(gum in self.bgb_pack)
     {
         if (gum == "zm_bgb_anywhere_but_here")
         {
@@ -277,7 +276,7 @@ function adjust_host_bgb_pack()
         }
     }
 
-    e_player.bgb_pack[4] = "zm_bgb_anywhere_but_here";
+    self.bgb_pack[4] = "zm_bgb_anywhere_but_here";
 }
 
 function _track_music_deadflowers()

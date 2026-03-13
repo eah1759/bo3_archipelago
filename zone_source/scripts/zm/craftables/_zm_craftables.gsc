@@ -1065,22 +1065,75 @@ function player_drop_piece( piece, slot )
 
 
 // self == player
-function player_take_piece( pieceSpawn, is_archipelago )
+function player_take_piece( pieceSpawn, give_ap_item )
 {
-	if (!isdefined(is_archipelago))
+	if(!isdefined(self.current_craftable_pieces))
 	{
-		is_archipelago = false;
+		self.current_craftable_pieces = [];
 	}
-	pieceStub = pieceSpawn.pieceStub;
-	slot = pieceStub.inventory_slot;
-	damage = pieceSpawn.damage;
-	
-	DEFAULT( self.current_craftable_pieces, [] );
+	if (!isdefined(give_ap_item))
+	{
+		give_ap_item = false;
+	}
 
 	fullName = pieceSpawn.craftableName + "_" + pieceSpawn.pieceName;
 	ap_location = level.archi.craftable_piece_to_location[fullName];
+
+	if (isdefined(ap_location))
+	{
+		return self player_take_ap_piece(pieceSpawn, ap_location, give_ap_item);
+	}
 	
-	if ( !isdefined(ap_location) || IS_TRUE(is_archipelago) )
+	// Not a registered archipelago piece, handle normally
+	piecestub = piecespawn.piecestub;
+	slot = piecestub.inventory_slot;
+	damage = piecespawn.damage;
+
+	self notify("player_got_craftable_piece_for_" + piecespawn.craftablename);
+	if(!(isdefined(piecestub.is_shared) && piecestub.is_shared) && isdefined(self.current_craftable_pieces[slot]))
+	{
+		other_piece = self.current_craftable_pieces[slot];
+		self player_drop_piece(self.current_craftable_piece, slot);
+		other_piece.damage = damage;
+		self zm_utility::do_player_general_vox("general", "craft_swap");
+	}
+	if(isdefined(piecestub.onpickup))
+	{
+		piecespawn [[piecestub.onpickup]](self);
+	}
+	if(isdefined(piecestub.is_shared) && piecestub.is_shared)
+	{
+		if(isdefined(piecestub.client_field_id))
+		{
+			level clientfield::set(piecestub.client_field_id, 1);
+		}
+	}
+	else if(isdefined(piecestub.client_field_state))
+	{
+		self clientfield::set_to_player("craftable", piecestub.client_field_state);
+	}
+	piecespawn piece_unspawn();
+	piecespawn notify(#"pickup");
+	if(isdefined(piecestub.is_shared) && piecestub.is_shared)
+	{
+		piecespawn.in_shared_inventory = 1;
+	}
+	else
+	{
+		slot = piecespawn.inventory_slot;
+		self.current_craftable_pieces[slot] = piecespawn;
+		self thread player_drop_piece_on_death(slot);
+	}
+	self track_craftable_piece_pickedup(piecespawn);
+}
+
+function player_take_ap_piece( pieceSpawn, ap_location, give_ap_item )
+{
+	piecestub = piecespawn.piecestub;
+	slot = piecestub.inventory_slot;
+	damage = piecespawn.damage;
+
+	if ( give_ap_item )
 	{
 		self notify( "player_got_craftable_piece_for_" + pieceSpawn.craftableName ); // for VO and other applications.
 
