@@ -456,6 +456,36 @@ function player_restore_zm_factory(xuid, playerData)
   restore_player_loadout(xuid, playerData)
 end
 
+function map_save_zm_westernz(mapData, uniData)
+  Archi.LogMessage("Saving map data for Wanted");
+  save_zombie_count(mapData)
+  save_round_number(mapData)
+  save_power_on(mapData)
+  save_doors_and_debris(mapData)
+
+  save_players(mapData, uniData, player_save_zm_westernz)
+end
+
+function player_save_zm_westernz(xuid, playerData)
+  save_player_score(xuid, playerData)
+  save_player_perks(xuid, playerData)
+  save_player_loadout(xuid, playerData)
+end
+
+function map_restore_zm_westernz(mapData)
+  Archi.LogMessage("Restoring map data for Wanted");
+  restore_zombie_count(mapData);
+  restore_round_number(mapData)
+  restore_power_on(mapData)
+  restore_doors_and_debris(mapData)
+end
+
+function player_restore_zm_westernz(xuid, playerData)
+  restore_player_score(xuid, playerData)
+  restore_player_perks(xuid, playerData)
+  restore_player_loadout(xuid, playerData)
+end
+
 -- General Purpose
 function restore_flag(mapData, flag)
   if mapData["flags"] and mapData["flags"][flag] then
@@ -920,6 +950,7 @@ map_saves = {
   zm_stalingrad = map_save_zm_stalingrad,
   zm_genesis = map_save_zm_genesis,
   zm_factory = map_save_zm_factory,
+  zm_westernz = map_save_zm_westernz,
 }
 
 player_saves = {
@@ -929,6 +960,7 @@ player_saves = {
   zm_stalingrad = player_save_zm_stalingrad,
   zm_genesis = player_save_zm_genesis,
   zm_factory = player_save_zm_factory,
+  zm_westernz = player_save_zm_westernz,
 }
 
 map_restores = {
@@ -938,6 +970,7 @@ map_restores = {
   zm_stalingrad = map_restore_zm_stalingrad,
   zm_genesis = map_restore_zm_genesis,
   zm_factory = map_restore_zm_factory,
+  zm_westernz = map_restore_zm_westernz,
 }
 
 player_restores = {
@@ -947,6 +980,7 @@ player_restores = {
   zm_stalingrad = player_restore_zm_stalingrad,
   zm_genesis = player_restore_zm_genesis,
   zm_factory = player_restore_zm_factory,
+  zm_westernz = player_restore_zm_westernz,
 }
 
 return {
@@ -961,3 +995,9 @@ return {
   save_map_player = save_map_player,
   restore_map_player = restore_map_player,
 }
+
+-- Rough template for a map
+---- add map_save_mapname to map_saves
+---- add player_save_mapname to player_saves
+---- add player_restore_mapname to player_restores
+---- add map_restore_mapname to map_restores

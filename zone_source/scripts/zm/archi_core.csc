@@ -68,6 +68,18 @@ function __init__()
             level._ap_weapon_bits["tesla_gun"] = 2;
             add_universal_box_bits();
             break;
+        case "zm_westernz":
+            level._ap_weapons_table = "gamedata/weapons/zm/zm_westernz_weapons.csv";
+            level._ap_weapon_bits["grenade_homunculus"] = 0;
+            level._ap_weapon_bits["thundergun"] = 1;
+            level._ap_weapon_bits["t8_shotgun_blundergat"] = 2;
+            level._ap_weapon_bits["t8_raygun"] = 3;
+            level._ap_weapon_bits["tesla_gun"] = 4;
+            level._ap_weapon_bits["ww2_lewis"] = 10;
+            level._ap_weapon_bits["m1831"] = 11;
+            level._ap_weapon_bits["bo3_boneglass"] = 12;
+            level._ap_weapon_bits["t8_m1897"] = 13;
+            break;
     }
 
     // Read weapons table into what we need ahead of time

@@ -31,6 +31,8 @@
 #define ARCHIPELAGO_MAP_ZETSUBOU "(Zetsubou No Shima)"
 #define ARCHIPELAGO_MAP_REVELATIONS "(Revelations)"
 
+#define ARCHIPELAGO_MAP_WANTED "(Wanted)"
+
 #define ARCHIPELAGO_ITEM_PERK_JUGGERNOG "Juggernog"
 #define ARCHIPELAGO_ITEM_PERK_QUICK_REVIVE "Quick Revive"
 #define ARCHIPELAGO_ITEM_PERK_SLEIGHT_OF_HAND "Speed Cola"

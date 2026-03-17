@@ -289,6 +289,10 @@ function give_ElectricCherry()
 {
     give_Perk(PERK_ELECTRIC_CHERRY);
 }
+function give_PhDFlopper()
+{
+    give_Perk(PERK_PHDFLOPPER);
+}
 
 // Weapons
 // Assault Rifles

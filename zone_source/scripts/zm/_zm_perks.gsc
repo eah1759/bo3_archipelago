@@ -818,6 +818,13 @@ function give_perk( perk, bought )
 	
 	if ( isdefined( level._custom_perks[ perk ] ) && isdefined( level._custom_perks[ perk ].player_thread_give ) )
 	{
+		if ( isdefined( level._custom_perks[ perk ].player_thread_give_list ))
+		{
+			foreach( func in level._custom_perks[ perk ].player_thread_give_list )
+			{
+				self thread [[func]]();
+			}
+		}
 		self thread [[ level._custom_perks[ perk ].player_thread_give ]]();
 	}
 
@@ -1013,6 +1020,13 @@ function perk_think( perk )
 	// turn off perk when perk is paused, if custom func is set
 	if ( isdefined( level._custom_perks[ perk ] ) && isdefined( level._custom_perks[ perk ].player_thread_take ) )
 	{
+		if ( isdefined( level._custom_perks[ perk ].player_thread_take_list ))
+		{
+			foreach( func in level._custom_perks[ perk ].player_thread_take_list )
+			{
+				self thread [[ func ]]( false, perk_str, result );
+			}
+		}
 		self thread [[ level._custom_perks[ perk ].player_thread_take ]]( false, perk_str, result );
 	}	
 	
@@ -1321,6 +1335,13 @@ function perk_pause( perk )
 			// turn off perk when perk is paused, if custom func is set
 			if ( isdefined( level._custom_perks[ perk ] ) && isdefined( level._custom_perks[ perk ].player_thread_take ) )
 			{
+				if ( isdefined( level._custom_perks[ perk ].player_thread_take_list ))
+				{
+					foreach( func in level._custom_perks[ perk ].player_thread_take_list )
+					{
+						player thread [[ func ]]( true );
+					}
+				}
 				player thread [[ level._custom_perks[ perk ].player_thread_take ]]( true );
 			}	
 			
@@ -1355,6 +1376,13 @@ function perk_unpause( perk )
 			
 			if ( isdefined( level._custom_perks[ perk ] ) && isdefined( level._custom_perks[ perk ].player_thread_give ) )
 			{
+				if ( isdefined( level._custom_perks[ perk ].player_thread_give_list ))
+				{
+					foreach( func in level._custom_perks[ perk ].player_thread_give_list )
+					{
+						player thread [[func]]();
+					}
+				}
 				player thread [[ level._custom_perks[ perk ].player_thread_give ]]();
 			}			
 		}
@@ -1996,16 +2024,31 @@ function register_perk_threads( str_perk, func_give_player_perk, func_take_playe
 	{
 		level._custom_perks[ str_perk ].player_thread_give = func_give_player_perk;
 	}
-	
+	else
+	{
+		if(!isdefined(level._custom_perks[ str_perk ].player_thread_give_list))
+		{
+			level._custom_perks[ str_perk ].player_thread_give_list = [];
+		}
+		level._custom_perks[ str_perk ].player_thread_give_list[level._custom_perks[ str_perk ].player_thread_give_list.size] = func_give_player_perk;
+	}
+
 	if ( isdefined( func_take_player_perk ) )
 	{
-		if ( !isdefined( level._custom_perks[ str_perk ].player_thread_take ) )
+		if( !isdefined( level._custom_perks[ str_perk ].player_thread_take ) )
 		{
-			level._custom_perks[ str_perk ].player_thread_take = func_take_player_perk;
+			level._custom_perks[ str_perk ].player_thread_take = func_give_player_perk;
+		}
+		else
+		{
+			if(!isdefined(level._custom_perks[ str_perk ].player_thread_take_list))
+			{
+				level._custom_perks[ str_perk ].player_thread_take_list = [];
+			}
+			level._custom_perks[ str_perk ].player_thread_take_list[level._custom_perks[ str_perk ].player_thread_take_list.size] = func_take_player_perk;
 		}
 	}
 }
-
 
 /@
 "Name: register_perk_clientfields( <str_perk>, <func_clientfield_register>, <func_clientfield_set> )"

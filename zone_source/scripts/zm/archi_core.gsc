@@ -21,14 +21,16 @@
 #using scripts\zm\_zm_utility;
 #using scripts\zm\craftables\_zm_craftables;
 
-#using scripts\zm\archi_items;
-#using scripts\zm\archi_commands;
 #using scripts\zm\archi_castle;
 #using scripts\zm\archi_island;
 #using scripts\zm\archi_stalingrad;
 #using scripts\zm\archi_genesis;
 #using scripts\zm\archi_zod;
 #using scripts\zm\archi_factory;
+#using scripts\zm\archi_westernz;
+
+#using scripts\zm\archi_items;
+#using scripts\zm\archi_commands;
 #using scripts\zm\archi_save;
 #using scripts\zm\archi_shop;
 
@@ -171,6 +173,7 @@ function init_string_mappings()
     }
     level.custom_perk_validation = &custom_perk_validation;
 
+    level.archi.original_func_override_wallbuy_prompt = level.func_override_wallbuy_prompt;
     level.archi.func_override_wallbuy_prompt = &func_override_wallbuy_prompt;
 }
 
@@ -695,7 +698,7 @@ function game_start()
         level.archi.mapString = ARCHIPELAGO_MAP_THE_GIANT;
         level.archi.map_key_item = "Map Unlock - The Giant";
 
-        // 7 possible machines, 6 will spawn
+        // 7 possible machines, 6 will spawn, 1 is behind a quest
         level thread setup_spare_change_trackers(5);
 
         archi_factory::setup_locations();
@@ -736,6 +739,75 @@ function game_start()
         level.archi.save_player_data = &archi_factory::save_player_data;
         level.archi.load_state_manager = &archi_factory::load_state;
         level.archi.restore_player_data = &archi_factory::restore_player_data;
+    }
+
+    
+    if (mapName == "zm_westernz")
+    {
+        level.archi.mapString = ARCHIPELAGO_MAP_WANTED;
+        level.archi.map_key_item = "Map Unlock - Wanted";
+
+        // 7 possible machines, 6 will spawn
+        level thread setup_spare_change_trackers(8);
+
+        replace_craftable_onPickup("craft_westernshield");
+        level.archi.craftable_piece_to_location["craft_westernshield_part_0"] = level.archi.mapString + " Shield Part Pickup - Dolly";
+        level.archi.craftable_piece_to_location["craft_westernshield_part_1"] = level.archi.mapString + " Shield Part Pickup - Door";
+        level.archi.craftable_piece_to_location["craft_westernshield_part_2"] = level.archi.mapString + " Shield Part Pickup - Clamp";
+
+        replace_craftable_onPickup("craft_blundersplat_zm");
+        level.archi.craftable_piece_to_location["craft_blundersplat_zm_part_3"] = level.archi.mapString + " Acidgat Upgrade Part Pickup - Engine";
+        level.archi.craftable_piece_to_location["craft_blundersplat_zm_part_4"] = level.archi.mapString + " Acidgat Upgrade Part Pickup - Acid";
+
+        archi_items::RegisterItem("Shield Part - Door",&archi_westernz::give_ShieldPart_Door,undefined,true);
+        archi_items::RegisterItem("Shield Part - Dolly",&archi_westernz::give_ShieldPart_Dolly,undefined,true);
+        archi_items::RegisterItem("Shield Part - Clamp",&archi_westernz::give_ShieldPart_Clamp,undefined,true);
+
+        archi_items::RegisterItem("Acidgat Upgrade Part - Engine",&archi_westernz::give_BlundergatPart_Engine,undefined,false);
+        archi_items::RegisterItem("Acidgat Upgrade Part - Acid",&archi_westernz::give_BlundergatPart_Acid,undefined,false);
+
+        archi_westernz::setup_locations();
+
+        if (level.archi.mystery_box_special_items == 1) {
+            archi_items::RegisterBoxWeapon("Mystery Box - Homunculus Bomb","grenade_homunculus",0);
+            archi_items::RegisterBoxWeapon("Mystery Box - Thundergun","thundergun",1);
+            archi_items::RegisterBoxWeapon("Mystery Box - Blundergat","t8_shotgun_blundergat",2);
+            archi_items::RegisterBoxWeapon("Mystery Box - Raygun","t8_raygun",3);
+            archi_items::RegisterBoxWeapon("Mystery Box - Wunderwaffe DG-2","tesla_gun",4);
+        }
+
+        if (level.archi.mystery_box_regular_items == 1) {
+            archi_items::RegisterBoxWeapon("Mystery Box - Lewis","ww2_lewis",4);
+            archi_items::RegisterBoxWeapon("Mystery Box - M1831 Blundergat","m1831",4);
+            archi_items::RegisterBoxWeapon("Mystery Box - Nightbreaker","bo3_boneglass",4);
+            archi_items::RegisterBoxWeapon("Mystery Box - Model 1897","t8_m1897",4);
+        }
+
+        archi_items::RegisterWeapon("Wallbuy - Winchester Model 94",&archi_items::give_Weapon_Sheiva,"aw_winchester");
+        archi_items::RegisterWeapon("Wallbuy - Escargot",&archi_items::give_Weapon_Sheiva,"bo4_escargot");
+        archi_items::RegisterWeapon("Wallbuy - Ribeyrolles",&archi_items::give_Weapon_Sheiva,"ww2_ribeyrolles");
+        archi_items::RegisterWeapon("Wallbuy - Model 1903",&archi_items::give_Weapon_Sheiva,"m1903_epic");
+        archi_items::RegisterWeapon("Wallbuy - Remington M1889",&archi_items::give_Weapon_Sheiva,"m1889");
+        archi_items::RegisterWeapon("Wallbuy - Red Talon",&archi_items::give_Weapon_Sheiva,"ww2_raven");
+
+        // Register Possible Global Items - Item name, callback, clientfield
+        archi_items::RegisterPerk("Juggernog",&archi_items::give_Juggernog,PERK_JUGGERNOG);
+        archi_items::RegisterPerk("Quick Revive",&archi_items::give_QuickRevive,PERK_QUICK_REVIVE);
+        archi_items::RegisterPerk("Speed Cola",&archi_items::give_SpeedCola,PERK_SLEIGHT_OF_HAND);
+        archi_items::RegisterPerk("Double Tap",&archi_items::give_DoubleTap,PERK_DOUBLETAP2);
+        archi_items::RegisterPerk("Dead Shot",&archi_items::give_DeadShot,PERK_DEAD_SHOT);
+        archi_items::RegisterPerk("Stamin-up",&archi_items::give_StaminUp,PERK_STAMINUP);
+        archi_items::RegisterPerk("PhD Flopper",&archi_items::give_PhDFlopper,PERK_PHDFLOPPER);
+        archi_items::RegisterPerk("Mule Kick",&archi_items::give_MuleKick,PERK_ADDITIONAL_PRIMARY_WEAPON);
+        archi_items::RegisterPerk("Electric Cherry",&archi_items::give_WidowsWine,PERK_ELECTRIC_CHERRY);
+        archi_items::RegisterPerk("Widow's Wine",&archi_items::give_WidowsWine,PERK_WIDOWS_WINE);
+
+        spawn_shop((1236, 1020, -3), (0, -144, 0));
+
+        level.archi.save_state_manager = &archi_westernz::save_state_manager;
+        level.archi.save_player_data = &archi_westernz::save_player_data;
+        level.archi.load_state_manager = &archi_westernz::load_state;
+        level.archi.restore_player_data = &archi_westernz::restore_player_data;
     }
 
     level thread map_lock();
@@ -1170,6 +1242,30 @@ function custom_perk_validation(player)
     return true;
 }
 
+function wrapper_func_override_wallbuy_prompt(player)
+{
+    weapon = self.weapon;
+    apItem = level.archi.wallbuy_mappings[weapon.name];
+    if ((!isdefined(apItem)) || isdefined(level.archi.wallbuys[weapon.name]) && IS_TRUE(level.archi.wallbuys[weapon.name])) 
+    {
+        if (isdefined(level.archi.original_func_override_wallbuy_prompt))
+        {
+            return self [[level.archi.original_func_override_wallbuy_prompt]](player);
+        }
+        return true;
+    } 
+    else
+    {
+        hint_string = "'" + apItem + "' is required";
+        if (level.archi.map_specific_wallbuys)
+        {
+            hint_string = "'" + level.archi.mapString + " " + apItem + "' is required";
+        }
+        self SetHintString(hint_string);
+        return false;
+    }
+}
+
 // self is weapon spawn
 function func_override_wallbuy_prompt(player)
 {
@@ -1292,8 +1388,6 @@ function custom_random_perk_weights()
         temp_array = array::randomize(level._random_perk_machine_perk_list);
         keys = GetArrayKeys(temp_array);
         return keys;
-        
-        
     }
 }
 
@@ -1323,108 +1417,6 @@ function update_wunderfizz()
         }
     }
 }
-
-function register_weapon_attachments( weapon_name )
-{
-    switch( weapon_name )
-    {
-        case "ar_garand":
-        case "ar_galil":
-        case "ar_famas":
-        case "ar_m16":
-        case "ar_standard":
-        case "ar_marksman":
-        case "ar_longburst":
-        case "ar_damage":
-        case "ar_cqb":
-        case "ar_accurate":
-            self.ap_sights_large = array( "acog", "dualoptic", "ir" );
-            self.ap_sights_small = array( "none", "holo", "reddot", "reflex" );
-            self.ap_attachments = array( "damage", "extbarrel", "extclip", "fastreload", "fmj", "grip", "quickdraw", "rf", "stalker", "steadyaim", "suppressed" );
-            if( weapon_name == "ar_m16" || weapon_name == "ar_famas" )
-            {
-                ArrayRemoveValue( self.ap_sights_large, "dualoptic" );
-            }
-            break;
-
-        case "lmg_rpk":
-        case "lmg_slowfire":
-        case "lmg_light":
-        case "lmg_heavy":
-        case "lmg_cqb":
-            self.ap_sights_large = array( "acog", "dualoptic", "ir" );
-            self.ap_sights_small = array( "none", "holo", "reddot", "reflex" );
-            self.ap_attachments = array( "extclip", "fastreload", "fmj", "grip", "quickdraw", "rf", "stalker", "steadyaim", "suppressed" );
-            if( weapon_name == "lmg_rpk" )
-            {
-                ArrayRemoveValue( self.ap_sights_large, "dualoptic" );
-            }
-            break;
-
-        case "smg_ak74u":
-        case "smg_versatile":
-        case "smg_standard":
-        case "smg_ppsh":
-        case "smg_fastfire":
-        case "smg_capacity":
-        case "smg_longrange":
-        case "smg_burst":
-        case "smg_mp40":
-            self.ap_sights_large = array( "acog", "dualoptic" );
-            self.ap_sights_small = array( "none", "holo", "reddot", "reflex" );
-            self.ap_attachments = array( "extbarrel", "extclip", "fastreload", "fmj", "grip", "quickdraw", "rf", "stalker", "steadyaim", "suppressed" );
-            if( weapon_name == "smg_ak74u" || weapon_name == "smg_mp40" )
-            {
-                // Bad compat with large scopes
-                self.ap_sights_large = self.ap_sights_small;
-            }
-            if ( weapon_name == "smg_ppsh" ) {
-                self.ap_sights_large = array("none");
-                self.ap_sights_small = array("none");
-            }
-            break;
-
-        case "shotgun_semiauto":
-        case "shotgun_pump":
-        case "shotgun_precision":
-        case "shotgun_fullauto":
-        case "shotgun_energy":
-            // No large sights, duplicate array instead
-            self.ap_sights_large = array( "none", "holo", "reddot", "reflex" );
-            self.ap_sights_small = array( "none", "holo", "reddot", "reflex" );
-            self.ap_attachments = array( "extbarrel", "extclip", "fastreload", "quickdraw", "rf", "stalker", "steadyaim", "suppressed" );
-            break;
-
-        case "pistol_fullauto":
-        case "pistol_burst":
-        case "pistol_energy":
-        case "pistol_m1911":
-        case "pistol_standard":
-            // No large sights, duplicate array instead
-            self.ap_sights_large = array( "none", "reddot", "reflex" );
-            self.ap_sights_small = array( "none", "reddot", "reflex" );
-            self.ap_attachments = array( "damage", "extbarrel", "extclip", "fastreload", "fmj", "quickdraw", "steadyaim", "suppressed" );
-            break;
-
-        case "sniper_fastsemi":
-        case "sniper_powerbolt":
-        case "sniper_fastbolt":
-            self.ap_sights_large = array( "none", "acog", "dualoptic", "ir" );
-            self.ap_sights_small = array( "reddot" );
-            self.ap_attachments = array( "extclip", "fastreload", "fmj", "rf", "stalker", "suppressed", "swayreduc" );
-            break;
-    }
-}
-
-// function attachment_rando()
-// {
-//     foreach (weapon in GetArrayKeys(level.zombie_weapons))
-//     {
-//         level.zombie_weapons[weapon] register_weapon_attachments(weapon.name);
-//         attachments = generate_attachments(weapon);
-//         level.zombie_weapons[weapon].force_attachments = attachments;
-//     }
-// }
 
 function init_attachment_rando()
 {
@@ -1474,50 +1466,6 @@ function init_attachment_rando()
     }
 
     level flag::set("ap_attachment_rando_ready");
-}
-
-function generate_attachments(weapon)
-{
-    dw_weapons = array("pistol_standard_upgraded","pistol_m1911_upgraded","pistol_revolver38_upgraded","pistol_shotgun_dw","pistol_shotgun_dw_upgraded");
-    weapon_name = weapon.name;
-    upgrade = StrEndsWith( weapon_name, "_upgraded" );
-    base_weapon = zm_weapons::get_base_weapon( weapon.rootweapon );
-    weapon_data = level.zombie_weapons[ base_weapon ];
-    attachments = [];
-    sight = undefined;
-    if (isdefined(weapon_data.ap_sights_large) && weapon_data.ap_sights_large.size > 0)
-    {
-        if (RandomInt(100) < level.archi.attachments_sight_weight)
-        {
-            sight = array::random(weapon_data.ap_sights_large);
-        }
-        else
-        {
-            sight = array::random(weapon_data.ap_sights_small);
-        }
-        attachments[attachments.size] = sight;
-    }
-    if (isdefined(weapon_data.ap_attachments))
-    {
-        num_attachments = min(3, weapon_data.ap_attachments.size);
-        attachment_bag = array::randomize(weapon_data.ap_attachments);
-        for (i = 0; i < num_attachments; i++)
-        {
-            attachments[attachments.size] = attachment_bag[i];
-        }
-    }
-    // Add dual wield to expected weapons
-    if( IsInArray(dw_weapons, weapon_name) )
-    {
-        ArrayInsert( attachments, "dw", 0 );
-    }
-    // Remove either sight or sway reduction since incompatible on snipers
-    if( isdefined( sight ) && IsInArray( attachments, "swayreduc" ) )
-    {
-        ArrayRemoveValue( attachments, ( RandomInt(3) != 0 ? sight : "swayreduc" ) );
-    }
-
-    return attachments;
 }
 
 function deathlink_recv_monitor()
@@ -1698,6 +1646,7 @@ function map_lock()
 
     if (isdefined(level.archi.map_key_item))
     {
+        archi_items::RegisterUniversalItem(level.archi.map_key_item,&give_Map_Unlock);
         dvar_value = GetDvarString("ARCHIPELAGO_INIT_MAP_ITEMS", "");
         if (dvar_value != "")
         {
@@ -1711,7 +1660,6 @@ function map_lock()
                 }
             }
         }
-        archi_items::RegisterUniversalItem(level.archi.map_key_item,&give_Map_Unlock);
         level flag::set("ap_map_locked");
         // Check if we're pre-unlocked
 
