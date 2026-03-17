@@ -110,12 +110,25 @@ function setup_locations()
     // Setup AP checks here
 }
 
-// Useful util for tying AP checks to level flags
+// === AP Check Utilities ===
+
+// Collect a check when a level flag gets set
+// level thread _flag_to_location_thread("flag", level.archi.mapString + " locationName");
 function _flag_to_location_thread(flag, location)
 {
     level endon("end_game");
 
     level flag::wait_till(flag);
+    archi_core::send_location(location);
+}
+
+// Collect a check when a level notification happens
+// level thread _notify_to_location_thread("notification", level.archi.mapString + " locationName");
+function _notify_to_location_thread(str, location)
+{
+    level endon("end_game");
+
+    level waittill(str);
     archi_core::send_location(location);
 }
 
