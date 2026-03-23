@@ -141,7 +141,6 @@ function save_player_data(xuid)
     self archi_save::save_player_val("fumigator", self.var_abe77dc0, xuid);
     if (isdefined(self.sword_quest))
     {
-        IPrintLn("Saving sword stage: " + self.sword_quest.upgrade_stage);
         self archi_save::save_player_val("sword_upgrade_stage", self.sword_quest.upgrade_stage, xuid);
     }
     // self save_player_sword_quest(xuid);

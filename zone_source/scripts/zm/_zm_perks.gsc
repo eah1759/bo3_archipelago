@@ -2037,7 +2037,7 @@ function register_perk_threads( str_perk, func_give_player_perk, func_take_playe
 	{
 		if( !isdefined( level._custom_perks[ str_perk ].player_thread_take ) )
 		{
-			level._custom_perks[ str_perk ].player_thread_take = func_give_player_perk;
+			level._custom_perks[ str_perk ].player_thread_take = func_take_player_perk;
 		}
 		else
 		{

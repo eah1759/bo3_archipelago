@@ -1,4 +1,5 @@
 #using scripts\codescripts\struct;
+#using scripts\shared\ai\zombie_utility;
 #using scripts\shared\flag_shared;
 #using scripts\shared\system_shared;
 #using scripts\shared\array_shared;
@@ -375,6 +376,7 @@ function _demon_gate_collect_skulls()
     skulls = getentarray("aq_dg_fossil", "script_noteworthy");
     array::wait_till(skulls, "returned");
     wait(2); // Delay matches ingame
+    level.archi.ap_void_skulls = 1;
     archi_core::send_location(level.archi.mapString + " Demon Gate - Collect the Skulls");
 }
 
@@ -500,11 +502,17 @@ function restore_landingpads()
     if (save_flag_exists("ARCHIPELAGO_LOAD_DATA_CASTLE_LANDINGPADS"))
     {
         SetDvar("ARCHIPELAGO_LOAD_DATA_CASTLE_LANDINGPADS", "");
+        triggers = get_all_unitriggers();
         level.archi.zm_castle_landingpads = 1;
         landing_pads = struct::get_array("115_flinger_landing_pad", "targetname");
         foreach(landing_pad in landing_pads)
         {
-           level flag::set(landing_pad.script_noteworthy);
+            closest = zm_unitrigger::get_closest_unitriggers(landing_pad.origin, triggers, 2);
+            foreach(stub in closest)
+            {
+                stub notify("trigger", level.players[0]);
+                WAIT_SERVER_FRAME
+            }
         }
     }
 }
@@ -615,6 +623,12 @@ function restore_map_state()
     archi_save::restore_flag("boss_fight_ready");
     if (level flag::get("boss_fight_ready"))
     {
+        if (!(level flag::get("start_channeling_stone_step")))
+        {
+            level.a_elements = array("storm");
+            level flag::set("start_channeling_stone_step");
+            bring_rocket_down();
+        }
         // Uncover MPD
         pyramids = getentarray("pyramid", "targetname");
         foreach(pyramid in pyramids)
@@ -660,8 +674,8 @@ function _restore_wolf_bow(e_player)
     arrow.var_67b5dd94 notify("trigger", e_player);
     wait(0.1);
 
-    level.archi.wolf_skull_collected = archi_save::restore_val("wolf_howl_skull_collected");
-    if (level.archi.wolf_skull_collected == "1")
+    level.archi.wolf_skull_collected = archi_save::restore_val_bool("wolf_howl_skull_collected");
+    if (level.archi.wolf_skull_collected == 1)
     {
         falling_skull = getent("aq_wh_skull_shrine_trig", "targetname");
         level.var_52978d72 notify("projectile_impact", elemental_bow, falling_skull.origin);
@@ -710,15 +724,7 @@ function _restore_storm_bow(e_player)
     arrow_pickup.var_67b5dd94 notify("trigger", e_player);
     wait(0.5);
 
-    level.archi.elemental_storm_beacons_lit = archi_save::restore_val("elemental_storm_beacons_lit");
-    if (isdefined(level.archi.elemental_storm_beacons_lit))
-    {
-        level.archi.elemental_storm_beacons_lit = Int(level.archi.elemental_storm_beacons_lit);
-    }
-    else
-    {
-        level.archi.elemental_storm_beacons_lit = 0;
-    }
+    level.archi.elemental_storm_beacons_lit = archi_save::restore_val_bool("elemental_storm_beacons_lit");
     if (level.archi.elemental_storm_beacons_lit == 1)
     {
         beacons = getentarray("aq_es_beacon_trig", "script_noteworthy");
@@ -748,16 +754,7 @@ function _restore_storm_bow(e_player)
     wait(5);
 
     // Restore charged beacons
-    level.archi.elemental_storm_beacons_charged = archi_save::restore_val("elemental_storm_beacons_charged");
-    if (isdefined(level.archi.elemental_storm_beacons_charged))
-    {
-        level.archi.elemental_storm_beacons_charged = Int(level.archi.elemental_storm_beacons_charged);
-    }
-    else
-    {
-        level.archi.elemental_storm_beacons_charged = 0;
-    }
-    IPrintLn("charged beacons: " + level.archi.elemental_storm_beacons_charged);
+    level.archi.elemental_storm_beacons_charged = archi_save::restore_val_bool("elemental_storm_beacons_charged");
     if (level.archi.elemental_storm_beacons_charged == 1)
     {
         for (i = 0; i < beacons.size; i++)
@@ -836,31 +833,45 @@ function _restore_void_bow(e_player)
     wait(0.1);
     arrow = struct::get("quest_start_demon_gate");
     arrow.var_67b5dd94 notify("trigger", e_player);
+    wait(5);
 
     archi_save::restore_flag("demon_gate_seal");
     if (level flag::get("demon_gate_seal"))
     {
-        wait(0.1);
+        wait GetAnimLength("p7_fxanim_zm_castle_quest_demongate_flagstones_bundle");
+        wait(3);
         s_urn = struct::get("aq_dg_urn_struct", "targetname");
         s_urn.var_67b5dd94 notify("trigger", e_player);
-        
+        wait(3);
+    }
+
+    if (1)
+    {
         fossils = getentarray("aq_dg_fossil", "script_noteworthy");
         foreach(fossil in fossils)
         {
             fossil.var_67b5dd94 notify("trigger", e_player);
+            WAIT_SERVER_FRAME
         }
         wait(3);
     }
 
-    archi_save::restore_flag("demon_gate_crawlers");
-    if (level flag::get("demon_gate_crawlers"))
-    {
-        align_fossils = getentarray("aq_dg_fossil_align", "script_noteworthy");
-        foreach (f in align_fossils)
-        {
-            f clientfield::set("fossil_reveal", 0);
-        }
-    }
+    // archi_save::restore_flag("demon_gate_crawlers");
+    // if (level flag::get("demon_gate_crawlers"))
+    // {
+    //     demonic_circle = getent("aq_dg_demonic_circle_volume", "targetname");
+    //     spawner = array::random( level.zombie_spawners );
+    //     spawn_point = SpawnStruct();
+    //     spawn_point.origin = demonic_circle.origin + (0, 1, 0);
+    //     spawn_point.angles = (0, 0, 0);
+    //     for (i = 0; i < 6; i++)
+    //     {
+    //         ai = zombie_utility::spawn_zombie(spawner, "free_crawler", spawn_point);
+    //         ai.ignore_enemy_count = 1;
+    //         ai zombie_utility::makezombiecrawler();
+    //     }
+    //     wait(0.1);
+    // }
 
     archi_save::restore_flag("demon_gate_runes");
 }
@@ -874,46 +885,45 @@ function _track_player_connection_bow()
 
     if (self hasweapon(storm_bow))
     {
-        level flag::set("elemental_storm_upgraded");
         level _restore_storm_bow(self);
+        level flag::set("elemental_storm_upgraded");
         wait(1);
     }
     else if (self hasweapon(wolf_bow))
     {
-        level flag::set("wolf_howl_upgraded");
         level _restore_wolf_bow(self);
+        level flag::set("wolf_howl_upgraded");
         wait(1);
     }
     else if (self hasweapon(fire_bow))
     {
         level flag::set("rune_prison_upgraded");
         //level thread _restore_fire_bow(self);
-        return;
     }
     else if (self hasweapon(void_bow))
     {
+        level _restore_void_bow(self);
         level flag::set("demon_gate_upgraded");
-        //level thread _restore_void_bow(self);
-        return;
+        wait(1);
     }
 
     xuid = self GetXuid();
-    if (level.archi.storm_owner == xuid)
+    if (level.archi.storm_owner == xuid && !(self hasweapon(storm_bow)))
     {
         level _restore_storm_bow(self);
         wait(1);
     }
-    if (level.archi.wolf_owner == xuid)
+    if (level.archi.wolf_owner == xuid && !(self hasweapon(wolf_bow)))
     {
         level _restore_wolf_bow(self);
         wait(1);
     }
-    if (level.archi.fire_owner == xuid)
+    if (level.archi.fire_owner == xuid && !(self hasweapon(fire_bow)))
     {
         //level thread _restore_fire_bow(self);
         wait(1);
     }
-    if (level.archi.void_owner == xuid)
+    if (level.archi.void_owner == xuid && !(self hasweapon(void_bow)))
     {
         //level thread _restore_void_bow(self);
         wait(1);
@@ -976,34 +986,40 @@ function setup_bow_restore()
     wait(0.1);
 
     // Wait until we have bows for the keeper ai to use
-    while(!isdefined(level.a_elements) || level.a_elements.size == 0)
-    {
-        wait(1);
-    }
-
+    level flag::wait_till_any(array("demon_gate_upgraded", "elemental_storm_upgraded", "rune_prison_upgraded", "wolf_howl_upgraded"));
+    wait(3);
+    
     // Complete simons says sequence to trigger rocket scene
-    archi_save::restore_flag("start_channeling_stone_step");
-    if (level flag::get("start_channeling_stone_step"))
+    if (!(level flag::get("start_channeling_stone_step")))
     {
-        wait(1);
-        simon_terminals = struct::get_array("golden_key_slot");
-        for (i = 0; i < 2; i++)
+        archi_save::restore_flag("start_channeling_stone_step");
+        if (level flag::get("start_channeling_stone_step"))
         {
-            level.var_cf5a713 = simon_terminals[i];
-            level flag::set("simon_terminal_activated");
-            WAIT_SERVER_FRAME
-            level notify("hash_706f7f9a"); // Skip intro
-            WAIT_SERVER_FRAME
-            level.var_521b0bd1 = 9; // Number of successful presses
-            level flag::set("simon_press_check"); // Success press
-            WAIT_SERVER_FRAME
-            level notify("hash_b7f06cd9"); // Press release (3 seconds later)
-            wait(0.5);
+            bring_rocket_down();
         }
-        wait(1);
-        button = struct::get("death_ray_button");
-        button notify("trigger_activated");
     }
+}
+
+function bring_rocket_down()
+{
+    wait(1);
+    simon_terminals = struct::get_array("golden_key_slot");
+    for (i = 0; i < 2; i++)
+    {
+        level.var_cf5a713 = simon_terminals[i];
+        level flag::set("simon_terminal_activated");
+        WAIT_SERVER_FRAME
+        level notify("hash_706f7f9a"); // Skip intro
+        WAIT_SERVER_FRAME
+        level.var_521b0bd1 = 9; // Number of successful presses
+        level flag::set("simon_press_check"); // Success press
+        WAIT_SERVER_FRAME
+        level notify("hash_b7f06cd9"); // Press release (3 seconds later)
+        wait(0.5);
+    }
+    wait(1);
+    button = struct::get("death_ray_button");
+    button notify("trigger_activated");
 }
 
 function _player_connect()
@@ -1081,4 +1097,17 @@ function sync_perk_exploders()
             }
         }
     }
+}
+
+function get_all_unitriggers()
+{
+    all_uni = [];
+    foreach (zone in level.zones)
+    {
+        if (isdefined(zone.unitrigger_stubs))
+        {
+            all_uni = ArrayCombine(all_uni, zone.unitrigger_stubs, 1, 0);
+        }
+    }
+    return all_uni;
 }

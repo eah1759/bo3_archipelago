@@ -219,12 +219,6 @@ function wait_for_start()
     level thread game_start();
 }
 
-function test_box(keys)
-{
-    IPrintLn(keys[0].name);
-    return keys;
-}
-
 function game_start()
 {
     // Hold server-wide Archipelago Information
@@ -247,8 +241,6 @@ function game_start()
     level.archi.ap_weapon_bits = [];
     level flag::init("ap_map_locked");
     level.archi.map_key_item = undefined;
-
-    level.customrandomweaponweights = &test_box;
 
     zombie_doors = GetEntArray("zombie_door", "targetname");
     for (i = 0; i < zombie_doors.size; i++)

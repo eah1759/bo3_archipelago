@@ -35,7 +35,7 @@ function staminup_perk_activate()
     }
 }
 
-function staminup_perk_lost()
+function staminup_perk_lost(pause, perk_str, result)
 {
     self UnSetPerk("specialty_unlimitedsprint");
     self.ap_staminup = 0;

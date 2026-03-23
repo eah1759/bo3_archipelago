@@ -785,7 +785,7 @@ function save_players(save_player_data)
         // Conditions which would break the save state must prevent saving
         if (cur_weapon == level.weaponrevivetool ||
             isdefined(e_player.laststand) ||
-            ( isdefined(e_player.beast_mode) && e_player.beast_mode == 1))
+            ( isdefined(e_player.beastmode) && e_player.beastmode == 1))
         {
             IPrintLnBold("Skipped saving player due to dangerous state - " + e_player.name);
             continue;
@@ -934,7 +934,14 @@ function restore_val_bool(key)
 {
     val = GetDvarString("ARCHIPELAGO_LOAD_DATA_MAP_KVAL_" + ToUpper(key), "");
     SetDvar("ARCHIPELAGO_LOAD_DATA_MAP_KVAL_" + ToUpper(key), "");
-    return Int(val);
+    if (val != "")
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 function restore_player_val(key, xuid)

@@ -34,9 +34,12 @@
 
 **Fancy notifications in the top left when you send checks or receive items**
 
-**Map QoL Changes:**
-- Shadows of Evil EE supported with any number of players. Rails will remain electrified indefinitely if there are less than 4 players.
-- Zetsubou No Shima will always have Anywhere but Here in the Host's 5th slot if they don't have it equipped already
+**Map QoL Changes:** 
+- Shadows of Evil
+  - EE supports any number of players
+  - Rails will remain electrified indefinitely with 3 or less players
+  - Train can be called while in beast mode
+- Zetsubou No Shima will always have Anywhere but Here in the 5th slot if you don't have it equipped already
 - Revelations menu button to reset the summoning key when it gets stuck out of bounds
 
 **Randomized Weapon Attachments:**
@@ -72,6 +75,7 @@
   - Configurable modifier to default perk limit
   - Configurable number of Progressive perk limit items to increase number of perks you can have
   - Default: Start at 2 with 4 more in the itempool (6 max)
+- Progressive Starting Points in blocks of 500 (2500 total default)
 - Perk Machines (universal or map specific):
   - Cannot buy from the perk machine until item received
   - Wunderfizz will only give unlocked perks
