@@ -1,6 +1,22 @@
 require("ui.t6.lobby.lobbymenubuttons_og")
 require("ui.archipelago.frontend.ArchipelagoSettings")
 
+Engine.GetRank = function()
+    return 1000
+end
+
+Engine.IsItemLocked = function()
+    return false
+end
+
+Engine.IsItemLockedForAll = function()
+    return false
+end
+
+Engine.IsItemLockedForRank = function()
+    return false
+end
+
 CoD.LobbyButtons.ZM_AP_BUTTON =
 {
 	stringRef = "ARCHIPELAGO",

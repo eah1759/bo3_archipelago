@@ -377,7 +377,8 @@ function _get_flag(val)
 {
   if (val != "")
   {
-    if (level flag::get(val))
+    val = level flag::get(val);
+    if (isdefined(val) && val == 1)
     {
       IPrintLn("True");
     }
