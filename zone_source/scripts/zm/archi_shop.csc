@@ -37,11 +37,13 @@ function on_player_connected(localClientNum)
     level.ap_models["GumTokens"] = createModel(localClientNum, "GumTokens");
     level.ap_models["RareGumTokens"] = createModel(localClientNum, "RareGumTokens");
     level.ap_models["LegendaryGumTokens"] = createModel(localClientNum, "LegendaryGumTokens");
+    level.ap_models["CheckpointTokens"] = createModel(localClientNum, "CheckpointTokens");
 
     util::register_system("PerkTokens", &updatePerkTokens);
     util::register_system("GumTokens", &updateGumTokens);
     util::register_system("RareGumTokens", &updateRareGumTokens);
     util::register_system("LegendaryGumTokens", &updateLegendaryGumTokens);
+    util::register_system("CheckpointTokens", &updateCheckpointTokens);
 }
 
 function createModel(localClientNum, fieldName)
@@ -80,5 +82,13 @@ function updateLegendaryGumTokens(localClientNum, newVal, oldVal)
     if (isdefined(level.ap_models["LegendaryGumTokens"]))
     {
         SetUIModelValue(level.ap_models["LegendaryGumTokens"], newVal);
+    }
+}
+
+function updateCheckpointTokens(localClientNum, newVal, oldVal)
+{
+    if (isdefined(level.ap_models["CheckpointTokens"]))
+    {
+        SetUIModelValue(level.ap_models["CheckpointTokens"], newVal);
     }
 }

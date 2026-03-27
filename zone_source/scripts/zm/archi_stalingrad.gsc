@@ -29,6 +29,19 @@ function save_state_manager()
 {
     level flag::init("ap_allow_player_restore");
 
+    if (level.archi.difficulty_ee_checkpoints >= 3)
+    {
+        level thread easy_checkpoint_trigger();
+    }
+    if (level.archi.difficulty_ee_checkpoints >= 2)
+    {
+        level thread medium_checkpoint_trigger();
+    }
+    if (level.archi.difficulty_ee_checkpoints >= 1)
+    {
+        level thread hard_checkpoint_trigger();
+    }
+
     level.archi.save_state = &save_state;
     level thread archi_save::save_on_round_change();
     level thread archi_save::round_checkpoints();
@@ -50,6 +63,7 @@ function save_state()
     archi_save::save_zombie_count();
     archi_save::save_power_on();
     archi_save::save_doors_and_debris();
+    archi_save::save_spent_tokens();
 
     archi_save::save_players(&save_player_data);
 
@@ -75,6 +89,7 @@ function load_state()
 {
     archi_save::wait_restore_ready("zm_stalingrad");
     level flag::wait_till("ap_attachment_rando_ready");
+    archi_save::restore_spent_tokens();
     archi_save::restore_zombie_count();
     archi_save::restore_round_number();
     archi_save::restore_power_on();

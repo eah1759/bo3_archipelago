@@ -809,6 +809,10 @@ function save_player_perks(xuid)
     {
         if (IsInArray(level.archi.perk_whitelist, perk))
         {
+            if (level.archi.mapString == ARCHIPELAGO_MAP_REVELATIONS && perk == PERK_TOMBSTONE)
+            {
+                continue;
+            }
             SetDvar("ARCHIPELAGO_SAVE_DATA_XUID_PERK_" + xuid + "_" + i, perk);
             i++;
         }
@@ -841,6 +845,16 @@ function save_player_loadout(xuid)
         }
         // Don't save the death machine
         if (weapon_data["weapon"].rootWeapon.name == level.zombie_powerup_weapon["minigun"].name)
+        {
+            continue;
+        }
+        // Don't save perk bottles
+        if (IsSubStr(weapon_data["weapon"].rootWeapon.name, "zombie_perk"))
+        {
+            continue;
+        }
+        // Don't save gobblegum
+        if (weapon_data["weapon"] == level.weaponbgbgrab || weapon_data["weapon"] == level.weaponbgbuse)
         {
             continue;
         }
@@ -934,7 +948,7 @@ function restore_val_bool(key)
 {
     val = GetDvarString("ARCHIPELAGO_LOAD_DATA_MAP_KVAL_" + ToUpper(key), "");
     SetDvar("ARCHIPELAGO_LOAD_DATA_MAP_KVAL_" + ToUpper(key), "");
-    if (val != "")
+    if (val != "" && val != "0")
     {
         return 1;
     }
@@ -949,6 +963,17 @@ function restore_player_val(key, xuid)
     val = GetDvarString("ARCHIPELAGO_LOAD_DATA_XUID_" + xuid + "_KVAL_" + ToUpper(key), "");
     SetDvar("ARCHIPELAGO_LOAD_DATA_XUID_" + xuid + "_KVAL_" + ToUpper(key), "");
     return val;
+}
+
+function restore_player_val_int(key, xuid)
+{
+    val = GetDvarString("ARCHIPELAGO_LOAD_DATA_XUID_" + xuid + "_KVAL_" + ToUpper(key), "");
+    SetDvar("ARCHIPELAGO_LOAD_DATA_XUID_" + xuid + "_KVAL_" + ToUpper(key), "");
+    if (val != "")
+    {
+        return Int(val);
+    }
+    return 0;
 }
 
 // Self is player
@@ -972,4 +997,19 @@ function state_other_monitor()
         SetDvar("ARCHIPELAGO_MSTATE_PERK_LIMIT", perk_limit);
         wait(2);
     }
+}
+
+function save_spent_tokens()
+{
+    SetDvar("ARCHIPELAGO_SAVE_SPENT_CHECKPOINT_TOKENS", level.archi.spent_checkpoint_tokens);
+}
+
+function restore_spent_tokens()
+{
+    val = GetDvarInt("ARCHIPELAGO_LOAD_SPENT_CHECKPOINT_TOKENS", 0);
+    if (val < 0)
+    {
+        val = 0;
+    }
+    level.archi.spent_checkpoint_tokens = val;
 }

@@ -169,6 +169,11 @@ function give_LegendaryGumToken()
     level.archi.legendary_gum_tokens++;
 }
 
+function give_CheckpointToken()
+{
+    level.archi.checkpoint_tokens++;
+}
+
 //General/Universal gives
 function give_1500Points()
 {

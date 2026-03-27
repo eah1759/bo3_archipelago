@@ -278,6 +278,8 @@ function game_start()
     level.archi.gum_tokens = 0;
     level.archi.rare_gum_tokens = 0;
     level.archi.legendary_gum_tokens = 0;
+    level.archi.checkpoint_tokens = 1;
+    level.archi.spent_checkpoint_tokens = -1;
 
     // Map State
     level.archi.progressive_perk_limit = 0;
@@ -292,7 +294,7 @@ function game_start()
     archi_items::RegisterUniversalItem("Shop - Mega Gobblegum Token",&archi_items::give_GumToken);
     archi_items::RegisterUniversalItem("Shop - Rare Mega Gobblegum Token",&archi_items::give_RareGumToken);
     archi_items::RegisterUniversalItem("Shop - Legendary Mega Gobblegum Token",&archi_items::give_LegendaryGumToken);
-
+    archi_items::RegisterUniversalItem("Shop - Checkpoint Token",&archi_items::give_CheckpointToken);
 
     // Traps
     archi_items::RegisterUniversalItem("Trap - Third Person Mode",&archi_items::give_Trap_ThirdPerson);
@@ -1807,4 +1809,43 @@ function _remove_piece()
         self.in_shared_inventory = 0; // Not sure if this bit actually does anything right now
         level clientfield::set(self.piecestub.client_field_id, 0);
     }
+}
+
+function notify_trigger_with_player(stub, player, force_visibility = 0)
+{
+    // Get the trigger struct
+    trigger = zm_unitrigger::check_and_build_trigger_from_unitrigger_stub(stub, player);
+
+    // Make sure the trigger func is running before notifying
+    if (trigger.thread_running != 1)
+    {
+        IPrintLn("Starting thread...");
+
+        if (force_visibility)
+        {
+            original_vis = stub.prompt_and_visibility_func;
+            stub.prompt_and_visibility_func = &_force_visibility;
+        }
+        // Assess visibility to make sure thread is running
+        zm_unitrigger::assess_and_apply_visibility(trigger, stub, player, 1);
+        WAIT_SERVER_FRAME
+        trigger notify("trigger", player);  
+        WAIT_SERVER_FRAME
+
+        if (force_visibility)
+        {
+            stub.prompt_and_visibility_func = original_vis;
+        }
+        // Player has mask, this will return false and kill the thread now
+        zm_unitrigger::assess_and_apply_visibility(trigger, stub, player, 1);   
+    }
+    else
+    {
+        trigger notify("trigger", player);
+    }
+}
+
+function _force_visibility()
+{
+    return true;
 }

@@ -34,6 +34,8 @@
 
 **Fancy notifications in the top left when you send checks or receive items**
 
+### Save System details can be found in [SAVE_SYSTEM.md](SAVE_SYSTEM.md)
+
 **Map QoL Changes:** 
 - Shadows of Evil
   - EE supports any number of players

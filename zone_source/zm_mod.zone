@@ -67,6 +67,7 @@ image,i_ap_gum_regular
 image,i_ap_gum_mega
 image,i_ap_gum_rare
 image,i_ap_gum_legendary
+image,i_ap_checkpoint
 
 rawfile,ui/uieditor/menus/ApShop/ApShop_Main.lua
 rawfile,ui/uieditor/widgets/ApShop/ApShopButton1ListItem.lua

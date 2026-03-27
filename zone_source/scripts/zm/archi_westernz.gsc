@@ -54,6 +54,7 @@ function save_state()
     archi_save::save_power_on();
     archi_save::save_doors_and_debris();
     archi_save::save_modded_floating_debris();
+    archi_save::save_spent_tokens();
 
     archi_save::save_players(&save_player_data);
 
@@ -80,6 +81,7 @@ function load_state()
     level.archi.zm_castle_landingpads = 0;
     archi_save::wait_restore_ready("zm_westernz");
     level flag::wait_till("ap_attachment_rando_ready");
+    archi_save::restore_spent_tokens();
     archi_save::restore_zombie_count();
     archi_save::restore_round_number();
     archi_save::restore_power_on();

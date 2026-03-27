@@ -90,7 +90,16 @@ CoD.ApShopItems = {
         image = "i_ap_gum_legendary",
         type = "gum",
         value = "3"
-    }
+    },
+	{
+		name = "^2Checkpoint",
+        cost = 1,
+		currencyField = "CheckpointTokens",
+        description = "Checkpoint your current progress until Clear Save Data used",
+        image = "i_ap_checkpoint",
+        type = "checkpoint",
+        value = "1"
+	}
 }
 
 local PostLoadFunc = function ( self, controller )

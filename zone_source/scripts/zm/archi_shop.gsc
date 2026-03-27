@@ -56,6 +56,7 @@ function on_player_connect()
 	util::registerClientSys("GumTokens");
 	util::registerClientSys("RareGumTokens");
 	util::registerClientSys("LegendaryGumTokens");
+	util::registerClientSys("CheckpointTokens");
 
 	self thread shop_menu_handler();
 }
@@ -135,6 +136,7 @@ function shop_open_menu()
 	util::setClientSysState("GumTokens", level.archi.gum_tokens - self.ap_spent_gum_tokens, self);
 	util::setClientSysState("RareGumTokens", level.archi.rare_gum_tokens - self.ap_spent_rare_gum_tokens, self);
 	util::setClientSysState("LegendaryGumTokens", level.archi.legendary_gum_tokens - self.ap_spent_legendary_gum_tokens, self);
+	util::setClientSysState("CheckpointTokens", level.archi.checkpoint_tokens - level.archi.spent_checkpoint_tokens);
 
     self OpenMenu( "ApShop_Main" );
 }
@@ -164,6 +166,35 @@ function shop_menu_handler()
 		item_type = split[0];
 		item_value = split[1];
 
+		if (item_type == "checkpoint")
+		{
+			self shop_close_menu();
+			if (level.archi.spent_checkpoint_tokens >= 0)
+			{
+				if (level.archi.spent_checkpoint_tokens < level.archi.checkpoint_tokens)
+				{
+					if (isdefined(level.archi.save_state)) {
+						level.archi.spent_checkpoint_tokens++;
+						level.archi.save_checkpoint = true;
+						[[level.archi.save_state]]();
+						level.archi.save_checkpoint = false;
+					}
+					else
+					{
+						IPrintLnBold("Saving not available for this map");
+					}
+
+				}
+				else
+				{
+					self playsound( "zmb_no_cha_ching" );
+				}
+			}
+			else
+			{
+				IPrintLnBold("Checkpoint token count not loaded yet");
+			}
+		}
 
         if (item_type == "gum")
         {

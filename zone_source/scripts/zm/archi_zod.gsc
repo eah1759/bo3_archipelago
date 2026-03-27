@@ -119,6 +119,7 @@ function save_state()
     archi_save::save_zombie_count();
     archi_save::save_power_on();
     archi_save::save_doors_and_debris();
+    archi_save::save_spent_tokens();
 
     archi_save::save_players(&save_player_data);
 
@@ -181,6 +182,7 @@ function load_state()
 
     archi_save::wait_restore_ready("zm_zod");
     level flag::wait_till("ap_attachment_rando_ready");
+    archi_save::restore_spent_tokens();
     archi_save::restore_zombie_count();
     archi_save::restore_round_number();
     archi_save::restore_power_on();
@@ -584,7 +586,10 @@ function restore_map_state()
         worms_held++;
     }
 
-    // level thread restore_pap_ritual(worms_held);
+    if (worms_held >= 4)
+    {
+        level thread restore_pap_ritual();
+    }
 
 	if(!isdefined(level.mementos_picked_up))
 	{
@@ -629,64 +634,6 @@ function restore_map_state()
         }
     }
 
-    // if (level flag::get("ritual_pap_complete"))
-    // {
-    //     // Flag all basins as done
-    //     level flag::set("pap_basin_1");
-    //     level flag::set("pap_basin_2");
-    //     level flag::set("pap_basin_3");
-    //     level flag::set("pap_basin_4");
-    //     pap_defend_area = level.a_o_defend_areas["pap"];
-    //     zm_unitrigger::unregister_unitrigger(pap_defend_area.m_t_use);
-    //     // Move gateworm models into position
-    //     ritual_array = array("relic_boxer", "relic_magician", "relic_detective", "relic_femme");
-    //     for(i = 1; i < 5; i++)
-    //     {
-	//         mdl_gateworm = getent(("quest_ritual_" + ritual_array[i-1]) + "_placed", "targetname");
-    //         e_basin = get_worm_basin("pap_basin_" + i);
-    //         basin_pos = struct::get("pap_basin_" + i + "_pos", "targetname");
-    //         if (isdefined(basin_pos))
-    //         {
-    //             mdl_gateworm.origin = basin_pos.origin;
-    //             mdl_gateworm.angles = basin_pos.angles;
-    //         }
-    //         else
-    //         {
-    //             mdl_gateworm.origin = e_basin.origin + vectorscale((0, 0, 1), 40);
-    //         }
-    //         e_basin clientfield::set("gateworm_basin_fx", 2);
-    //         e_basin playloopsound("zmb_zod_ritual_pap_worm_firelvl2", 1);
-    //         mdl_gateworm show();
-    //         exploder::stop_exploder(("fx_exploder_ritual_pap_basin_" + i) + "_path");
-    //         e_basin = get_worm_basin("pap_basin_" + i);
-    //         e_basin clientfield::set("gateworm_basin_fx", 2);
-    //         e_basin playloopsound("zmb_zod_ritual_pap_worm_firelvl2", 1);
-    //     }
-    //     level.n_zod_rituals_completed = 5;
-    //     level flag::set("can_spawn_margwa");
-    //     // Change quest state later when restoring each relic
-    //     held_state = 5;
-    // }
-
-    // if (level flag::get("ritual_pap_complete"))
-    // {
-	// 	exploder::stop_exploder("fx_exploder_ritual_pap_altar_path");
-    //     exploder::exploder("fx_exploder_ritual_gatestone_explosion");
-	//     exploder::exploder("fx_exploder_ritual_gatestone_portal");
-    //     HideMiscModels("gatestone_unbroken");
-    //     // Remove worm basin triggers
-    //     for(i = 1; i < 5; i++)
-    //     {
-    //         if(isdefined(level.var_f86952c7["pap_basin_" + i]))
-    //         {
-    //             zm_unitrigger::unregister_unitrigger(level.var_f86952c7["pap_basin_" + i]);
-    //         }
-    //     }
-    //     level notify("ritual_pap_succeed");
-    //     level clientfield::set("ritual_current", 0);
-	//     level clientfield::set("ritual_state_pap", 3);
-    // }
-
     if (level flag::get("pap_door_open"))
     {
         enter_subway_trigger = getent("keeper_subway_welcome", "targetname");
@@ -712,17 +659,15 @@ function restore_map_state()
     level thread _restore_boss_ready();
 }
 
-function restore_pap_ritual(worms_held)
+function restore_pap_ritual()
 {
-    wait(20);
-    IPrintLn("Restoring pap ritual for " + worms_held);
-    for (i = 0; i < worms_held; i++)
+    for (i = 0; i < 4; i++)
     {
         basin_number = i + 1;
         str_flag = "pap_basin_" + basin_number;
         s_basin = struct::get(str_flag, "script_noteworthy");
-        s_basin.unitrigger_stub notify("trigger", level.players[0]);
-        wait(0.1);
+        archi_core::notify_trigger_with_player(s_basin.unitrigger_stub, level.players[0]);
+        wait(0.2);
     }
 }
 

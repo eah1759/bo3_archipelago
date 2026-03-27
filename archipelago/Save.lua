@@ -1,6 +1,7 @@
 -- Der Eisendrache
 function map_save_zm_castle(mapData, uniData)
   Archi.LogMessage("Saving map data for Der Eisendrache");
+  save_spent_tokens(mapData)
   save_zombie_count(mapData)
   save_round_number(mapData)
   save_power_on(mapData)
@@ -53,8 +54,9 @@ function player_save_zm_castle(xuid, playerData)
 end
 
 function map_restore_zm_castle(mapData)
-  Archi.LogMessage("Restoring map data for Der Eisendrache");
-  restore_zombie_count(mapData);
+  Archi.LogMessage("Restoring map data for Der Eisendrache")
+  restore_spent_tokens(mapData)
+  restore_zombie_count(mapData)
   restore_round_number(mapData)
   restore_power_on(mapData)
   restore_doors_and_debris(mapData)
@@ -106,6 +108,7 @@ end
 -- Shadows of Evil
 function map_save_zm_zod(mapData, uniData)
   Archi.LogMessage("Saving map data for Shadows of Evil");
+  save_spent_tokens(mapData)
   save_zombie_count(mapData)
   save_round_number(mapData)
   save_power_on(mapData)
@@ -142,8 +145,9 @@ function player_save_zm_zod(xuid, playerData)
 end
 
 function map_restore_zm_zod(mapData)
-  Archi.LogMessage("Restoring map data for Shadows of Evil");
-  restore_zombie_count(mapData);
+  Archi.LogMessage("Restoring map data for Shadows of Evil")
+  restore_spent_tokens(mapData)
+  restore_zombie_count(mapData)
   restore_round_number(mapData)
   restore_power_on(mapData)
   restore_doors_and_debris(mapData)
@@ -179,6 +183,7 @@ end
 -- Zetsubou No Shima
 function map_save_zm_island(mapData, uniData)
   Archi.LogMessage("Saving map data for Zetsubou No Shima");
+  save_spent_tokens(mapData)
   save_zombie_count(mapData)
   save_round_number(mapData)
   save_power_on(mapData)
@@ -213,11 +218,17 @@ function player_save_zm_island(xuid, playerData)
   save_player_flag(xuid, playerData, "flag_player_collected_reward_1")
   save_player_flag(xuid, playerData, "flag_player_collected_reward_2")
   save_player_flag(xuid, playerData, "flag_player_collected_reward_3")
+
+  save_player_val(xuid, playerData, "bucket_held")
+  save_player_val(xuid, playerData, "has_island_seed")
+  save_player_val(xuid, playerData, "bucket_bucket_water_type")
+  save_player_val(xuid, playerData, "bucket_bucket_water_level")
 end
 
 function map_restore_zm_island(mapData)
-  Archi.LogMessage("Restoring map data for Zetsubou No Shima");
-  restore_zombie_count(mapData);
+  Archi.LogMessage("Restoring map data for Zetsubou No Shima")
+  restore_spent_tokens(mapData)
+  restore_zombie_count(mapData)
   restore_round_number(mapData)
   restore_power_on(mapData)
   restore_doors_and_debris(mapData)
@@ -249,11 +260,17 @@ function player_restore_zm_island(xuid, playerData)
   restore_player_flag(xuid, playerData, "flag_player_collected_reward_1")
   restore_player_flag(xuid, playerData, "flag_player_collected_reward_2")
   restore_player_flag(xuid, playerData, "flag_player_collected_reward_3")
+
+  restore_player_val(xuid, playerData, "bucket_held")
+  restore_player_val(xuid, playerData, "has_island_seed")
+  restore_player_val(xuid, playerData, "bucket_bucket_water_type")
+  restore_player_val(xuid, playerData, "bucket_bucket_water_level")
 end
 
 -- Gorod Krovi
 function map_save_zm_stalingrad(mapData, uniData)
   Archi.LogMessage("Saving map data for Gorod Krovi")
+  save_spent_tokens(mapData)
   save_zombie_count(mapData)
   save_round_number(mapData)
   save_power_on(mapData)
@@ -303,6 +320,7 @@ end
 
 function map_restore_zm_stalingrad(mapData)
   Archi.LogMessage("Restoring map data for Gorod Krovi")
+  restore_spent_tokens(mapData)
   restore_zombie_count(mapData)
   restore_round_number(mapData)
   restore_power_on(mapData)
@@ -351,6 +369,7 @@ end
 -- Revelations
 function map_save_zm_genesis(mapData, uniData)
   Archi.LogMessage("Saving map data for Revelations")
+  save_spent_tokens(mapData)
   save_zombie_count(mapData)
   save_round_number(mapData)
   save_power_on(mapData)
@@ -366,11 +385,37 @@ function map_save_zm_genesis(mapData, uniData)
   save_flag(mapData, "grand_tour")
   save_flag(mapData, "toys_collected")
   save_flag(mapData, "acm_done")
-  save_flag(mapData, "electricity_rq_done");
-  save_flag(mapData, "fire_rq_done");
-  save_flag(mapData, "light_rq_done");
-  save_flag(mapData, "shadow_rq_done");
-  save_flag(mapData, "shards_done");
+  save_flag(mapData, "electricity_rq_done")
+  save_flag(mapData, "fire_rq_done")
+  save_flag(mapData, "light_rq_done")
+  save_flag(mapData, "shadow_rq_done")
+  save_flag(mapData, "shards_done")
+  save_flag(mapData, "writing_on_the_wall_complete")
+
+  -- Fury Head
+  save_flag(mapData, "fury_head_sniper_kill")
+  -- Apothicon God
+  save_flag(mapData, "apothicon_mask_all_zombies_killed")
+  save_flag(mapData, "apothicon_mask_all_wasps_killed")
+  save_flag(mapData, "apothicon_mask_all_spiders_killed")
+  save_flag(mapData, "apothicon_mask_all_margwas_killed")
+  save_flag(mapData, "apothicon_mask_all_fury_killed")
+  save_flag(mapData, "apothicon_mask_all_keepers_killed")
+  -- Margwa Head
+  save_flag(mapData, "margwa_head_wasps_flag")
+  save_flag(mapData, "margwa_head_fire_flag")
+  save_flag(mapData, "margwa_head_shadow_flag")
+  -- Keeper Skull
+  save_flag(mapData, "keeper_skull_turret_flag")
+  -- Wolf Head
+  save_flag(mapData, "keeper_skull_dg4_flag")
+  save_flag(mapData, "keeper_skull_zombie_flag")
+  -- Helm of the King
+  save_flag(mapData, "mechz_gun_flag")
+  save_flag(mapData, "mechz_mask_flag")
+  save_flag(mapData, "mechz_trap_flag")
+  -- Siegfried
+  save_val(mapData, "helm_of_siegfried")
 
   save_players(mapData, uniData, player_save_zm_genesis)
 end
@@ -385,11 +430,13 @@ function player_save_zm_genesis(xuid, playerData)
   save_player_flag(xuid, playerData, "flag_player_collected_reward_1")
   save_player_flag(xuid, playerData, "flag_player_collected_reward_2")
   save_player_flag(xuid, playerData, "flag_player_collected_reward_3")
+  save_player_val(xuid, playerData, "wearable")
 end
 
 function map_restore_zm_genesis(mapData)
   Archi.LogMessage("Restoring map data for Revelations")
-  restore_zombie_count(mapData);
+  restore_spent_tokens(mapData)
+  restore_zombie_count(mapData)
   restore_round_number(mapData)
   restore_power_on(mapData)
   restore_doors_and_debris(mapData)
@@ -404,11 +451,37 @@ function map_restore_zm_genesis(mapData)
   restore_flag(mapData, "grand_tour")
   restore_flag(mapData, "toys_collected")
   restore_flag(mapData, "acm_done")
-  restore_flag(mapData, "electricity_rq_done");
-  restore_flag(mapData, "fire_rq_done");
-  restore_flag(mapData, "light_rq_done");
-  restore_flag(mapData, "shadow_rq_done");
-  restore_flag(mapData, "shards_done");
+  restore_flag(mapData, "electricity_rq_done")
+  restore_flag(mapData, "fire_rq_done")
+  restore_flag(mapData, "light_rq_done")
+  restore_flag(mapData, "shadow_rq_done")
+  restore_flag(mapData, "shards_done")
+  restore_flag(mapData, "writing_on_the_wall_complete")
+
+  -- Fury Head
+  restore_flag(mapData, "fury_head_sniper_kill")
+  -- Apothicon God
+  restore_flag(mapData, "apothicon_mask_all_zombies_killed")
+  restore_flag(mapData, "apothicon_mask_all_wasps_killed")
+  restore_flag(mapData, "apothicon_mask_all_spiders_killed")
+  restore_flag(mapData, "apothicon_mask_all_margwas_killed")
+  restore_flag(mapData, "apothicon_mask_all_fury_killed")
+  restore_flag(mapData, "apothicon_mask_all_keepers_killed")
+  -- Margwa Head
+  restore_flag(mapData, "margwa_head_wasps_flag")
+  restore_flag(mapData, "margwa_head_fire_flag")
+  restore_flag(mapData, "margwa_head_shadow_flag")
+  -- Keeper Skull
+  restore_flag(mapData, "keeper_skull_turret_flag")
+  -- Wolf Head
+  restore_flag(mapData, "keeper_skull_dg4_flag")
+  restore_flag(mapData, "keeper_skull_zombie_flag")
+  -- Helm of the King
+  restore_flag(mapData, "mechz_gun_flag")
+  restore_flag(mapData, "mechz_mask_flag")
+  restore_flag(mapData, "mechz_trap_flag")
+  -- Siegfried
+  restore_val(mapData, "helm_of_siegfried")
 end
 
 function player_restore_zm_genesis(xuid, playerData)
@@ -421,11 +494,13 @@ function player_restore_zm_genesis(xuid, playerData)
   restore_player_flag(xuid, playerData, "flag_player_collected_reward_1")
   restore_player_flag(xuid, playerData, "flag_player_collected_reward_2")
   restore_player_flag(xuid, playerData, "flag_player_collected_reward_3")
+  restore_player_val(xuid, playerData, "wearable")
 end
 
 -- The Giant
 function map_save_zm_factory(mapData, uniData)
-  Archi.LogMessage("Saving map data for The Giant");
+  Archi.LogMessage("Saving map data for The Giant")
+  save_spent_tokens(mapData)
   save_zombie_count(mapData)
   save_round_number(mapData)
   save_power_on(mapData)
@@ -444,8 +519,9 @@ function player_save_zm_factory(xuid, playerData)
 end
 
 function map_restore_zm_factory(mapData)
-  Archi.LogMessage("Restoring map data for The Giant");
-  restore_zombie_count(mapData);
+  Archi.LogMessage("Restoring map data for The Giant")
+  restore_spent_tokens(mapData)
+  restore_zombie_count(mapData)
   restore_round_number(mapData)
   restore_power_on(mapData)
   restore_doors_and_debris(mapData)
@@ -462,6 +538,7 @@ end
 
 function map_save_zm_westernz(mapData, uniData)
   Archi.LogMessage("Saving map data for Wanted");
+  save_spent_tokens(mapData)
   save_zombie_count(mapData)
   save_round_number(mapData)
   save_power_on(mapData)
@@ -481,8 +558,9 @@ function player_save_zm_westernz(xuid, playerData)
 end
 
 function map_restore_zm_westernz(mapData)
-  Archi.LogMessage("Restoring map data for Wanted");
-  restore_zombie_count(mapData);
+  Archi.LogMessage("Restoring map data for Wanted")
+  restore_spent_tokens(mapData)
+  restore_zombie_count(mapData)
   restore_round_number(mapData)
   restore_power_on(mapData)
   restore_doors_and_debris(mapData)
@@ -974,6 +1052,20 @@ function restore_map_player(xuid, playerData)
   restore_player_val(xuid, playerData, "spent_gum_tokens")
   restore_player_val(xuid, playerData, "spent_rare_gum_tokens")
   restore_player_val(xuid, playerData, "spent_legendary_gum_tokens")
+end
+
+function save_spent_tokens(mapData)
+  local checkpoints = Engine.DvarInt(0, "ARCHIPELAGO_SAVE_SPENT_CHECKPOINT_TOKENS")
+  if checkpoints < 0 then
+    checkpoints = 0
+  end
+  mapData["spent_checkpoint_tokens"] = checkpoints
+end
+
+function restore_spent_tokens(mapData)
+  if mapData["spent_checkpoint_tokens"] then
+    Engine.SetDvar( "ARCHIPELAGO_LOAD_SPENT_CHECKPOINT_TOKENS", mapData["spent_checkpoint_tokens"] )
+  end
 end
 
 map_saves = {

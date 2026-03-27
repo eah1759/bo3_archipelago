@@ -68,6 +68,7 @@ function save_state()
     archi_save::save_zombie_count();
     archi_save::save_power_on();
     archi_save::save_doors_and_debris();
+    archi_save::save_spent_tokens();
 
     archi_save::save_players(&save_player_data);
 
@@ -87,6 +88,18 @@ function save_player_data(xuid)
     self archi_save::save_player_score(xuid);
     self archi_save::save_player_perks(xuid);
     self archi_save::save_player_loadout(xuid);
+
+    bucket_held = self clientfield::get_to_player("bucket_held");
+    archi_save::save_player_val("bucket_held", bucket_held, xuid);
+
+    has_island_seed = self clientfield::get_to_player("has_island_seed");
+    archi_save::save_player_val("has_island_seed", has_island_seed, xuid);
+
+    bucket_bucket_water_type = self clientfield::get_to_player("bucket_bucket_water_type");
+    archi_save::save_player_val("bucket_bucket_water_type", bucket_bucket_water_type, xuid);
+
+    bucket_bucket_water_level = self clientfield::get_to_player("bucket_bucket_water_level");
+    archi_save::save_player_val("bucket_bucket_water_level", bucket_bucket_water_level, xuid);
 }
 
 function load_state()
@@ -94,8 +107,10 @@ function load_state()
     level flag::init("ap_skullroom_finished");
     archi_save::wait_restore_ready("zm_island");
     level flag::wait_till("ap_attachment_rando_ready");
+    archi_save::restore_spent_tokens();
     archi_save::restore_zombie_count();
     archi_save::restore_round_number();
+    level thread patch_perk_machines();
     restore_power_on();
     archi_save::restore_doors_and_debris();
 
@@ -202,7 +217,106 @@ function restore_player_data(xuid)
         {
             self flag::set("has_skull");
             self clientfield::set_to_player("skull_skull_state", 3);
+            WAIT_SERVER_FRAME
         }
+
+        has_island_seed = archi_save::restore_player_val_int("has_island_seed", xuid);
+        IPrintLn(has_island_seed);
+        self clientfield::set_to_player("has_island_seed", has_island_seed);
+        switch(has_island_seed)
+        {
+            case 0:
+            {
+                self clientfield::set_to_player("bucket_seed_01", 0);
+                self clientfield::set_to_player("bucket_seed_02", 0);
+                self clientfield::set_to_player("bucket_seed_03", 0);
+                break;
+            }
+            case 1:
+            {
+                self clientfield::set_to_player("bucket_seed_01", 1);
+                self clientfield::set_to_player("bucket_seed_02", 0);
+                self clientfield::set_to_player("bucket_seed_03", 0);
+                break;
+            }
+            case 2:
+            {
+                self clientfield::set_to_player("bucket_seed_01", 1);
+                self clientfield::set_to_player("bucket_seed_02", 1);
+                self clientfield::set_to_player("bucket_seed_03", 0);
+                break;
+            }
+            case 3:
+            {
+                self clientfield::set_to_player("bucket_seed_01", 1);
+                self clientfield::set_to_player("bucket_seed_02", 1);
+                self clientfield::set_to_player("bucket_seed_03", 1);
+                break;
+            }
+        }
+        WAIT_SERVER_FRAME
+
+        // bucket_bucket_water_type = archi_save::restore_player_val_int("bucket_bucket_water_type", xuid);
+        // IPrintLn(bucket_bucket_water_type);
+        // self.var_c6cad973 = bucket_bucket_water_type;
+        // self clientfield::set_to_player("bucket_bucket_water_type", bucket_bucket_water_type);
+        // WAIT_SERVER_FRAME
+
+        // bucket_bucket_water_level = archi_save::restore_player_val_int("bucket_bucket_water_level", xuid);
+        // IPrintLn(bucket_bucket_water_level);
+        // self.var_bb2fd41c = bucket_bucket_water_level;
+        // self clientfield::set_to_player("bucket_bucket_water_level", bucket_bucket_water_level);
+
+        // bucket_held = archi_save::restore_player_val_int("bucket_held", xuid);
+        // IPrintLn(bucket_held);
+        // self clientfield::set_to_player("bucket_held", bucket_held);
+        // WAIT_SERVER_FRAME
+        // if (bucket_held > 0)
+        // {
+        //     foreach(water_source in level.var_4a0060c0)
+        //     {
+        //         if (water_source.script_int == bucket_bucket_water_type && bucket_bucket_water_level == 3)
+        //         {
+        //             water_source SetInvisibleToPlayer(self);
+        //         }
+        //         water_source SetVisibleToPlayer(self);
+        //     }
+        //     if(bucket_bucket_water_level === 3)
+        //     {
+        //         foreach(power_bucket in level.var_769c0729)
+        //         {
+        //             if(isdefined(power_bucket))
+        //             {
+        //                 power_bucket sethintstringforplayer(self, &"ZOMBIE_ELECTRIC_SWITCH");
+        //             }
+        //         }
+        //     }
+        //     else
+        //     {
+        //         if(bucket_bucket_water_level > 0)
+        //         {
+        //             foreach(power_bucket in level.var_769c0729)
+        //             {
+        //                 if(isdefined(power_bucket))
+        //                 {
+        //                     power_bucket sethintstringforplayer(self, &"ZM_ISLAND_POWER_SWITCH_NEEEDS_MORE_WATER");
+        //                 }
+        //             }
+        //         }
+        //         else
+        //         {
+        //             foreach(power_bucket in level.var_769c0729)
+        //             {
+        //                 if(isdefined(power_bucket))
+        //                 {
+        //                     power_bucket sethintstringforplayer(self, &"ZM_ISLAND_POWER_SWITCH_NEEEDS_WATER");
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     self.var_6fd3d65c = 1;
+        //     level flag::set("any_player_has_bucket");
+        // }
     }
 }
 
@@ -652,4 +766,38 @@ function sync_perk_exploders()
             }
         }
     }
+}
+
+// Perk machine spawning is really unreliable, just force it ourselves
+function patch_perk_machines()
+{
+    // Give time to make sure they're buried
+	level flag::wait_till("all_players_spawned");
+	level flag::wait_till("zones_initialized");
+    wait(1);
+
+    foreach(perk in level.var_fd5c770c)
+    {
+        if(isdefined(perk.var_f11ace87))
+        {
+            perk reveal_perk_machine();
+        }
+    }
+}
+
+function reveal_perk_machine()
+{
+    v_loc = self.var_f11ace87;
+    v_angles = self.var_d7ae6fe9;
+    self.origin = v_loc;
+    self.clip.origin = v_loc - vectorscale((0, 0, 1), 60);
+    self.machine.origin = v_loc - vectorscale((0, 0, 1), 60);
+    self.bump.origin = v_loc - vectorscale((0, 0, 1), 30);
+	self.angles = v_angles;
+	self.machine.angles = v_angles;
+	self.clip.angles = v_angles;
+	self.bump.angles = v_angles;
+    self.var_f11ace87 = undefined;
+    self.var_d7ae6fe9 = undefined;
+    self.var_f391d884 = 0;
 }

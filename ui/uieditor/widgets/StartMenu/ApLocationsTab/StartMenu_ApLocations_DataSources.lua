@@ -23,7 +23,7 @@ end, true )
 
 DataSources.StartMenu_ApLocations_Castle = ListHelper_SetupDataSource( "StartMenu_ApLocations_Castle", function( controller )
     local ApLocations = {}
-    local prefixLength = string.len("(Castle) ")
+    local prefixLength = string.len("(Der Eisendrache) ")
 
     local bow_ranges = {
         storm = {2500, 2509},
@@ -144,7 +144,66 @@ DataSources.StartMenu_ApLocations_Genesis = ListHelper_SetupDataSource( "StartMe
     local ApLocations = {}
     local prefixLength = string.len("(Revelations) ")
 
-    for code = 6100, 6999 do
+    local mask_ranges = {
+        wolf = {6600, 6609},
+        siegfried = {6610, 6619},
+        king = {6620, 6629},
+        fury = {6630, 6639},
+        keeper = {6640, 6649},
+        margwa = {6650, 6659},
+        apothigod = {6660, 6669},
+    }
+
+    local rolled_masks = {}
+    i = 0
+    while true do
+        dvar_value = Engine.DvarString(nil,"ARCHIPELAGO_ROLLED_MASK_" .. i)
+        if not dvar_value or dvar_value == "" then
+            break
+        end
+        rolled_masks[dvar_value] = true
+        i = i + 1
+    end
+
+    local function is_rolled_mask_location(code)
+        for mask_name, range in pairs(mask_ranges) do
+            if code >= range[1] and code <= range[2] then
+                return rolled_masks[mask_name] == true
+            end
+        end
+    end
+
+    for code = 6100, 6599 do
+        local location = locations.IDToLocation[code]
+        local checked = Archi.CheckedLocations[code] == true
+        if location then
+            local trimmedLocation = string.sub(location, prefixLength + 1)
+            if checked then
+                trimmedLocation = "^2" .. trimmedLocation
+            end
+            table.insert( ApLocations, {
+                models = { name = trimmedLocation, code = code }
+            })
+        end
+    end
+
+    for code = 6600, 6699 do
+        if is_rolled_mask_location(code) then
+            local location = locations.IDToLocation[code]
+            if location then
+                local checked = Archi.CheckedLocations[code] == true
+                local trimmedLocation = string.sub(location, prefixLength + 1)
+                if checked then
+                    trimmedLocation = "^2" .. trimmedLocation
+                end
+                table.insert(ApLocations, {
+                    models = { name = trimmedLocation, code = code }
+                })
+            end
+        end
+    end
+
+    for code = 6700, 6999 do
         local location = locations.IDToLocation[code]
         local checked = Archi.CheckedLocations[code] == true
         if location then

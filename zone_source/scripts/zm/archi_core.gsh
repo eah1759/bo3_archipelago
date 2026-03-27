@@ -25,7 +25,7 @@
 #define ARCHIPELAGO_SETTING_PAP_MACHINE                         "AP_PAP_MACHINE"
 
 #define ARCHIPELAGO_MAP_THE_GIANT "(The Giant)"
-#define ARCHIPELAGO_MAP_CASTLE "(Castle)"
+#define ARCHIPELAGO_MAP_CASTLE "(Der Eisendrache)"
 #define ARCHIPELAGO_MAP_SHADOWS_OF_EVIL "(Shadows of Evil)"
 #define ARCHIPELAGO_MAP_GOROD_KROVI "(Gorod Krovi)"
 #define ARCHIPELAGO_MAP_ZETSUBOU "(Zetsubou No Shima)"

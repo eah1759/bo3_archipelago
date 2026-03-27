@@ -11,7 +11,9 @@
 #using scripts\shared\hud_util_shared;
 #using scripts\shared\lui_shared;
 #using scripts\shared\clientfield_shared;
+#using scripts\shared\trigger_shared;
 #using scripts\shared\scene_shared;
+#using scripts\zm\_zm_perks;
 #using scripts\zm\_zm_unitrigger;
 #using scripts\zm\_zm_power;
 
@@ -26,6 +28,7 @@
 
 function save_state_manager()
 {
+    level.archi.helm_of_siegfried = 0;
     level flag::init("ap_allow_player_restore");
 
     if (level.archi.difficulty_ee_checkpoints >= 3)
@@ -62,6 +65,7 @@ function save_state()
     archi_save::save_zombie_count();
     archi_save::save_power_on();
     archi_save::save_doors_and_debris();
+    archi_save::save_spent_tokens();
 
     archi_save::save_players(&save_player_data);
 
@@ -81,12 +85,14 @@ function save_player_data(xuid)
     self archi_save::save_player_score(xuid);
     self archi_save::save_player_perks(xuid);
     self archi_save::save_player_loadout(xuid);
+    self save_wearable(xuid);
 }
 
 function load_state()
 {
     archi_save::wait_restore_ready("zm_genesis");
     level flag::wait_till("ap_attachment_rando_ready");
+    archi_save::restore_spent_tokens();
     archi_save::restore_zombie_count();
     archi_save::restore_round_number();
     archi_save::restore_power_on();
@@ -113,6 +119,7 @@ function restore_player_data(xuid)
         self archi_save::restore_player_score(xuid);
         self archi_save::restore_player_perks(xuid);
         self archi_save::restore_player_loadout(xuid);
+        self thread restore_wearable(xuid);
     }
 }
 
@@ -128,6 +135,8 @@ function setup_main_quest()
     level thread _all_power_stations(level.archi.mapString + " Main Quest - Override all 4 Corruption Engines");
     level thread _flag_to_location_thread("apotho_pack_freed", level.archi.mapString + " Main Quest - Free the Pack-A-Punch");
     level thread _track_music_thegift();
+
+    level thread _flag_to_location_thread("writing_on_the_wall_complete", level.archi.mapString + " Writing on the Wall");
 }
 
 function setup_main_ee_quest()
@@ -163,12 +172,26 @@ function setup_weapon_quest()
 
 function setup_wearables()
 {
-    level thread _wearable_wolf(level.archi.mapString + " Unlock the Wolf Mask");
-    // level thread _wearable_siegfried(level.archi.mapString + " Unlock the Helmet of Siegfried");
-    level thread _wearable_king(level.archi.mapString + " Unlock the Helmet of the King");
-    level thread _wearable_keeper_skull(level.archi.mapString + " Unlock the Keeper Skull Mask");
-    level thread _wearable_margwa(level.archi.mapString + " Unlock the Margwa Mask");
-    level thread _wearable_apothigod(level.archi.mapString + " Unlock the Apothigod Mask");
+    level thread _wearable_wolf(level.archi.mapString + " Unlock the Dire Wolf Mask - Grenade the hole then 15 kills during low gravity");
+    level thread _wearable_siegfried(level.archi.mapString + " Unlock the Helmet of Siegfried - Shoot the clock then charge the soul jars");
+    level thread _wearable_king(
+        level.archi.mapString + " Unlock the Helmet of the King (1) - 50 Trap Kills",
+        level.archi.mapString + " Unlock the Helmet of the King (2) - Break off a Panzer's helmet and gun"
+    );
+    level thread _wearable_fury(level.archi.mapString + " Unlock the Fury's Head - 40 Fury kills after all power is turned on");
+    level thread _wearable_keeper_skull(
+        level.archi.mapString + " Unlock the Keeper Skull (1) - Grenade the hole then 15 kills during low gravity",
+        level.archi.mapString + " Unlock the Keeper Skull (2) - 30 zombies killed by the Keeper Protector"
+    );
+    level thread _wearable_margwa(
+        level.archi.mapString + " Unlock the Margwa's Head (1) - Explode all of a Margwa's heads with a Sniper",
+        level.archi.mapString + " Unlock the Margwa's Head (2) - Kill both a Void and Fire Margwa"
+    );
+    level thread _wearable_apothigod(
+        level.archi.mapString + " Unlock the Apothicon God Mask (1) - 50 Zombie, 5 Spider and 5 Wasp Kills in Stomach Gas",
+        level.archi.mapString + " Unlock the Apothicon God Mask (2) - 10 Keeper and 10 Fury kills in Stomach Gas",
+        level.archi.mapString + " Unlock the Apothicon God Mask (3) - 3 Margwa Kills in Stomach Gas"
+    );
 }
 
 function setup_challenges()
@@ -356,37 +379,120 @@ function _wearable_wolf(location)
 
 function _wearable_siegfried(location)
 {
-    // batteries = struct::get_array("ancient_battery", "targetname");
-    // archi_core::send_location(location);
-}
+    clock = struct::get_array("s_ee_clock", "targetname");
+	t_clock = getent("ee_grand_tour_undercroft", "targetname");
+    t_clock setcandamage(1);
+	n_stage = 9;
+    not_solved = 1;
+    while(not_solved)
+	{
+		t_clock waittill("damage", damage, attacker, direction_vec, v_point, type, modelname, tagname, partname, weapon, idflags);
+        n_closest = 9999999;
+		s_closest = clock[0];
+		for(i = 0; i < clock.size; i++)
+		{
+			n_dist = distance(clock[i].origin, v_point);
+			if(n_dist < n_closest)
+			{
+				n_closest = n_dist;
+				s_closest = clock[i];
+			}
+		}
+		switch(n_stage)
+		{
+			case 9:
+			{
+				if(s_closest.script_int == 9)
+				{
+					n_stage = 3;
+				}
+				break;
+			}
+			case 3:
+			{
+				if(s_closest.script_int == 3)
+				{
+					n_stage = 5;
+				}
+				else
+				{
+					n_stage = 9;
+				}
+				break;
+			}
+			case 5:
+			{
+				if(s_closest.script_int == 5)
+				{
+					not_solved = 0;
+				}
+				else
+				{
+					n_stage = 9;
+				}
+				break;
+			}
+		}
+	}
+    wait(5);
 
-function _wearable_king(location)
-{
-	level flag::wait_till_all(array("mechz_gun_flag", "mechz_mask_flag", "mechz_trap_flag"));
+    while(level.var_5317b760 > 0)
+    {
+        wait(1);
+    }
+
+    level.archi.helm_of_siegfried = 1;
     archi_core::send_location(location);
 }
 
-function _wearable_keeper_skull(location)
+function _wearable_king(location1, location2)
 {
-    level endon("end_game");
+    level thread _flag_to_location_thread("mechz_trap_flag", location1);
+    level flag::wait_till_all(array("mechz_gun_flag", "mechz_mask_flag"));
+    archi_core::send_location(location2);
+}
 
-	level flag::wait_till_all(array("keeper_skull_turret_flag", "keeper_skull_zombie_flag"));
+function _wearable_fury(location)
+{
+    level flag::wait_till("fury_head_sniper_kill");
     archi_core::send_location(location);
 }
 
-function _wearable_margwa(location)
+function _wearable_keeper_skull(location1, location2)
 {
-    level endon("end_game");
-
-    level flag::wait_till_all(array("margwa_head_wasps_flag", "margwa_head_fire_flag", "margwa_head_shadow_flag"));
-    archi_core::send_location(location);
+    level thread _flag_to_location_thread("keeper_skull_turret_flag", location1);
+    level thread _flag_to_location_thread("keeper_skull_dg4_flag", location2);
 }
 
-function _wearable_apothigod(location)
+function _wearable_margwa(location1, location2)
+{
+    level endon("end_game");
+    level thread _flag_to_location_thread("margwa_head_wasps_flag", location1);
+    level flag::wait_till_all(array("margwa_head_fire_flag", "margwa_head_shadow_flag"));
+    archi_core::send_location(location2);
+}
+
+function _wearable_apothigod(location1, location2, location3)
+{
+    level thread _wearable_apothigod_basic(location1);
+    level thread _wearable_apothigod_special(location2);
+    level thread _flag_to_location_thread("apothicon_mask_all_margwas_killed", location3);
+}
+
+function _wearable_apothigod_basic(location)
 {
     level endon("end_game");
 
-	level flag::wait_till_all(array("apothicon_mask_all_zombies_killed", "apothicon_mask_all_wasps_killed", "apothicon_mask_all_spiders_killed", "apothicon_mask_all_margwas_killed", "apothicon_mask_all_fury_killed", "apothicon_mask_all_keepers_killed"));
+	level flag::wait_till_all(array("apothicon_mask_all_zombies_killed", "apothicon_mask_all_wasps_killed", "apothicon_mask_all_spiders_killed"));
+    archi_core::send_location(location);
+
+}
+
+function _wearable_apothigod_special(location)
+{
+    level endon("end_game");
+
+	level flag::wait_till_all(array("apothicon_mask_all_fury_killed", "apothicon_mask_all_keepers_killed"));
     archi_core::send_location(location);
 }
 
@@ -449,6 +555,36 @@ function save_map_state()
     archi_save::save_flag("fire_rq_done");
     archi_save::save_flag("light_rq_done");
     archi_save::save_flag("shadow_rq_done");
+    archi_save::save_flag("writing_on_the_wall_complete");
+    archi_save::save_flag("keeper_callbox_totem_found");
+    archi_save::save_flag("keeper_callbox_head_found");
+    archi_save::save_flag("keeper_callbox_gem_found");
+
+    // Wearables
+    // Fury
+    archi_save::save_flag("fury_head_sniper_kill");
+    // Apothicon God
+    archi_save::save_flag("apothicon_mask_all_zombies_killed");
+    archi_save::save_flag("apothicon_mask_all_wasps_killed");
+    archi_save::save_flag("apothicon_mask_all_spiders_killed");
+    archi_save::save_flag("apothicon_mask_all_margwas_killed");
+    archi_save::save_flag("apothicon_mask_all_fury_killed");
+    archi_save::save_flag("apothicon_mask_all_keepers_killed");
+    // Margwa Head
+    archi_save::save_flag("margwa_head_wasps_flag");
+    archi_save::save_flag("margwa_head_fire_flag");
+    archi_save::save_flag("margwa_head_shadow_flag");
+    // Keeper Skull
+    archi_save::save_flag("keeper_skull_turret_flag");
+    // Wolf Head
+    archi_save::save_flag("keeper_skull_dg4_flag");
+    archi_save::save_flag("keeper_skull_zombie_flag");
+    // Helm of the King
+    archi_save::save_flag("mechz_gun_flag");
+    archi_save::save_flag("mechz_mask_flag");
+    archi_save::save_flag("mechz_trap_flag");
+    // Siegfried
+    archi_save::save_val("helm_of_siegfried", level.archi.helm_of_siegfried);
 
     archi_save::save_flag("shards_done");
     foreach (player in level.players)
@@ -457,8 +593,97 @@ function save_map_state()
     }
 }
 
+function feed_batteries()
+{
+    wait(1);
+    bats = struct::get_array("ancient_battery", "targetname");
+    foreach(bat in bats)
+    {
+        for(i = 0; i < 5; i++)
+        {
+            level.var_98fdd784 = bat.origin;
+            level notify("hash_e8c3642d");
+            wait(0.9);
+        }
+    }
+    wait(1);
+    level flag::set("ap_siegfried_ready");
+}
+
 function restore_map_state()
 {
+    level flag::init("ap_siegfried_ready");
+    archi_save::restore_flag("keeper_callbox_totem_found");
+    archi_save::restore_flag("keeper_callbox_head_found");
+    archi_save::restore_flag("keeper_callbox_gem_found");
+
+    archi_save::restore_flag("writing_on_the_wall_complete");
+    if (level flag::get("writing_on_the_wall_complete"))
+    {
+        wallbuy = getent("smg_thompson_wallbuy_chalk", "targetname");
+		wallbuy show();
+    }
+
+    // Wearables
+    // Fury
+    archi_save::restore_flag("fury_head_sniper_kill");
+    // Apothicon God
+    archi_save::restore_flag("apothicon_mask_all_zombies_killed");
+    archi_save::restore_flag("apothicon_mask_all_wasps_killed");
+    archi_save::restore_flag("apothicon_mask_all_spiders_killed");
+    archi_save::restore_flag("apothicon_mask_all_margwas_killed");
+    archi_save::restore_flag("apothicon_mask_all_fury_killed");
+    archi_save::restore_flag("apothicon_mask_all_keepers_killed");
+    // Margwa Head
+    archi_save::restore_flag("margwa_head_wasps_flag");
+    archi_save::restore_flag("margwa_head_fire_flag");
+    archi_save::restore_flag("margwa_head_shadow_flag");
+    // Keeper Skull
+    archi_save::restore_flag("keeper_skull_turret_flag");
+    // Wolf Head
+    archi_save::restore_flag("keeper_skull_dg4_flag");
+    archi_save::restore_flag("keeper_skull_zombie_flag");
+    // Helm of the King
+    archi_save::restore_flag("mechz_gun_flag");
+    archi_save::restore_flag("mechz_mask_flag");
+    archi_save::restore_flag("mechz_trap_flag");
+
+    level.archi.helm_of_siegfried = archi_save::restore_val_bool("helm_of_siegfried");
+    if (level.archi.helm_of_siegfried == 1)
+    {
+        // Trigger the 9 3 5 symbols on the clock
+        clock_nums = struct::get_array("s_ee_clock", "targetname");
+        num_9 = undefined;
+        num_3 = undefined;
+        num_5 = undefined;
+        foreach (num in clock_nums)
+        {
+            if (num.script_int == 9)
+            {
+                num_9 = num;
+            }
+            if (num.script_int == 3)
+            {
+                num_3 = num;
+            }
+            if (num.script_int == 5)
+            {
+                num_5 = num;
+            }
+        }
+
+	    t_clock = getent("ee_grand_tour_undercroft", "targetname");
+        t_clock notify("damage", 10, level.players[0], (0,0,0), num_9.origin, "MOD_BULLET", "", "", "", undefined, undefined);
+        wait(0.1);
+        t_clock notify("damage", 10, level.players[0], (0,0,0), num_3.origin, "MOD_BULLET", "", "", "", undefined, undefined);
+        wait(0.1);
+        t_clock notify("damage", 10, level.players[0], (0,0,0), num_5.origin, "MOD_BULLET", "", "", "", undefined, undefined);
+
+
+        // Trigger the kill functions 5 times on each battery, takes 15 seconds so thread it
+        level thread feed_batteries();
+    }
+
     tape_recorders = struct::get_array("audio_reel_place", "targetname");
     archi_save::restore_flag("shards_done");
     if (level flag::get("shards_done"))
@@ -469,7 +694,6 @@ function restore_map_state()
             shard_ent = getent(shard.target, "targetname");
             shard_ent ghost();
         }
-
     }
     archi_save::restore_flag("all_power_on");
     if (level flag::get("all_power_on"))
@@ -643,4 +867,94 @@ function delayed_ball_deleter()
     zm_unitrigger::unregister_unitrigger(s_loc.unitrigger_stub);
     ball_visual = level.ball.visuals[0];
     ball_visual.origin = (10000,10000,10000);
+}
+
+function save_wearable(xuid)
+{
+    if (isdefined(self.var_bc5f242a) && isdefined(self.var_bc5f242a.str_model))
+    {
+        archi_save::save_player_val("wearable", self.var_bc5f242a.str_model + "", xuid);
+    }
+}
+
+function restore_wearable(xuid)
+{
+    self endon("disconnect");
+
+    str_model = archi_save::restore_player_val("wearable", xuid);
+    s_loc = undefined;
+    switch (str_model)
+    {
+        case "c_zom_dlc4_player_arlington_helmet":
+            s_loc = struct::get("s_weasels_hat", "targetname");
+            break;
+        case "c_zom_dlc4_player_siegfried_helmet":
+            s_loc = struct::get("s_helm_of_siegfried", "targetname");
+            break;
+        case "c_zom_dlc4_player_king_helmet":
+            s_loc = struct::get("s_helm_of_the_king", "targetname");
+            break;
+        case "c_zom_dlc4_player_direwolf_helmet":
+            s_loc = struct::get("s_dire_wolf_head", "targetname");
+            break;
+        case "c_zom_dlc4_player_keeper_helmet":
+            s_loc = struct::get("s_keeper_skull_head", "targetname");
+            break;
+        case "c_zom_dlc4_player_margwa_helmet":
+            s_loc = struct::get("s_margwa_head", "targetname");
+            break;
+        case "c_zom_dlc4_player_apothican_helmet":
+            s_loc = struct::get("s_apothicon_mask", "targetname");
+            break;
+        case "c_zom_dlc4_player_fury_helmet":
+            s_loc = struct::get("s_fury_head", "targetname");
+            break;
+    }
+    wait(0.1);
+
+    if (isdefined(s_loc))
+    {
+        // Siegfried takes a while to spawn
+        if (str_model == "c_zom_dlc4_player_siegfried_helmet")
+        {
+            level flag::wait_till("ap_siegfried_ready");
+        }
+
+        if (isdefined(s_loc.s_unitrigger))
+        {
+            IPrintLn("Loaded helm: " + s_loc.s_unitrigger.var_475b0a4e);
+            // Get the trigger struct
+            archi_core::notify_trigger_with_player(s_loc.s_unitrigger, self);
+        }
+        else
+        {
+            IPrintLn("Restoring too early?");
+        }
+    }
+    else
+    {
+        IPrintLn("no helm found? " + str_model);
+    }
+}
+
+function always_visible_func()
+{
+    return true;
+}
+
+function get_all_unitriggers()
+{
+    all_uni = [];
+    foreach (zone in level.zones)
+    {
+        if (isdefined(zone.unitrigger_stubs))
+        {
+            all_uni = ArrayCombine(all_uni, zone.unitrigger_stubs, 1, 0);
+        }
+    }
+    if (isdefined(level._unitriggers.dynamic_stubs))
+    {
+        all_uni = ArrayCombine(all_uni, level._unitriggers.dynamic_stubs, 1, 0);
+    }
+    return all_uni;
 }
