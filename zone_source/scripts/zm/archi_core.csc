@@ -68,6 +68,15 @@ function __init__()
             level._ap_weapon_bits["tesla_gun"] = 2;
             add_universal_box_bits();
             break;
+        case "zm_theater":
+            level._ap_weapons_table = "gamedata/weapons/zm/zm_theater_weapons.csv";
+            level._ap_weapon_bits["cymbal_monkey"] = 0;
+            level._ap_weapon_bits["ray_gun"] = 1;
+            level._ap_weapon_bits["raygun_mark2"] = 2;
+            level._ap_weapon_bits["thundergun"] = 3;
+            level._ap_weapon_bits["hero_annihilator"] = 4;
+            add_universal_box_bits();
+            break;
         case "zm_westernz":
             level._ap_weapons_table = "gamedata/weapons/zm/zm_westernz_weapons.csv";
             level._ap_weapon_bits["grenade_homunculus"] = 0;
@@ -85,32 +94,37 @@ function __init__()
     // Read weapons table into what we need ahead of time
     if (isdefined(level._ap_weapons_table))
     {
-        index = 1;
-        row = tablelookuprow(level._ap_weapons_table, index);
-        while (isdefined(row))
-        {
-		    weapon_name = checkStringValid(row[0]);
-            upgrade_name = checkStringValid(row[1]);
-		    in_box = tolower(row[9]) == "true";
-            upgrade_in_box = tolower(row[10]) == "true";
-
-            weapon_data = SpawnStruct();
-            weapon_data.name = weapon_name;
-            weapon_data.in_box = in_box;
-            level._ap_weapon_data[level._ap_weapon_data.size] = weapon_data;
-            if (isdefined(upgrade_name))
-            {
-                upgrade_weapon_data = SpawnStruct();
-                upgrade_weapon_data.name = upgrade_name;
-                upgrade_weapon_data.in_box = upgrade_in_box;
-                level._ap_weapon_data[level._ap_weapon_data.size] = upgrade_weapon_data;
-            }
-            index++;
-		    row = tablelookuprow(level._ap_weapons_table, index);
-        }
+        custom_load_csv(level._ap_weapons_table);
     }
 
     clientfield::register("world", "ap_mystery_box_changes", 1, 28, "int", &update_mystery_box, 0, 0);
+}
+
+function custom_load_csv(table)
+{
+    index = 1;
+    row = tablelookuprow(table, index);
+    while (isdefined(row))
+    {
+        weapon_name = checkStringValid(row[0]);
+        upgrade_name = checkStringValid(row[1]);
+        in_box = tolower(row[9]) == "true";
+        upgrade_in_box = tolower(row[10]) == "true";
+
+        weapon_data = SpawnStruct();
+        weapon_data.name = weapon_name;
+        weapon_data.in_box = in_box;
+        level._ap_weapon_data[level._ap_weapon_data.size] = weapon_data;
+        if (isdefined(upgrade_name))
+        {
+            upgrade_weapon_data = SpawnStruct();
+            upgrade_weapon_data.name = upgrade_name;
+            upgrade_weapon_data.in_box = upgrade_in_box;
+            level._ap_weapon_data[level._ap_weapon_data.size] = upgrade_weapon_data;
+        }
+        index++;
+        row = tablelookuprow(table, index);
+    }
 }
 
 function update_mystery_box( localclientnum, oldval, newval, bnewent, binitialsnap, fieldname, bwastimejump )
@@ -145,6 +159,16 @@ function update_mystery_box( localclientnum, oldval, newval, bnewent, binitialsn
 
 function add_universal_box_bits()
 {
+    level._ap_weapon_bits["ar_standard"] = 5; // KN-44
+    level._ap_weapon_bits["shotgun_precision"] = 6; // Argus
+    level._ap_weapon_bits["lmg_light"] = 7; // BRM
+    level._ap_weapon_bits["lmg_slowfire"] = 8; // Gorgon
+    level._ap_weapon_bits["lmg_mg08"] = 9; // MG-08 (Chronicles)
+    level._ap_weapon_bits["ar_stg44"] = 10; // STG-44 (Chronicles)
+    level._ap_weapon_bits["smg_mp40_1940"] = 11; // MP40 (Chronicles)
+    level._ap_weapon_bits["ar_m16"] = 12; // M16 (Chronicles)
+    level._ap_weapon_bits["smg_ak74u"] = 13; // AK74u (Chronicles)
+    level._ap_weapon_bits["ar_galil"] = 14; // Galil (Chronicles)
     level._ap_weapon_bits["ar_famas"] = 15; // FFAR
     level._ap_weapon_bits["sniper_fastsemi"] = 16; // Drakon
     level._ap_weapon_bits["sniper_fastbolt"] = 17; // Locus

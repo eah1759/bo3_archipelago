@@ -536,6 +536,40 @@ function player_restore_zm_factory(xuid, playerData)
   restore_player_loadout(xuid, playerData)
 end
 
+-- Kino der Toten
+function map_save_zm_theater(mapData, uniData)
+  Archi.LogMessage("Saving map data for Kino der Toten")
+  save_spent_tokens(mapData)
+  save_zombie_count(mapData)
+  save_round_number(mapData)
+  save_power_on(mapData)
+  save_doors_and_debris(mapData)
+
+  save_players(mapData, uniData, player_save_zm_theater)
+end
+
+function player_save_zm_theater(xuid, playerData)
+  save_player_score(xuid, playerData)
+  save_player_perks(xuid, playerData)
+  save_player_loadout(xuid, playerData)
+end
+
+function map_restore_zm_theater(mapData)
+  Archi.LogMessage("Restoring map data for Kino der Toten")
+  restore_spent_tokens(mapData)
+  restore_zombie_count(mapData)
+  restore_round_number(mapData)
+  restore_power_on(mapData)
+  restore_doors_and_debris(mapData)
+end
+
+function player_restore_zm_theater(xuid, playerData)
+  restore_player_score(xuid, playerData)
+  restore_player_perks(xuid, playerData)
+  restore_player_loadout(xuid, playerData)
+end
+
+-- Wanted
 function map_save_zm_westernz(mapData, uniData)
   Archi.LogMessage("Saving map data for Wanted");
   save_spent_tokens(mapData)
@@ -1075,6 +1109,7 @@ map_saves = {
   zm_stalingrad = map_save_zm_stalingrad,
   zm_genesis = map_save_zm_genesis,
   zm_factory = map_save_zm_factory,
+  zm_theater = map_save_zm_theater,
   zm_westernz = map_save_zm_westernz,
 }
 
@@ -1085,6 +1120,7 @@ player_saves = {
   zm_stalingrad = player_save_zm_stalingrad,
   zm_genesis = player_save_zm_genesis,
   zm_factory = player_save_zm_factory,
+  zm_theater = player_save_zm_theater,
   zm_westernz = player_save_zm_westernz,
 }
 
@@ -1095,6 +1131,7 @@ map_restores = {
   zm_stalingrad = map_restore_zm_stalingrad,
   zm_genesis = map_restore_zm_genesis,
   zm_factory = map_restore_zm_factory,
+  zm_theater = map_restore_zm_theater,
   zm_westernz = map_restore_zm_westernz,
 }
 
@@ -1105,6 +1142,7 @@ player_restores = {
   zm_stalingrad = player_restore_zm_stalingrad,
   zm_genesis = player_restore_zm_genesis,
   zm_factory = player_restore_zm_factory,
+  zm_theater = player_restore_zm_theater,
   zm_westernz = player_restore_zm_westernz,
 }
 

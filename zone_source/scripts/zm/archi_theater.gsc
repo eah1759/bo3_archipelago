@@ -53,7 +53,7 @@ function save_state()
 
     save_map_state();
 
-    archi_save::send_save_data("zm_yourmap");
+    archi_save::send_save_data("zm_theater");
 
     if (level.archi.save_checkpoint == true)
     {
@@ -71,7 +71,7 @@ function save_player_data(xuid)
 
 function load_state()
 {
-    archi_save::wait_restore_ready("zm_yourmap");
+    archi_save::wait_restore_ready("zm_theater");
     level flag::wait_till("ap_attachment_rando_ready");
     archi_save::restore_zombie_count();
     archi_save::restore_round_number();
@@ -100,7 +100,7 @@ function restore_player_data(xuid)
 
 function clear_state()
 {
-    SetDvar("ARCHIPELAGO_CLEAR_DATA", "zm_yourmap");
+    SetDvar("ARCHIPELAGO_CLEAR_DATA", "zm_theater");
     LUINotifyEvent(&"ap_clear_data", 0);
 }
 
@@ -108,7 +108,37 @@ function setup_locations()
 {
     level flag::wait_till("initial_blackscreen_passed");
 
-    // Setup AP checks here
+    foreach (player in level.players)
+    {
+        player thread onplayerconnect();
+    }
+    callback::on_connect(&onplayerconnect);
+
+    level thread _flag_to_location_thread("power_on", level.archi.mapString + " Turn on the Power");
+    level thread _notify_to_location_thread("play_movie", level.archi.mapString + " Watch a Movie");
+    level thread _flag_to_location_thread("snd_song_completed", level.archi.mapString + " Music EE - 115");
+    // level thread _notify_to_location_thread("zhd_knocker_success", level.archi.mapString + " Samantha's Sorrow");
+
+    level thread _rocket_ee(level.archi.mapString + " Launch the Toy Rocket");
+}
+
+function _rocket_ee(location)
+{
+    rocket_stand = getent("trigger_jump", "targetname");
+    rocket_stand waittill("hash_88782877");
+    archi_core::send_location(location);
+}
+
+function onplayerconnect()
+{
+    self thread _monitor_teleport();
+}
+
+function _monitor_teleport(location)
+{
+    self waittill("player_teleported", n_loc);
+
+    archi_core::send_location(location);
 }
 
 // === AP Check Utilities ===

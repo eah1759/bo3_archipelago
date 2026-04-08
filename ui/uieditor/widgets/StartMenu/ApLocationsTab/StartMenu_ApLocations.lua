@@ -25,6 +25,8 @@ CoD.StartMenu_ApLocations.new = function( menu, controller )
 	self.itemList:setWidgetType( CoD.StartMenu_ApLocations_ListItem )
 	self.itemList:setHorizontalCount( 3 )
 	self.itemList:setVerticalCount( 28 )
+	self.itemList:setVerticalCounter( CoD.verticalCounter )
+    self.itemList:setVerticalScrollbar( CoD.verticalScrollbar )
 	menu:registerEventHandler( "menu_opened", function()
 		self.itemList:updateDataSource()
         return true

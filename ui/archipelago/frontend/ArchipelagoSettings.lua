@@ -301,7 +301,7 @@ LUI.createMenu.ArchipelagoSettings = function ( controller )
 	end, false )
 
     Menu:AddButtonCallbackFunction( self, controller, Enum.LUIButton.LUI_KEY_XBY_PSTRIANGLE, nil, function ( f20_arg0, f20_arg1, f20_arg2, f20_arg3 )
-		ConnectArchi(savedServer, savedSlot)
+		ConnectArchi(savedServer, savedSlot, savedPassword)
 		return true
 	end, function ( f21_arg0, f21_arg1, f21_arg2 )
 		CoD.Menu.SetButtonLabel( f21_arg1, Enum.LUIButton.LUI_KEY_XBY_PSTRIANGLE, "Test Connection" )

@@ -20,6 +20,7 @@ scriptparsetree,scripts/zm/archi_island.gsc
 scriptparsetree,scripts/zm/archi_stalingrad.gsc
 scriptparsetree,scripts/zm/archi_genesis.gsc
 scriptparsetree,scripts/zm/archi_factory.gsc
+scriptparsetree,scripts/zm/archi_theater.gsc
 scriptparsetree,scripts/zm/archi_westernz.gsc
 scriptparsetree,scripts/zm/archi_items.gsc
 scriptparsetree,scripts/zm/archi_save.gsc

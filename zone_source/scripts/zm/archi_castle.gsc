@@ -259,27 +259,46 @@ function _track_music_requiem()
 
     gramophones_activated = 0;
     gramophones = getentarray("hs_gramophone", "targetname");
-    array::thread_all(gramophones, &_track_trigger_requiem);
+    array::thread_all(gramophones, &_create_gramophone_trigger);
 
     while(gramophones_activated < gramophones.size)
     {
-		level waittill("ap_castle_requiem");
+		level waittill("hash_9c9fb305");
         gramophones_activated += 1;
     }
 
     archi_core::send_location(level.archi.mapString + " Music EE - Requiem");
 }
 
-function _track_trigger_requiem()
+function _create_gramophone_trigger()
 {
-    while( !IS_TRUE( self.b_activated ) )
+    // Remove old trigger
+    if (isdefined(self.s_unitrigger))
     {
-        self waittill( "trigger_activated" );
-        // Allow e_origin's own waittill to run first so b_activated is changed
-        WAIT_SERVER_FRAME
+        zm_unitrigger::unregister_unitrigger(self.s_unitrigger);
     }
     
-    level notify("ap_castle_requiem");
+    // Increase radius by 1.5 feet
+    self zm_unitrigger::create_unitrigger("", 82);
+
+    while(!(isdefined(self.b_activated) && self.b_activated))
+	{
+		self waittill("trigger_activated");
+		if(isdefined(level.musicsystem.currentplaytype) && level.musicsystem.currentplaytype >= 4 || (isdefined(level.musicsystemoverride) && level.musicsystemoverride))
+		{
+			continue;
+		}
+		if(!(isdefined(self.b_activated) && self.b_activated))
+		{
+			self.b_activated = 1;
+			level.var_89ad28cd++;
+			level notify("hash_9c9fb305");
+			self stoploopsound(0.2);
+		}
+		self playsound("zmb_ee_gramophone_activate");
+	}
+
+    zm_unitrigger::unregister_unitrigger(self.s_unitrigger);
 }
 
 function setup_locations()
@@ -619,6 +638,14 @@ function restore_map_state()
     }
     archi_save::restore_flag("death_ray_trap_used");
     archi_save::restore_flag("ee_safe_open");
+    // Solve safe puzzle
+    if (level flag::get("ee_safe_open"))
+    {
+        wait(0.1);
+        level.var_ab58bca7 = array(0, 0, 0);
+        level.var_a44ebbe8 = array(1, 1, 1);
+        level notify("hash_a126360f");
+    }
     wait(0.1);
     archi_save::restore_flag("tesla_connector_launch_platform");
     if (level flag::get("tesla_connector_launch_platform"))

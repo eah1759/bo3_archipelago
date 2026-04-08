@@ -31,6 +31,15 @@
 #define ARCHIPELAGO_MAP_ZETSUBOU "(Zetsubou No Shima)"
 #define ARCHIPELAGO_MAP_REVELATIONS "(Revelations)"
 
+#define ARCHIPELAGO_MAP_NACHT_DER_UNTOTEN "(Nacht der Untoten)"
+#define ARCHIPELAGO_MAP_VERRUCKT "(Verruckt)"
+#define ARCHIPELAGO_MAP_SHI_NO_NUMA "(Shi No Numa)"
+#define ARCHIPELAGO_MAP_KINO_DER_UNTOTEN "(Kino der Toten)"
+#define ARCHIPELAGO_MAP_ASCENSION "(Ascension)"
+#define ARCHIPELAGO_MAP_SHANGRILA "(Shangri-La)"
+#define ARCHIPELAGO_MAP_MOON "(Moon)"
+#define ARCHIPELAGO_MAP_ORIGINS "(Origins)"
+
 #define ARCHIPELAGO_MAP_WANTED "(Wanted)"
 
 #define ARCHIPELAGO_ITEM_PERK_JUGGERNOG "Juggernog"

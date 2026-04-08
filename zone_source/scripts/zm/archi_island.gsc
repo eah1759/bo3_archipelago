@@ -256,67 +256,78 @@ function restore_player_data(xuid)
         }
         WAIT_SERVER_FRAME
 
-        // bucket_bucket_water_type = archi_save::restore_player_val_int("bucket_bucket_water_type", xuid);
-        // IPrintLn(bucket_bucket_water_type);
-        // self.var_c6cad973 = bucket_bucket_water_type;
-        // self clientfield::set_to_player("bucket_bucket_water_type", bucket_bucket_water_type);
-        // WAIT_SERVER_FRAME
+        bucket_held = archi_save::restore_player_val_int("bucket_held", xuid);
+        IPrintLn(bucket_held);
+        WAIT_SERVER_FRAME
+        if (bucket_held > 0)
+        {
+            // Pick up a bucket
+            bucket_locs = struct::get_array("water_bucket_location", "targetname");
+            foreach (loc in bucket_locs)
+            {
+                if (isdefined(loc.trigger))
+                {
+                    loc.trigger notify("trigger", self);
+                    wait(0.1);
+                    break;
+                }
+            }
+        }
 
-        // bucket_bucket_water_level = archi_save::restore_player_val_int("bucket_bucket_water_level", xuid);
-        // IPrintLn(bucket_bucket_water_level);
-        // self.var_bb2fd41c = bucket_bucket_water_level;
-        // self clientfield::set_to_player("bucket_bucket_water_level", bucket_bucket_water_level);
+        bucket_bucket_water_type = archi_save::restore_player_val_int("bucket_bucket_water_type", xuid);
+        IPrintLn(bucket_bucket_water_type);
+        self.var_c6cad973 = bucket_bucket_water_type + 1;
+        self clientfield::set_to_player("bucket_bucket_water_type", bucket_bucket_water_type);
+        WAIT_SERVER_FRAME
 
-        // bucket_held = archi_save::restore_player_val_int("bucket_held", xuid);
-        // IPrintLn(bucket_held);
-        // self clientfield::set_to_player("bucket_held", bucket_held);
-        // WAIT_SERVER_FRAME
-        // if (bucket_held > 0)
-        // {
-        //     foreach(water_source in level.var_4a0060c0)
-        //     {
-        //         if (water_source.script_int == bucket_bucket_water_type && bucket_bucket_water_level == 3)
-        //         {
-        //             water_source SetInvisibleToPlayer(self);
-        //         }
-        //         water_source SetVisibleToPlayer(self);
-        //     }
-        //     if(bucket_bucket_water_level === 3)
-        //     {
-        //         foreach(power_bucket in level.var_769c0729)
-        //         {
-        //             if(isdefined(power_bucket))
-        //             {
-        //                 power_bucket sethintstringforplayer(self, &"ZOMBIE_ELECTRIC_SWITCH");
-        //             }
-        //         }
-        //     }
-        //     else
-        //     {
-        //         if(bucket_bucket_water_level > 0)
-        //         {
-        //             foreach(power_bucket in level.var_769c0729)
-        //             {
-        //                 if(isdefined(power_bucket))
-        //                 {
-        //                     power_bucket sethintstringforplayer(self, &"ZM_ISLAND_POWER_SWITCH_NEEEDS_MORE_WATER");
-        //                 }
-        //             }
-        //         }
-        //         else
-        //         {
-        //             foreach(power_bucket in level.var_769c0729)
-        //             {
-        //                 if(isdefined(power_bucket))
-        //                 {
-        //                     power_bucket sethintstringforplayer(self, &"ZM_ISLAND_POWER_SWITCH_NEEEDS_WATER");
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     self.var_6fd3d65c = 1;
-        //     level flag::set("any_player_has_bucket");
-        // }
+        bucket_bucket_water_level = archi_save::restore_player_val_int("bucket_bucket_water_level", xuid);
+        IPrintLn(bucket_bucket_water_level);
+        self.var_bb2fd41c = bucket_bucket_water_level;
+        self clientfield::set_to_player("bucket_bucket_water_level", bucket_bucket_water_level);
+
+        if (self.var_6fd3d65c == 1) {
+            foreach(water_source in level.var_4a0060c0)
+            {
+                if (water_source.script_int == bucket_bucket_water_type && bucket_bucket_water_level == 3)
+                {
+                    water_source SetInvisibleToPlayer(self);
+                }
+                water_source SetVisibleToPlayer(self);
+            }
+            if(bucket_bucket_water_level === 3)
+            {
+                foreach(power_bucket in level.var_769c0729)
+                {
+                    if(isdefined(power_bucket))
+                    {
+                        power_bucket sethintstringforplayer(self, &"ZOMBIE_ELECTRIC_SWITCH");
+                    }
+                }
+            }
+            else
+            {
+                if(bucket_bucket_water_level > 0)
+                {
+                    foreach(power_bucket in level.var_769c0729)
+                    {
+                        if(isdefined(power_bucket))
+                        {
+                            power_bucket sethintstringforplayer(self, &"ZM_ISLAND_POWER_SWITCH_NEEEDS_MORE_WATER");
+                        }
+                    }
+                }
+                else
+                {
+                    foreach(power_bucket in level.var_769c0729)
+                    {
+                        if(isdefined(power_bucket))
+                        {
+                            power_bucket sethintstringforplayer(self, &"ZM_ISLAND_POWER_SWITCH_NEEEDS_WATER");
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

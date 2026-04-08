@@ -1,8 +1,23 @@
 require("ui.t6.lobby.lobbymenubuttons_og")
 require("ui.archipelago.frontend.ArchipelagoSettings")
 
+require( "lua.Shared.LobbyData" )
+require( "ui_mp.T6.Menus.CACUtility" )
+
 Engine.GetRank = function()
     return 1000
+end
+
+Engine.GetRankDisplayLevel = function()
+	local roll = math.random()
+	if roll > 0.99 then
+		return 67
+	elseif roll > 0.98 then
+		return 69
+	elseif roll > 0.97 then
+		return 420
+	end
+    return 1
 end
 
 Engine.IsItemLocked = function()
@@ -55,3 +70,10 @@ APStartButtonDisabled = function()
 	-- return false
 end
 	
+CoD.LobbyButtons.ZM_BUILD_KITS = {
+	stringRef = "MENU_WEAPON_BUILD_KITS_CAPS",
+	action = OpenWeaponBuildKits,
+	customId = "btnWeaponBuildKits",
+	newBreadcrumbFunc = Gunsmith_AnyNewWeaponsOrAttachments,
+	starterPack = CoD.LobbyButtons.STARTERPACK_UPGRADE
+}
