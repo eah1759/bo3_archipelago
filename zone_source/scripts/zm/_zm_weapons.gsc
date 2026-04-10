@@ -940,7 +940,19 @@ function init_spawnable_weapon_upgrade()
 		absMins = undefined;
 		absMaxs = undefined;
 		
-		tempModel setModel( target_struct.model );
+		// Patch: Wanted
+		if (!isdefined(level._ap_mapname))
+		{
+			level._ap_mapname = GetDvarString("mapname");
+		}
+		if (level._ap_mapname == "zm_westernz")
+		{
+			tempModel setModel( "tag_origin" );
+		}
+		else
+		{
+			tempModel setModel( target_struct.model );
+		}
 
 		tempModel UseWeaponHideTags( spawn_list[i].weapon );
 		

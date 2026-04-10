@@ -58,7 +58,7 @@ function init_weapon_item_names()
     level.archi.weapon_item_names["vanilla"]["pistol_fullauto"] = "Weapon - L-CAR";
     level.archi.weapon_item_names["vanilla"]["pistol_energy"] = "Weapon - Rift E9";
     level.archi.weapon_item_names["vanilla"]["pistol_m1911"] = "Weapon - M1911";
-    level.archi.weapon_item_names["vanilla"]["pistol_shotgun_dw"] = "Weapon - Marhsal 16";
+    level.archi.weapon_item_names["vanilla"]["pistol_shotgun_dw"] = "Weapon - Marshal 16";
     level.archi.weapon_item_names["vanilla"]["pistol_c96"] = "Weapon - Mauser C96";
     level.archi.weapon_item_names["vanilla"]["launcher_standard"] = "Weapon - XM-53";
     level.archi.weapon_item_names["vanilla"]["launcher_multi"] = "Weapon - L4 Siege";
@@ -95,6 +95,38 @@ function init_weapon_item_names()
     level.archi.weapon_item_names["zm_westernz"]["m1831"] = "(Wanted) Weapon - M1831 Blundergat";
     level.archi.weapon_item_names["zm_westernz"]["bo3_boneglass"] = "(Wanted) Weapon - Nightbreaker";
     level.archi.weapon_item_names["zm_westernz"]["t8_m1897"] = "(Wanted) Weapon - Model 1987";
+    level.archi.weapon_item_names["zm_westernz"]["ww2_ribeyrolles"] = "(Wanted) Weapon - Ribeyrolles";
+    level.archi.weapon_item_names["zm_westernz"]["m1889"] = "(Wanted) Weapon - Remington M1889";
+    level.archi.weapon_item_names["zm_westernz"]["m1903_epic"] = "(Wanted) Weapon - Model 1903";
+    level.archi.weapon_item_names["zm_westernz"]["bo4_escargot"] = "(Wanted) Weapon - Escargot";
+    level.archi.weapon_item_names["zm_westernz"]["mwr_ranger"] = "(Wanted) Weapon - Ranger";
+    level.archi.weapon_item_names["zm_westernz"]["ww2_winchester94"] = "(Wanted) Weapon - Winchester M94";
+    level.archi.weapon_item_names["zm_westernz"]["ww2_crossbow"] = "(Wanted) Weapon - Crossbow";
+    level.archi.weapon_item_names["zm_westernz"]["aw_winchester"] = "(Wanted) Weapon - Winchester Model 94";
+    level.archi.weapon_item_names["zm_westernz"]["doc_w1866"] = "(Wanted) Weapon - Great Scott";
+    level.archi.weapon_item_names["zm_westernz"]["m1896_essex"] = "(Wanted) Weapon - Model 1896 Essex";
+    level.archi.weapon_item_names["zm_westernz"]["ww2_mosin"] = "(Wanted) Weapon - Mosin Nagant";
+    level.archi.weapon_item_names["zm_westernz"]["ww2_m712"] = "(Wanted) Weapon - Machine Pistol";
+    level.archi.weapon_item_names["zm_westernz"]["ww2_enfield2"] = "(Wanted) Weapon - Enfield No. 2";
+    level.archi.weapon_item_names["zm_westernz"]["ww2_enfield2_gold"] = "(Wanted) Weapon - Enfield No. 2 (Gold)";
+    level.archi.weapon_item_names["zm_westernz"]["ww2_colt45saa"] = "(Wanted) Weapon - Colt .45";
+    level.archi.weapon_item_names["zm_westernz"]["ww2_reichsrevolver"] = "(Wanted) Weapon - Model 1883";
+    level.archi.weapon_item_names["zm_westernz"]["t8_welling"] = "(Wanted) Weapon - Webley Mark IV";
+    level.archi.weapon_item_names["zm_westernz"]["ww2_iceaxe"] = "(Wanted) Weapon - Ice Pick";
+    level.archi.weapon_item_names["zm_westernz"]["ww2_raven"] = "(Wanted) Weapon - Red Talon";
+    level.archi.weapon_item_names["zm_westernz"]["frag_ww2_dynamite"] = "(Wanted) Weapon - Dynamite";
+    level.archi.weapon_item_names["zm_westernz"]["m1827_exp"] = "(Wanted) Weapon - Winchester 1892";
+    level.archi.weapon_item_names["zm_westernz"]["wes_jag42"] = "(Wanted) Weapon - Jag-42";
+    level.archi.weapon_item_names["zm_westernz"]["ww2_fliegerfaust"] = "(Wanted) Weapon - Fliegerfaust";
+    level.archi.weapon_item_names["zm_westernz"]["lebel_m1811"] = "(Wanted) Weapon - Lebel M1811";
+    level.archi.weapon_item_names["zm_westernz"]["fc4_m1887_long"] = "(Wanted) Weapon - Model 1887";
+    level.archi.weapon_item_names["zm_westernz"]["w1892"] = "(Wanted) Weapon - Winchester 1892";
+    level.archi.weapon_item_names["zm_westernz"]["ww2_model21"] = "(Wanted) Weapon - Sawed-Off Shotgun";
+    level.archi.weapon_item_names["zm_westernz"]["w1887"] = "(Wanted) Weapon - Model 1887 (Slow)";
+    level.archi.weapon_item_names["zm_westernz"]["henry_m1840"] = "(Wanted) Weapon - Henry M1840";
+    level.archi.weapon_item_names["zm_westernz"]["bo3_olympia"] = "(Wanted) Weapon - Olympia";
+    level.archi.weapon_item_names["zm_westernz"]["t8_allistair_annihalator"] = "(Wanted) Weapon - Zeroy's Annihilator";
+    level.archi.weapon_item_names["zm_westernz"]["t8_crossbow"] = "(Wanted) Weapon - Savage Impaler";
 
 }
 
