@@ -332,7 +332,58 @@ function get_map_weapon_lists(map_name)
                 "hero_annihilator"
             );
             break;
-            
+
+        case "zm_moon":
+            lists.vanilla = array(
+                "ar_accurate",
+                "ar_cqb",
+                "ar_damage",
+                "ar_famas",
+                "ar_galil",
+                "ar_longburst",
+                "ar_m16",
+                "ar_marksman",
+                "ar_standard",
+                "lmg_cqb",
+                "lmg_heavy",
+                "lmg_light",
+                "lmg_slowfire",
+                "pistol_fullauto",
+                "shotgun_fullauto",
+                "shotgun_precision",
+                "shotgun_pump",
+                "shotgun_semiauto",
+                "launcher_multi",
+                "launcher_standard",
+                "smg_burst",
+                "smg_capacity",
+                "smg_fastfire",
+                "smg_standard",
+                "smg_versatile",
+                "smg_ak74u",
+                "sniper_fastbolt",
+                "sniper_fastsemi",
+                "special_crossbow",
+                "lmg_rpk",
+                "ar_m14"
+            );
+            lists.expanded = array(
+                "pistol_standard",
+                "pistol_m1911",
+                "bouncingbetty",
+                "bowie_knife",
+                "pistol_burst"
+            );
+            lists.special = array(
+                "hero_annihilator",
+                "raygun_mark2",
+                "quantum_bomb",
+                "black_hole_bomb",
+                "ray_gun",
+                "microwavegundw"
+            );
+            break;
+
         case "zm_westernz":
             lists.vanilla = array(
                 "t8_crossbow",

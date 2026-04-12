@@ -569,6 +569,39 @@ function player_restore_zm_theater(xuid, playerData)
   restore_player_loadout(xuid, playerData)
 end
 
+-- Moon
+function map_save_zm_moon(mapData, uniData)
+  Archi.LogMessage("Saving map data for Moon")
+  save_spent_tokens(mapData)
+  save_zombie_count(mapData)
+  save_round_number(mapData)
+  save_power_on(mapData)
+  save_doors_and_debris(mapData)
+
+  save_players(mapData, uniData, player_save_zm_theater)
+end
+
+function player_save_zm_moon(xuid, playerData)
+  save_player_score(xuid, playerData)
+  save_player_perks(xuid, playerData)
+  save_player_loadout(xuid, playerData)
+end
+
+function map_restore_zm_moon(mapData)
+  Archi.LogMessage("Restoring map data for Moon")
+  restore_spent_tokens(mapData)
+  restore_zombie_count(mapData)
+  restore_round_number(mapData)
+  restore_power_on(mapData)
+  restore_doors_and_debris(mapData)
+end
+
+function player_restore_zm_moon(xuid, playerData)
+  restore_player_score(xuid, playerData)
+  restore_player_perks(xuid, playerData)
+  restore_player_loadout(xuid, playerData)
+end
+
 -- Wanted
 function map_save_zm_westernz(mapData, uniData)
   Archi.LogMessage("Saving map data for Wanted");
@@ -1111,6 +1144,7 @@ map_saves = {
   zm_factory = map_save_zm_factory,
   zm_theater = map_save_zm_theater,
   zm_westernz = map_save_zm_westernz,
+  zm_moon = map_save_zm_moon,
 }
 
 player_saves = {
@@ -1122,6 +1156,7 @@ player_saves = {
   zm_factory = player_save_zm_factory,
   zm_theater = player_save_zm_theater,
   zm_westernz = player_save_zm_westernz,
+  zm_moon = player_save_zm_moon,
 }
 
 map_restores = {
@@ -1133,6 +1168,7 @@ map_restores = {
   zm_factory = map_restore_zm_factory,
   zm_theater = map_restore_zm_theater,
   zm_westernz = map_restore_zm_westernz,
+  zm_moon = map_restore_zm_moon,
 }
 
 player_restores = {
@@ -1144,6 +1180,7 @@ player_restores = {
   zm_factory = player_restore_zm_factory,
   zm_theater = player_restore_zm_theater,
   zm_westernz = player_restore_zm_westernz,
+  zm_moon = player_restore_zm_moon,
 }
 
 return {

@@ -64,6 +64,7 @@ function init_weapon_item_names()
     level.archi.weapon_item_names["vanilla"]["launcher_multi"] = "Weapon - L4 Siege";
     level.archi.weapon_item_names["vanilla"]["launcher_ex41"] = "Weapon - China Lake";
     level.archi.weapon_item_names["vanilla"]["special_crossbow_dw"] = "Weapon - NX Shadowclaw";
+    level.archi.weapon_item_names["vanilla"]["special_crossbow"] = "Weapon - NX Shadowclaw";
     level.archi.weapon_item_names["vanilla"]["bouncingbetty"] = "Weapon - Trip Mines";
     level.archi.weapon_item_names["vanilla"]["hero_annihilator"] = "Weapon - Annihilator";
     level.archi.weapon_item_names["vanilla"]["bowie_knife"] = "Weapon - Bowie Knife";
@@ -87,6 +88,9 @@ function init_weapon_item_names()
     level.archi.weapon_item_names["vanilla"]["hero_gravityspikes_melee"] = "Weapon - Ragnarok DG-4s";
     level.archi.weapon_item_names["vanilla"]["cymbal_monkey"] = "Weapon - Monkey Bombs";
     level.archi.weapon_item_names["vanilla"]["octobomb"] = "Weapon - Li'l Arnies";
+    level.archi.weapon_item_names["vanilla"]["quantum_bomb"] = "Weapon - Quantum Entanglement Device";
+    level.archi.weapon_item_names["vanilla"]["black_hole_bomb"] = "Weapon - Gersh Device";
+    level.archi.weapon_item_names["vanilla"]["microwavegundw"] = "Weapon - Wave Gun";
 
     level.archi.weapon_item_names["zm_westernz"]["grenade_homunculus"] = "(Wanted) Weapon - Homunculus Bomb";
     level.archi.weapon_item_names["zm_westernz"]["t8_shotgun_blundergat"] = "(Wanted) Weapon - Blundergat";

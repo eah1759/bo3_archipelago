@@ -53,6 +53,9 @@ function __init__()
         case "zm_theater":
             level._ap_weapons_table = "gamedata/weapons/zm/zm_theater_weapons.csv";
             break;
+        case "zm_moon":
+            level._ap_weapons_table = "gamedata/weapons/zm/zm_moon_weapons.csv";
+            break;
         case "zm_westernz":
             level._ap_weapons_table = "gamedata/weapons/zm/zm_westernz_weapons.csv";
             break;

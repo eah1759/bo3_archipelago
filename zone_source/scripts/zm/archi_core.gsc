@@ -28,6 +28,7 @@
 #using scripts\zm\archi_zod;
 #using scripts\zm\archi_factory;
 #using scripts\zm\archi_theater;
+#using scripts\zm\archi_moon;
 #using scripts\zm\archi_westernz;
 
 #using scripts\zm\archi_items;
@@ -650,7 +651,7 @@ function game_start()
 
     if (mapName == "zm_theater")
     {
-        level.archi.mapString = ARCHIPELAGO_MAP_KINO_DER_UNTOTEN;
+        level.archi.mapString = ARCHIPELAGO_MAP_KINO_DER_TOTEN;
         level.archi.map_key_item = "Map Unlock - Kino der Toten";
 
         level thread setup_spare_change_trackers(5);
@@ -677,6 +678,30 @@ function game_start()
         level.archi.save_player_data = &archi_theater::save_player_data;
         level.archi.load_state_manager = &archi_theater::load_state;
         level.archi.restore_player_data = &archi_theater::restore_player_data;
+    }
+
+    if (mapName == "zm_moon")
+    {
+        level.archi.mapString = ARCHIPELAGO_MAP_MOON;
+        level.archi.map_key_item = "Map Unlock - Moon";
+
+        archi_moon::setup_locations();
+
+        archi_items::RegisterMapWeapons(mapName);
+
+        archi_items::RegisterPerk("Juggernog",&archi_items::give_Juggernog,PERK_JUGGERNOG);
+        archi_items::RegisterPerk("Quick Revive",&archi_items::give_QuickRevive,PERK_QUICK_REVIVE);
+        archi_items::RegisterPerk("Speed Cola",&archi_items::give_SpeedCola,PERK_SLEIGHT_OF_HAND);
+        archi_items::RegisterPerk("Double Tap",&archi_items::give_DoubleTap,PERK_DOUBLETAP2);
+        archi_items::RegisterPerk("Dead Shot",&archi_items::give_DeadShot,PERK_DEAD_SHOT);
+        archi_items::RegisterPerk("Stamin-up",&archi_items::give_StaminUp,PERK_STAMINUP);
+        archi_items::RegisterPerk("Mule Kick",&archi_items::give_MuleKick,PERK_ADDITIONAL_PRIMARY_WEAPON);
+        archi_items::RegisterPerk("Widow's Wine",&archi_items::give_WidowsWine,PERK_WIDOWS_WINE);
+
+        level.archi.save_state_manager = &archi_moon::save_state_manager;
+        level.archi.save_player_data = &archi_moon::save_player_data;
+        level.archi.load_state_manager = &archi_moon::load_state;
+        level.archi.restore_player_data = &archi_moon::restore_player_data;
     }
 
     // === Modded Maps ===
@@ -709,7 +734,6 @@ function game_start()
 
         archi_items::RegisterMapWeapons(mapName);
 
-        // Register Possible Global Items - Item name, callback, clientfield
         archi_items::RegisterPerk("Juggernog",&archi_items::give_Juggernog,PERK_JUGGERNOG);
         archi_items::RegisterPerk("Quick Revive",&archi_items::give_QuickRevive,PERK_QUICK_REVIVE);
         archi_items::RegisterPerk("Speed Cola",&archi_items::give_SpeedCola,PERK_SLEIGHT_OF_HAND);

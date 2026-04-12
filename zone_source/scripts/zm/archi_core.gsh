@@ -1,4 +1,4 @@
-#define MOD_VERSION "0.4.1"
+#define MOD_VERSION "0.4.2"
 
 #define ARCHIPELAGO_SERVER_DVAR	"ARCHIPELAGO_SERVER"
 
@@ -34,7 +34,7 @@
 #define ARCHIPELAGO_MAP_NACHT_DER_UNTOTEN "(Nacht der Untoten)"
 #define ARCHIPELAGO_MAP_VERRUCKT "(Verruckt)"
 #define ARCHIPELAGO_MAP_SHI_NO_NUMA "(Shi No Numa)"
-#define ARCHIPELAGO_MAP_KINO_DER_UNTOTEN "(Kino der Toten)"
+#define ARCHIPELAGO_MAP_KINO_DER_TOTEN "(Kino der Toten)"
 #define ARCHIPELAGO_MAP_ASCENSION "(Ascension)"
 #define ARCHIPELAGO_MAP_SHANGRILA "(Shangri-La)"
 #define ARCHIPELAGO_MAP_MOON "(Moon)"
