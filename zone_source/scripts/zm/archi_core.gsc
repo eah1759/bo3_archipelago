@@ -239,6 +239,7 @@ function game_start()
     //Collection of Locations that are checked, 
     level.archi.locationQueue = array();
 
+    level.archi.notifysave = [];
     level.archi.shops = [];
     level.archi.monitor_strings = [];
     level.archi.save_checkpoint = false;
@@ -344,7 +345,6 @@ function game_start()
     archi_items::RegisterUniversalItem("Progressive - Perk Limit Increase",&archi_items::give_ProgressivePerkLimit);
 
     archi_commands::init_commands();
-    level thread round_start_location();
     level thread round_end_noti();
     level thread repaired_board_noti();
 
@@ -838,24 +838,6 @@ function on_player_connect()
     }
 }
 
-function round_start_location()
-{
-    
-    level endon("end_game");
-	level endon("end_round_think");
-    while (true)
-    {
-        
-        level waittill("start_of_round");
-
-        //Round 1 Location Check
-        if (level.round_number == 1)
-        {
-            // send_location(level.archi.mapString + " Round 01");
-        }
-    }
-}
-
 function send_location(loc_str)
 {
     level notify("ap_location_found", loc_str);
@@ -866,26 +848,28 @@ function round_end_noti()
 {
     level endon("end_game");
 	level endon("end_round_think");
+    last_round = 0;
     while (true)
     {
+        level waittill("between_round_over");
 
-        //TODO: Make this all special rounds, and put it in a function for readability
-        //TODO: Make this an option in the AP
-        //Make sure dogs don't happen
-        //level.next_dog_round = 9999;
-
-        level waittill("end_of_round");
-
-        //Round 2+ Location Check
-        round = level.round_number+1;
-        loc_str = level.archi.mapString + " Round ";
-        if (round<10)
+        if (level.round_number == 1)
         {
-            loc_str += "0"+round;
+            continue;
+        }
+        if (last_round >= level.round_number)
+        {
+            continue;
+        }
+        last_round = level.round_number;
+        loc_str = level.archi.mapString + " Round ";
+        if (last_round < 10)
+        {
+            loc_str += "0" + last_round;
         }
         else
         {
-            loc_str += round;
+            loc_str += last_round;
         }
         send_location(loc_str);
     }

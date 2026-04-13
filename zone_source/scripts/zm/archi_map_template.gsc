@@ -114,12 +114,20 @@ function setup_locations()
 // === AP Check Utilities ===
 
 // Collect a check when a level flag gets set
+// If an array is given it will wait for all flags to be set
 // level thread _flag_to_location_thread("flag", level.archi.mapString + " locationName");
 function _flag_to_location_thread(flag, location)
 {
     level endon("end_game");
 
-    level flag::wait_till(flag);
+    if (IsArray(flag))
+    {
+        level flag::wait_till_all(flag);
+    }
+    else
+    {
+        level flag::wait_till(flag);
+    }
     archi_core::send_location(location);
 }
 

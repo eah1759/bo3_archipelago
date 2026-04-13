@@ -251,10 +251,17 @@ function save_on_round_change()
 
     while (true)
     {
-        level waittill("start_of_round");
+        last_round = 0;
+        level waittill("between_round_over");
+        if (last_round >= level.round_number)
+        {
+            continue;
+        }
+
+        last_round = level.round_number;
+        wait(1);
         if (level.round_number != 1 && isdefined(level.archi.save_state) && !(level flag::get("ap_prevent_checkpoints"))) // Make sure load is finished too
         {
-            wait(1);
             level.archi.save_zombie_count = 0;
             [[level.archi.save_state]]();
             level.archi.save_zombie_count = 1;
@@ -273,10 +280,17 @@ function round_checkpoints()
 
     while (true)
     {
-        level waittill("start_of_round");
+        last_round = 0;
+        level waittill("between_round_over");
+        if (last_round >= level.round_number)
+        {
+            continue;
+        }
+        last_round = level.round_number;
+
+        wait(1);
         if (level.round_number != 1 && level.round_number % level.archi.difficulty_round_checkpoints == 0 && !(level flag::get("ap_prevent_checkpoints")))
         {
-            wait(6); // Allow round change to occur first?
             level.archi.save_zombie_count = 0;
             level.archi.save_checkpoint = true;
             [[level.archi.save_state]]();

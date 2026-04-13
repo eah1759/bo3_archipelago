@@ -262,6 +262,28 @@ DataSources.StartMenu_ApLocations_KinoDerToten = ListHelper_SetupDataSource( "St
     return ApLocations
 end, true )
 
+DataSources.StartMenu_ApLocations_Moon = ListHelper_SetupDataSource( "StartMenu_ApLocations_Moon", function( controller )
+    local ApLocations = {}
+    local prefixLength = string.len("(Moon) ")
+
+    for code = 12100, 12999 do
+        local location = locations.IDToLocation[code]
+        local checked = Archi.CheckedLocations[code] == true
+        if location then
+            local trimmedLocation = string.sub(location, prefixLength + 1)
+            if checked then
+                trimmedLocation = "^2" .. trimmedLocation
+            end
+            table.insert( ApLocations, {
+                models = { name = trimmedLocation, code = code }
+            })
+        end
+    end
+
+    return ApLocations
+end, true )
+
+
 DataSources.StartMenu_ApLocations_Wanted = ListHelper_SetupDataSource( "StartMenu_ApLocations_Wanted", function( controller )
     local ApLocations = {}
     local prefixLength = string.len("(Wanted) ")

@@ -102,6 +102,13 @@ CoD.StartMenu_ApLocations_KinoDerToten.new = function( menu, controller )
 	return self
 end
 
+CoD.StartMenu_ApLocations_Moon = InheritFrom( CoD.StartMenu_ApLocations )
+CoD.StartMenu_ApLocations_Moon.new = function( menu, controller )
+	self = CoD.StartMenu_ApLocations.new( menu, controller )
+	self.itemList:setDataSource( "StartMenu_ApLocations_Moon" )
+	return self
+end
+
 CoD.StartMenu_ApLocations_Wanted = InheritFrom( CoD.StartMenu_ApLocations )
 CoD.StartMenu_ApLocations_Wanted.new = function( menu, controller )
 	self = CoD.StartMenu_ApLocations.new( menu, controller )

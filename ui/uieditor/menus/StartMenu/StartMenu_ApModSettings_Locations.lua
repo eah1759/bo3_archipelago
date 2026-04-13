@@ -68,6 +68,12 @@ DataSources.ApModSettingsLocationsTabs = ListHelper_SetupDataSource( "ApModSetti
         } )
 
 		table.insert( tabList, {
+            models = { tabName = "Moon", tabWidget = "CoD.StartMenu_ApLocations_Moon",
+			 	tabIcon = "" },
+            properties = { tabId = "gameOptions" }
+        } )
+
+		table.insert( tabList, {
             models = { tabName = "Wanted", tabWidget = "CoD.StartMenu_ApLocations_Wanted",
 			 	tabIcon = "" },
             properties = { tabId = "gameOptions" }

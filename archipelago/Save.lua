@@ -577,6 +577,9 @@ function map_save_zm_moon(mapData, uniData)
   save_round_number(mapData)
   save_power_on(mapData)
   save_doors_and_debris(mapData)
+  save_airlocks(mapData)
+
+  save_val(mapData, "sq_ss1_completed")
 
   save_players(mapData, uniData, player_save_zm_theater)
 end
@@ -594,6 +597,9 @@ function map_restore_zm_moon(mapData)
   restore_round_number(mapData)
   restore_power_on(mapData)
   restore_doors_and_debris(mapData)
+  restore_airlocks(mapData)
+
+  restore_val(mapData, "sq_ss1_completed")
 end
 
 function player_restore_zm_moon(xuid, playerData)
@@ -720,6 +726,13 @@ function restore_doors_and_debris(mapData)
   if mapData["debris_opened"] then
     local debrisOpened = mapData["debris_opened"]
     Engine.SetDvar("ARCHIPELAGO_LOAD_DATA_OPENED_DEBRIS", table.concat(debrisOpened, ";"))
+  end
+end
+
+function restore_airlocks(mapData)
+  if mapData["airlocks_opened"] then
+    local airlocksOpened = mapData["airlocks_opened"]
+    Engine.SetDvar("ARCHIPELAGO_LOAD_DATA_OPENED_AIRLOCKS", table.concat(airlocksOpened, ";"))
   end
 end
 
@@ -935,6 +948,20 @@ function save_doors_and_debris(mapData)
 
   mapData.doors_opened = doorsOpened
   mapData.debris_opened = debrisOpened
+end
+
+function save_airlocks(mapData)
+  local airlockStr = Engine.DvarString(nil, "ARCHIPELAGO_SAVE_DATA_OPENED_AIRLOCKS");
+  if airlockStr then
+    Engine.SetDvar("ARCHIPELAGO_SAVE_DATA_OPENED_AIRLOCKS", "");
+  end
+  local airlocksOpened = {}
+
+  for airlockId in string.gmatch(airlockStr, "[^;]+") do
+    table.insert(airlocksOpened, airlockId);
+  end
+
+  mapData.airlocks_opened = airlocksOpened
 end
 
 function save_modded_floating_debris(mapData)
