@@ -580,6 +580,8 @@ function map_save_zm_moon(mapData, uniData)
   save_airlocks(mapData)
 
   save_val(mapData, "sq_ss1_completed")
+  save_val(mapData, "release_complete")
+  save_val(mapData, "complete_be_1")
 
   save_players(mapData, uniData, player_save_zm_theater)
 end
@@ -600,6 +602,8 @@ function map_restore_zm_moon(mapData)
   restore_airlocks(mapData)
 
   restore_val(mapData, "sq_ss1_completed")
+  restore_val(mapData, "release_complete")
+  restore_val(mapData, "complete_be_1")
 end
 
 function player_restore_zm_moon(xuid, playerData)

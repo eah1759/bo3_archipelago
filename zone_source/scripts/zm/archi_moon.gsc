@@ -274,7 +274,7 @@ function setup_locations()
 
     level thread _notify_kval_to_location_thread("sq_ss1_completed", level.archi.mapString + " Main Easter Egg - Samantha Says");
     level thread _notify_kval_to_location_thread("release_complete", level.archi.mapString + " Main Easter Egg - Buttons in the Lab");
-    level thread _flag_to_location_thread("complete_be_1", level.archi.mapString + " Main Easter Egg - Transport the Vril Sphere to the MPD");
+    level thread _notify_kval_to_location_thread("complete_be_1", level.archi.mapString + " Main Easter Egg - Transport the Vril Sphere to the MPD");
     level thread _flag_to_location_thread("sam_switch_thrown", level.archi.mapString + " Main Easter Egg - Open the MPD");
 
     level thread _flag_to_location_thread("c_built", level.archi.mapString + " Main Easter Egg - Transport the Hexagonal Plates");
@@ -429,6 +429,8 @@ function _notify_kval_to_location_thread(str, location)
 function save_map_state()
 {
     save_moon_kval("sq_ss1_completed");
+    save_moon_kval("release_complete");
+    save_moon_kval("complete_be_1");
 }
 
 function save_moon_kval(key)
@@ -439,6 +441,9 @@ function save_moon_kval(key)
 function restore_map_state()
 {
     restore_moon_kval("sq_ss1_completed");
+    restore_moon_kval("release_complete");
+    restore_moon_kval("complete_be_1");
+
     if (has_moon_kval("sq_ss1_completed"))
     {
         level flag::wait_till("power_on");
@@ -456,6 +461,59 @@ function restore_map_state()
         level flag::wait_till_clear("displays_active");
         level._ss_sequence_matched = 1;
         sq_struct notify("ss_won");
+        wait(0.1);
+    }
+
+    if (has_moon_kval("release_complete"))
+    {
+        if(!level flag::get(level._osc_flags[1]))
+        {
+            // Force hack
+            level flag::set(level._osc_flags[1]);
+            wait(0.1);
+        }
+
+        // Progress button step more
+        if(!level flag::get(level._osc_flags[8]))
+        {
+            level flag::set(level._osc_flags[8]);
+            wait(0.05);
+        }
+ 
+        // Mark all buttons as pressed
+        if(!level flag::get(level._osc_flags[9]))
+        {
+            level._osc_release = level._osc_rbs.size;
+            level flag::set(level._osc_flags[9]);
+            
+            // Close button covers
+            for(l = 0; l < level._osc_rbs.size; l++)
+            {
+                if(isdefined(level._osc_rbs[l].cover))
+                {
+                    level._osc_rbs[l].cover.angles = level._osc_rbs[l].cover_close;
+                }
+            }
+            
+            wait(0.1);
+        }        
+    }
+
+    if(has_moon_kval("complete_be_1"))
+    {
+        // Force breach flag so step starts
+        level flag::set("teleporter_breached");
+        wait(0.2);
+
+        // Detach ball from vehicle
+        level._be Unlink();
+
+        // Move to (more or less) MPD
+        s = struct::get("be2_pos", "targetname");
+        level._be.origin = s.origin;
+
+        // Set flag and move it into position
+        level flag::set("complete_be_1");
     }
 }
 

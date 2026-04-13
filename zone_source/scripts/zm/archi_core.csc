@@ -9,6 +9,8 @@
 #using scripts\zm\_zm_utility;
 #using scripts\zm\_zm_score;
 
+#using scripts\zm\perks\archi_perk_phdflopper;
+
 #using scripts\zm\archi_items;
 
 #insert scripts\shared\shared.gsh;
@@ -26,6 +28,15 @@ function __init__()
 
     mapName = GetDvarString( "mapname" );
     level._ap_mapname = mapName;
+
+    switch(mapName)
+    {
+        case "zm_westernz":
+            break;
+        default:
+            level thread archi_perk_phdflopper::init();
+            break;
+    }
 
     level._ap_weapons_vanilla = 1;
     level._ap_weapons_special = 1;

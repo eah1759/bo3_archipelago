@@ -28,6 +28,7 @@ scriptparsetree,scripts/zm/archi_items.gsc
 scriptparsetree,scripts/zm/archi_save.gsc
 scriptparsetree,scripts/zm/archi_staminup.gsc
 scriptparsetree,scripts/zm/archi_mappings.gsc
+scriptparsetree,scripts/zm/perks/archi_perk_utils.gsc
 
 //Commands
 scriptparsetree,scripts/zm/archi_commands.gsc
@@ -100,3 +101,21 @@ image,i_t7_attach_optic_reflex_reticle_loot_10_fun_c
 //Models
 xmodel,archipelago_logo
 xmodel,archipelago_shop
+
+sound,zm_mod
+
+// PhD Flopper
+scriptparsetree,scripts/zm/perks/archi_perk_phdflopper.gsc	
+scriptparsetree,scripts/zm/perks/archi_perk_phdflopper.csc
+scriptparsetree,scripts/zm/perks/archi_perk_phdflopper.gsh
+xmodel,p7_zm_vending_phd
+xmodel,p7_zm_vending_phd_active
+xmodel,wpn_t7_zmb_perk_bottle_phd_view
+xmodel,wpn_t7_zmb_perk_bottle_phd_world
+weapon,zombie_perk_bottle_phd
+fx,_mikeyray/perks/phd/fx_perk_phd
+image,specialty_phdflopper_zombies
+
+// Override perk huds
+// rawfile,ui/uieditor/widgets/HUD/ZM_Perks/ZMPerksContainer.lua
+rawfile,ui/uieditor/widgets/HUD/ZM_Perks/ZMPerksContainerFactory.lua

@@ -126,6 +126,79 @@ function init()
 	level thread perk_hostmigration();
 }
 
+function late_machine_init(perk)
+{
+	if ( isdefined(level._custom_perks[perk]) )
+	{
+		custom_perk = level._custom_perks[perk];
+		if ( IS_TRUE(custom_perk._machine_init_done) )
+		{
+			return;
+		}
+		custom_perk._machine_init_done = true;
+		// Kill old thinker if still running
+		level notify(perk + PERK_END_POWER_THREAD);
+		WAIT_SERVER_FRAME
+
+		if ( isdefined( custom_perk.perk_machine_thread ) )
+		{
+			level thread [[ custom_perk.perk_machine_thread ]]();
+		}
+		if( isdefined( custom_perk.perk_machine_power_override_thread ) && perk != "specialty_quickrevive" ) // Ignore quick revive solo power logic
+		{
+			level thread [[ custom_perk.perk_machine_power_override_thread ]]();
+		}
+		else if( isdefined( custom_perk.alias ) && isdefined( custom_perk.radiant_machine_name ) && isdefined( custom_perk.machine_light_effect ) )
+		{
+			level thread perk_machine_think( perk, custom_perk );	
+		}
+	}
+}
+
+function move_perk_machine( perk, new_origin, new_angles )
+{
+	perk_trigger = get_perk_trigger(perk);
+	if ( isdefined(perk_trigger) )
+	{	
+		// Move machine model
+		if(isdefined(perk_trigger.machine))
+		{
+			perk_trigger.machine.origin = new_origin;
+			perk_trigger.machine.angles = new_angles;
+		}
+		
+		// Move trigger
+		perk_trigger.origin = new_origin + (0, 0, 60);
+		
+		// Move collision
+		if(isdefined(perk_trigger.clip))
+		{
+			perk_trigger.clip.origin = new_origin;
+			perk_trigger.clip.angles = new_angles;
+		}
+		
+		// Move bump trigger
+		if(isdefined(perk_trigger.bump))
+		{
+			perk_trigger.bump.origin = new_origin + (0, 0, 20);
+		}
+	}
+}
+
+function get_perk_trigger(perk_key)
+{
+    vending_triggers = GetEntArray("zombie_vending", "targetname");
+    
+    foreach(trigger in vending_triggers)
+    {
+        if(trigger.script_noteworthy == perk_key)
+        {
+            return trigger;
+        }
+    }
+    return undefined;
+}
+
 function perk_machine_think( str_key, s_custom_perk )
 {	
 	str_endon = str_key + PERK_END_POWER_THREAD;
@@ -1511,6 +1584,71 @@ function perk_machine_removal(machine, replacement_model)
 		trig Delete();		
 	}
 }	
+
+function perk_machine_spawn_init_late( perk, origin, angles )
+{
+	if( !isdefined(level._custom_perks[perk]) )
+    {
+        return;
+    }
+
+	// Create the use trigger
+    t_use = Spawn("trigger_radius_use", origin + (0, 0, 60), 0, 40, 80);
+    t_use.targetname = "zombie_vending";
+    t_use.script_noteworthy = perk;
+    
+    t_use TriggerIgnoreTeam();
+    
+    // Spawn the machine model
+    perk_machine = Spawn("script_model", origin);
+    perk_machine.angles = angles;
+
+	if(isdefined(level._custom_perks[perk].radiant_machine_name))
+    {
+        perk_machine.targetname = level._custom_perks[perk].radiant_machine_name;
+    }
+    
+    if(isdefined(level.machine_assets[perk]) && isdefined(level.machine_assets[perk].off_model))
+    {
+        perk_machine SetModel(level.machine_assets[perk].off_model);
+    }
+    
+    perk_machine Solid();
+    
+    if(!IS_TRUE(level._no_vending_machine_bump_trigs))
+    {
+        bump_trigger = Spawn("trigger_radius", origin + (0, 0, 20), 0, 40, 80);
+        bump_trigger.script_activated = 1;
+        bump_trigger.script_sound = "zmb_perks_bump_bottle";
+        bump_trigger.targetname = "audio_bump_trigger";
+
+		bump_trigger thread check_for_change();
+    }
+    
+    if(!IS_TRUE(level._no_vending_machine_auto_collision))
+    {
+        collision = Spawn("script_model", origin, 1);
+        collision.angles = angles;
+        collision SetModel("zm_collision_perks1");
+        collision.script_noteworthy = "clip";
+        collision DisconnectPaths();
+    }
+    
+    t_use.clip = collision;
+    t_use.machine = perk_machine;
+    t_use.bump = bump_trigger;
+    
+    if(isdefined(level._custom_perks[perk].perk_machine_set_kvps))
+    {
+        [[level._custom_perks[perk].perk_machine_set_kvps]](t_use, perk_machine, bump_trigger, collision);
+    }
+
+	t_use thread vending_trigger_think();
+    t_use thread electric_perks_dialog();
+
+	late_machine_init(perk);
+}
+
 //=====================================================================
 // Simple utility to Add a perk machine.
 // model and script_noteworthy need to be set on struct.

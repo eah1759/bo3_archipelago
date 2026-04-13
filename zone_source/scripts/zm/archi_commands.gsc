@@ -16,6 +16,7 @@
 #using scripts\zm\_zm_score;
 #using scripts\zm\_zm_weapons;
 #using scripts\zm\_zm_utility;
+#using scripts\zm\_zm_perks;
 #using scripts\zm\gametypes\_globallogic_score;
 
 #insert scripts\shared\shared.gsh;
@@ -66,6 +67,7 @@ function init_commands()
     level thread _basic_trigger("ap_exploder", &_set_exploder);
     level thread _basic_trigger("ap_weapon_bits", &_print_weapon_bits);
     level thread _basic_trigger("ap_weapon_box", &_print_weapon_box_states);
+    level thread _basic_trigger("ap_perk_machine", &_spawn_perk_machine);
   }
 }
 
@@ -744,4 +746,10 @@ function _print_weapon_box_states()
   {
     IPrintLn("No weapon bits defined");
   }
+}
+
+function _spawn_perk_machine(val)
+{
+  e_player = level.players[0];
+  zm_perks::perk_machine_spawn_init_late(val, e_player.origin, e_player.angles );
 }

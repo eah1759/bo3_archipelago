@@ -21,6 +21,8 @@
 #using scripts\zm\_zm_utility;
 #using scripts\zm\craftables\_zm_craftables;
 
+#using scripts\zm\perks\archi_perk_phdflopper;
+
 #using scripts\zm\archi_castle;
 #using scripts\zm\archi_island;
 #using scripts\zm\archi_stalingrad;
@@ -85,6 +87,17 @@ function __init__()
 
     // First gobblegum free each round
     SetDvar("scr_firstGumFree", 1);
+
+    // Setup PhD
+    mapName = GetDvarString( "mapname" );
+    switch(mapName)
+    {
+        case "zm_westernz":
+            break;
+        default:
+            level thread archi_perk_phdflopper::init();
+            break;
+    }
     
     //Message Passing Dvars
     SetDvar("ARCHIPELAGO_MAP_UNLOCK_NOTIFY", "NONE");
@@ -697,6 +710,7 @@ function game_start()
         archi_items::RegisterPerk("Stamin-up",&archi_items::give_StaminUp,PERK_STAMINUP);
         archi_items::RegisterPerk("Mule Kick",&archi_items::give_MuleKick,PERK_ADDITIONAL_PRIMARY_WEAPON);
         archi_items::RegisterPerk("Widow's Wine",&archi_items::give_WidowsWine,PERK_WIDOWS_WINE);
+        archi_items::RegisterPerk("PhD Flopper",&archi_items::give_PhDFlopper,PERK_PHDFLOPPER);
 
         level.archi.save_state_manager = &archi_moon::save_state_manager;
         level.archi.save_player_data = &archi_moon::save_player_data;
@@ -1251,6 +1265,7 @@ function patch_wunderfizz()
         WAIT_SERVER_FRAME
         level notify("ap_update_wunderfizz");
     }
+    level.archi.wunderfizz_patched = true;
 
     level.archi.original_custom_random_perk_weights = level.custom_random_perk_weights;
     level.custom_random_perk_weights = &custom_random_perk_weights;
