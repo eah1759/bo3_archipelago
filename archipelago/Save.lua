@@ -581,7 +581,18 @@ function map_save_zm_moon(mapData, uniData)
 
   save_val(mapData, "sq_ss1_completed")
   save_val(mapData, "release_complete")
+  save_val(mapData, "teleporter_breached")
   save_val(mapData, "complete_be_1")
+  save_val(mapData, "sam_switch_thrown")
+  save_val(mapData, "c_built")
+  save_val(mapData, "w_placed")
+  save_val(mapData, "vg_placed")
+  save_val(mapData, "ctvg_tp_done")
+  save_val(mapData, "kill_press_monitor")
+
+  save_val(mapData, "sd_hound")
+  save_val(mapData, "sd_bear")
+  save_val(mapData, "sd_bone")
 
   save_players(mapData, uniData, player_save_zm_theater)
 end
@@ -603,7 +614,18 @@ function map_restore_zm_moon(mapData)
 
   restore_val(mapData, "sq_ss1_completed")
   restore_val(mapData, "release_complete")
+  restore_val(mapData, "teleporter_breached")
   restore_val(mapData, "complete_be_1")
+  restore_val(mapData, "sam_switch_thrown")
+  restore_val(mapData, "c_built")
+  restore_val(mapData, "w_placed")
+  restore_val(mapData, "vg_placed")
+  restore_val(mapData, "ctvg_tp_done")
+  restore_val(mapData, "kill_press_monitor")
+
+  restore_val(mapData, "sd_hound")
+  restore_val(mapData, "sd_bear")
+  restore_val(mapData, "sd_bone")
 end
 
 function player_restore_zm_moon(xuid, playerData)

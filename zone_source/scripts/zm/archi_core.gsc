@@ -202,6 +202,8 @@ function on_archi_connect_settings()
     level.archi.mystery_box_special_items = GetDvarInt("ARCHIPELAGO_MYSTERY_BOX_SPECIAL", 0);
     level.archi.mystery_box_regular_items = GetDvarInt("ARCHIPELAGO_MYSTERY_BOX_REGULAR", 0);
     level.archi.mystery_box_expanded = GetDvarInt("ARCHIPELAGO_MYSTERY_BOX_EXPANDED", 0);
+    level.archi.difficulty_rng_moon_digger = GetDvarInt("ARCHIPELAGO_DIFFICULTY_RNG_MOON_DIGGER", 0);
+    level.archi.difficulty_rng_moon_box = GetDvarInt("ARCHIPELAGO_DIFFICULTY_RNG_MOON_BOX", 0);
     level.archi.difficulty_gorod_egg_cooldown = GetDvarInt("ARCHIPELAGO_DIFFICULTY_GOROD_EGG_COOLDOWN", 0);
     level.archi.difficulty_gorod_dragon_wings = GetDvarInt("ARCHIPELAGO_DIFFICULTY_GOROD_DRAGON_WINGS", 0);
     level.archi.difficulty_ee_checkpoints = GetDvarInt("ARCHIPELAGO_DIFFICULTY_EE_CHECKPOINTS", 0);
@@ -252,6 +254,7 @@ function game_start()
     //Collection of Locations that are checked, 
     level.archi.locationQueue = array();
 
+    level.archi.blocked_powerups = [];
     level.archi.notifysave = [];
     level.archi.shops = [];
     level.archi.monitor_strings = [];
@@ -705,6 +708,8 @@ function game_start()
         level.archi.map_key_item = "Map Unlock - Moon";
 
         archi_moon::setup_locations();
+
+        level thread setup_spare_change_trackers(4);
 
         archi_items::RegisterMapWeapons(mapName);
 

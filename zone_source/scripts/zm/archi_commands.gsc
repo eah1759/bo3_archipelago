@@ -40,34 +40,35 @@ function init_commands()
     level thread _send_location_command_response();
     level thread _trigger_item_response();
     level thread _print_debug_craftableStubs_response();
-    level thread _print_debug_settings();
+    // level thread _print_debug_settings();
     level thread _force_save_response();
     level thread _godmode_response();
-    level thread _debug_magicbox_response();
-    level thread _basic_trigger("ap_grand_tour", &_start_grand_tour);
+    // level thread _debug_magicbox_response();
+    // level thread _basic_trigger("ap_grand_tour", &_start_grand_tour);
     level thread _basic_trigger("ap_sv_cheats", &_enable_cheats);
     level thread _basic_trigger("ap_get_flag", &_get_flag);
     level thread _basic_trigger("ap_set_flag", &_set_flag);
-    level thread _basic_trigger("ap_set_cf", &_set_cf);
+    // level thread _basic_trigger("ap_set_cf", &_set_cf);
     level thread _basic_trigger("ap_get_cf", &_get_cf);
     level thread _basic_trigger("ap_set_player_flag", &_set_player_flag);
     level thread _basic_trigger("ap_testkit", &_give_testkit);
-    level thread _basic_trigger("ap_debug_dragonheads", &_dragonhead_debug);
-    level thread _basic_trigger("ap_debug_stats", &_test_scoreboard);
-    level thread _basic_trigger("ap_gum", &_test_general);
-    level thread _basic_trigger("ap_stats", &_test_scoreboard);
+    // level thread _basic_trigger("ap_debug_dragonheads", &_dragonhead_debug);
+    // level thread _basic_trigger("ap_debug_stats", &_test_scoreboard);
+    // level thread _basic_trigger("ap_gum", &_test_general);
+    // level thread _basic_trigger("ap_stats", &_test_scoreboard);
     level thread _basic_trigger("ap_give_weapon", &_give_weapon);
-    level thread _basic_trigger("ap_camo", &_set_camo);
-    level thread _basic_trigger("ap_reticle", &_set_reticle);
+    // level thread _basic_trigger("ap_camo", &_set_camo);
+    // level thread _basic_trigger("ap_reticle", &_set_reticle);
     level thread _basic_trigger("ap_get_dvar", &_get_dvar);
     level thread _basic_trigger("ap_spawn_model", &_spawn_model);
     level thread _basic_trigger("ap_spawn_shop", &_spawn_shop);
     level thread _basic_trigger("ap_shop_print", &_shop_print);
-    level thread _basic_trigger("ap_test", &_testtt);
-    level thread _basic_trigger("ap_exploder", &_set_exploder);
-    level thread _basic_trigger("ap_weapon_bits", &_print_weapon_bits);
-    level thread _basic_trigger("ap_weapon_box", &_print_weapon_box_states);
+    // level thread _basic_trigger("ap_test", &_testtt);
+    // level thread _basic_trigger("ap_exploder", &_set_exploder);
+    // level thread _basic_trigger("ap_weapon_bits", &_print_weapon_bits);
+    // level thread _basic_trigger("ap_weapon_box", &_print_weapon_box_states);
     level thread _basic_trigger("ap_perk_machine", &_spawn_perk_machine);
+    level thread _basic_trigger("ap_set_round", &_set_round);
   }
 }
 
@@ -355,7 +356,7 @@ function _start_grand_tour(val)
 
 function _enable_cheats(val)
 {
-  ModVar("sv_cheats", 1);
+  SetDvar("sv_cheats", 1);
 }
 
 function _set_player_flag(val)
@@ -752,4 +753,10 @@ function _spawn_perk_machine(val)
 {
   e_player = level.players[0];
   zm_perks::perk_machine_spawn_init_late(val, e_player.origin, e_player.angles );
+}
+
+function _set_round(val)
+{
+  val = Int(val);
+  archi_core::change_to_round(val);
 }

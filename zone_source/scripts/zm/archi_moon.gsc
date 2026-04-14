@@ -19,6 +19,7 @@
 
 #using scripts\zm\archi_core;
 #using scripts\zm\archi_save;
+#using scripts\zm\archi_commands;
 
 #insert scripts\shared\shared.gsh;
 #insert scripts\shared\version.gsh;
@@ -105,6 +106,9 @@ function load_state()
     level flag::wait_till("ap_attachment_rando_ready");
     archi_save::restore_zombie_count();
     archi_save::restore_round_number();
+    if (level.archi.restored_round_number > 1) {
+        level.nml_last_round = level.archi.restored_round_number;
+    }
     archi_save::restore_power_on();
     archi_save::restore_doors_and_debris();
     restore_airlocks();
@@ -120,7 +124,6 @@ function restore_airlocks()
     // Open doors
 	airlock_buys = getentarray("zombie_airlock_buy", "targetname");
     airlocks_str = GetDvarString("ARCHIPELAGO_LOAD_DATA_OPENED_AIRLOCKS", "");
-    IPrintLn(airlocks_str);
     if (airlocks_str != "")
     {
         airlock_ids = strtok(airlocks_str, ";");
@@ -227,12 +230,42 @@ function do_mooncomp_vox(alias)
 	}
 }
 
+function patch_nml_supersprint()
+{
+    while(true)
+    {
+        level flag::wait_till("enter_nml");
+        level thread nml_supersprint_timer();
+        level flag::wait_till_clear("enter_nml");
+    }
+}
+
+function nml_supersprint_timer()
+{
+    level endon("stop_ramp");
+    level waittill("start_nml_ramp");
+    wait(1);
+    while(level flag::get("enter_nml"))
+    {
+        if (isdefined(level.nml_timer))
+        {
+            diff = level.nml_timer - level.nml_last_round;
+            if (diff >= 5)
+            {
+                level flag::set("start_supersprint");
+                break;
+            }
+        }
+        wait(20);
+    }
+}
+
 function patch_digger_rng()
 {
     while(true)
     {
         level waittill("between_round_over");
-        if (level.round_number >= 3)
+        if (level.round_number >= 16)
         {
             wait(2);
             if(level flag::exists("teleporter_used") && level flag::get("teleporter_used"))
@@ -254,93 +287,137 @@ function patch_digger_rng()
     }
 }
 
+function customrandomweaponweights(a_keys)
+{
+    if (level.chest_moves > 0)
+    {
+        rng_keys = GetArrayKeys(level.ap_moon_box_rng);
+        foreach(w_weapon in rng_keys)
+        {
+            weap_rng = level.ap_moon_box_rng[w_weapon];
+            if (weap_rng > 16)
+            {
+                // More than 16 spins without, add another to the item pool
+                a_keys[a_keys.size] = w_weapon;
+            }
+            if (weap_rng > 8)
+            {
+                // More than 8 spins without, add another to the item pool
+                a_keys[a_keys.size] = w_weapon;
+                a_keys = array::randomize(a_keys);
+            }
+        }
+    }
+
+    return a_keys;
+}
+
+function any_player_has_equipment(w_weapon)
+{
+    foreach (player in level.players)
+    {
+        if (player zm_weapons::has_weapon_or_upgrade(w_weapon))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+function func_magicbox_weapon_spawned(w_weapon)
+{
+    // Weapon spawned, kill its rng adjustment
+    if (isdefined(level.ap_moon_box_rng[w_weapon]))
+    {
+        level.ap_moon_box_rng[w_weapon] = 0;
+    }
+    else
+    {
+        if (level.chest_moves > 0)
+        {
+            // Increase weapon rng adjustment if no player has it
+            if (zm_weapons::limited_weapon_below_quota(level.w_microwavegun))
+            {
+                level.ap_moon_box_rng[level.w_microwavegun]++;
+            }
+
+            if (!any_player_has_equipment(level.w_quantum_bomb))
+            {
+                level.ap_moon_box_rng[level.w_quantum_bomb]++;
+            }
+
+            if (!any_player_has_equipment(level.w_black_hole_bomb))
+            {
+                level.ap_moon_box_rng[level.w_black_hole_bomb]++;
+            }
+        }
+    }
+}
+
 function setup_locations()
 {
     level flag::wait_till("initial_blackscreen_passed");
 
-    level thread patch_digger_rng();
+    level thread patch_nml_supersprint();
+
+    // level thread archi_commands::_basic_trigger("ap_ball_print", &show_be_pos);
+    // level thread archi_commands::_basic_trigger("ap_nml_print", &debug_nml);
+
+    if (level.archi.difficulty_rng_moon_digger == 1)
+    {
+        level thread patch_digger_rng();
+    }
+
+    if (level.archi.difficulty_rng_moon_box == 1)
+    {
+        level.ap_moon_box_rng = [];
+        level.ap_moon_box_rng[level.w_black_hole_bomb] = 0;
+        level.ap_moon_box_rng[level.w_quantum_bomb] = 0;
+        level.ap_moon_box_rng[level.w_microwavegun] = 0;
+        level.customrandomweaponweights = &customrandomweaponweights;
+        level.func_magicbox_weapon_spawned = &func_magicbox_weapon_spawned;
+    }
 
 	windows = struct::get_array("exterior_goal", "targetname");
     array::thread_all(windows, &hackable_window);
 
     level thread _notify_to_location_thread("packapunch_hacked", level.archi.mapString + " Hack the Pack-A-Punch Machine");
     level thread _flag_to_location_thread("override_magicbox_trigger_use", level.archi.mapString + " Hack the Mystery Box");
-    level thread hacked_digger(level.archi.mapString + " Hack an Excavator");
+    level thread _notify_to_location_thread("digger_hacked", level.archi.mapString + " Hack an Excavator");
 
     level thread _flag_to_location_thread("power_on", level.archi.mapString + " Turn on the Power");
 
     cushion_sound_triggers = getentarray("trig_cushion_sound", "targetname");
     array::thread_all(cushion_sound_triggers, &safe_landing);
 
-    level thread _notify_kval_to_location_thread("sq_ss1_completed", level.archi.mapString + " Main Easter Egg - Samantha Says");
-    level thread _notify_kval_to_location_thread("release_complete", level.archi.mapString + " Main Easter Egg - Buttons in the Lab");
-    level thread _notify_kval_to_location_thread("complete_be_1", level.archi.mapString + " Main Easter Egg - Transport the Vril Sphere to the MPD");
-    level thread _flag_to_location_thread("sam_switch_thrown", level.archi.mapString + " Main Easter Egg - Open the MPD");
+    level thread _notify_kval("sq_ss1_completed", level.archi.mapString + " Main Easter Egg - Samantha Says");
+    level thread _notify_kval("release_complete", level.archi.mapString + " Main Easter Egg - Buttons in the Lab");
+    level thread _flag_kval("teleporter_breached");
+    level thread _notify_kval("complete_be_1", level.archi.mapString + " Main Easter Egg - Transport the Vril Sphere to the MPD");
+    level thread _flag_kval("sam_switch_thrown", level.archi.mapString + " Main Easter Egg - Open the MPD");
 
-    level thread _flag_to_location_thread("c_built", level.archi.mapString + " Main Easter Egg - Transport the Hexagonal Plates");
-    level thread _flag_to_location_thread("w_placed", level.archi.mapString + " Main Easter Egg - Plug in the Computer");
-    level thread _notify_to_location_thread("kill_press_monitor", level.archi.mapString + " Main Easter Egg - Delete Maxis from the Computer");
+    level thread _notify_kval("ctvg_tp_done");
+    level thread _flag_kval("c_built", level.archi.mapString + " Main Easter Egg - Transport the Hexagonal Plates");
+    level thread _flag_kval("w_placed", level.archi.mapString + " Main Easter Egg - Plug in the Computer");
+    level thread _flag_kval("vg_placed");
+    level thread _notify_kval("kill_press_monitor", level.archi.mapString + " Main Easter Egg - Delete Maxis from the Computer");
     level thread _flag_to_location_thread("second_tanks_charged", level.archi.mapString + " Main Easter Egg - Fill all the MPD Soul Canisters");
     level thread _flag_to_location_thread("soul_swap_done", level.archi.mapString + " Main Easter Egg - Swap Souls");
     level thread _notify_to_location_thread("moon_sidequest_big_bang_achieved", level.archi.mapString + " Main Easter Egg - Nuke the Earth");
     level thread _notify_to_location_thread("moon_sidequest_big_bang_achieved", level.archi.mapString + " Main Easter Egg - Victory");
 
+    level thread _notify_to_location_thread("ap_music_8bit_cominghome", level.archi.mapString + " Music EE - Coming Home 8-Bit");
+    level thread _notify_to_location_thread("ap_music_8bit_redamned", level.archi.mapString + " Music EE - Redamned 8-Bit");
+    level thread _notify_to_location_thread("ap_music_8bit_pareidolia", level.archi.mapString + " Music EE - Pareidolia 8-Bit");
+
     level thread space_dog_objects(level.archi.mapString + " Space Dog - Wave Gun Target Practice");
-    level thread _flag_to_location_thread("sd_hound", level.archi.mapString + " Space Dog - Wave Gun the Toy Hellhound in Area 51");
-    level thread _flag_to_location_thread(array("sd_bear", "sd_bone"), level.archi.mapString + " Space Dog - Wave Gun the Teddy Bear in the Bidome and the Bone near the Teleporter");
+    level thread _flag_kval("sd_hound", level.archi.mapString + " Space Dog - Wave Gun the Toy Hellhound in Area 51");
+    level thread _flag_kval("sd_bear", level.archi.mapString + " Space Dog - Wave Gun the Bone near the Moon Teleporter");
+    level thread _flag_kval("sd_bone", level.archi.mapString + " Space Dog - Wave Gun the Teddy Bear in the Bidome");
     level thread _flag_to_location_thread("sd_large_complete", level.archi.mapString + " Space Dog - Fill the Dog Bowl with 30 Zombie Souls");
     level thread _flag_to_location_thread("sd_small_complete", level.archi.mapString + " Space Dog - Fill the Dog Bowl with 15 Hellhound Souls");
 
     level thread _flag_to_location_thread("snd_song_completed", level.archi.mapString + " Music EE - Coming Home");
-    level music_8bit_setup();
-}
-
-function music_8bit_setup()
-{
-    structs = struct::get_array("8bitsongs", "targetname");
-    foreach(struct in structs)
-    {
-        switch (struct.script_string)
-        {
-            case "8bit_redamned":
-                level thread music_8bit_thread(level.archi.mapString + " Music EE - Re-Damned");
-                break;
-            case "8bit_cominghome":
-                level thread music_8bit_thread(level.archi.mapString + " Music EE - Coming Home 8-Bit");
-                break;
-            case "8bit_pareidolia":
-                level thread music_8bit_thread(level.archi.mapString + " Music EE - Pareidolia 8-Bit");
-                break;
-        }
-    }
-}
-
-function music_8bit_thread(location)
-{
-    n_count = 0;
-    while(true)
-    {
-        self waittill("trigger_activated");
-		if(!is_music_ready())
-		{
-			continue;
-		}
-        n_count++;
-        if (n_count >= 3)
-        {
-            break;
-        }
-    }
-    archi_core::send_location(location);
-}
-
-function is_music_ready()
-{
-	if(isdefined(level.musicsystem.currentplaytype) && level.musicsystem.currentplaytype >= 4 || (isdefined(level.musicsystemoverride) && level.musicsystemoverride))
-	{
-		return false;
-	}
-	return true;
 }
 
 function space_dog_objects(location)
@@ -350,7 +427,6 @@ function space_dog_objects(location)
     wait(10);
     foreach(s_obj in s_objects)
     {   
-        IPrintLn(s_obj.targetname);
         a_flags[a_flags.size] = s_obj.targetname;
     }
     level flag::wait_till_all(a_flags);
@@ -369,12 +445,6 @@ function safe_landing()
     }
     archi_core::send_location(level.archi.mapString + " Land safely on a cushion");
     level notify("ap_safe_landing");
-}
-
-function hacked_digger(location)
-{
-    level flag::wait_till_any(array("teleporter_digger_hacked", "teleporter_digger_hacked_before_breached", "hangar_digger_hacked", "hangar_digger_hacked_before_breached", "biodome_digger_hacked", "biodome_digger_hacked_before_breached"))
-    archi_core::send_location(location);
 }
 
 function hackable_window()
@@ -404,6 +474,27 @@ function _flag_to_location_thread(flag, location)
     archi_core::send_location(location);
 }
 
+function _flag_kval(flag, location)
+{
+    level.archi.moon_kvals[flag] = 0;
+    level endon("end_game");
+
+    if (IsArray(flag))
+    {
+        level flag::wait_till_all(flag);
+    }
+    else
+    {
+        level flag::wait_till(flag);
+    }
+
+    if (isdefined(location))
+    {
+        archi_core::send_location(location);
+    }
+    level.archi.moon_kvals[flag] = 1;
+}
+
 // Collect a check when a level notification happens
 // level thread _notify_to_location_thread("notification", level.archi.mapString + " locationName");
 function _notify_to_location_thread(str, location)
@@ -414,23 +505,36 @@ function _notify_to_location_thread(str, location)
     archi_core::send_location(location);
 }
 
-function _notify_kval_to_location_thread(str, location)
+function _notify_kval(str, location)
 {
     level.archi.moon_kvals[str] = 0;
     level endon("end_game");
 
     level waittill(str);
-    archi_core::send_location(location);
+    if (isdefined(location))
+    {
+        archi_core::send_location(location);
+    }
 
     level.archi.moon_kvals[str] = 1;
-    IPrintLn(str);
 }
 
 function save_map_state()
 {
     save_moon_kval("sq_ss1_completed");
     save_moon_kval("release_complete");
+    save_moon_kval("teleporter_breached");
     save_moon_kval("complete_be_1");
+    save_moon_kval("sam_switch_thrown");
+    save_moon_kval("c_built");
+    save_moon_kval("w_placed");
+    save_moon_kval("vg_placed");
+    save_moon_kval("ctvg_tp_done");
+    save_moon_kval("kill_press_monitor");
+
+    save_moon_kval("sd_hound");
+    save_moon_kval("sd_bear");
+    save_moon_kval("sd_bone");
 }
 
 function save_moon_kval(key)
@@ -438,12 +542,44 @@ function save_moon_kval(key)
     archi_save::save_val(key, level.archi.moon_kvals[key]);
 }
 
+function debug_nml()
+{
+    IPrintLn("nml_timer: " + level.nml_timer);
+    IPrintLn("nml round: " + level.nml_last_round);
+}
+
 function restore_map_state()
 {
     restore_moon_kval("sq_ss1_completed");
     restore_moon_kval("release_complete");
+    restore_moon_kval("teleporter_breached");
     restore_moon_kval("complete_be_1");
+    restore_moon_kval("sam_switch_thrown");
+    restore_moon_kval("c_built");
+    restore_moon_kval("w_placed");
+    restore_moon_kval("vg_placed");
+    restore_moon_kval("ctvg_tp_done");
+    restore_moon_kval("kill_press_monitor");
 
+    restore_moon_kval("sd_hound");
+    restore_moon_kval("sd_bear");
+    restore_moon_kval("sd_bone");
+
+    level flag::init("ap_restore_ee1");
+    level flag::init("ap_restore_ee2");
+    level flag::init("ap_restore_computer");
+
+    level restore_space_dog();
+
+    level thread restore_ee1();
+    level thread restore_ee2();
+    level thread restore_computer();
+
+    level flag::wait_till_all(array("ap_restore_ee1", "ap_restore_ee2", "ap_restore_computer")); 
+}
+
+function restore_ee1()
+{
     if (has_moon_kval("sq_ss1_completed"))
     {
         level flag::wait_till("power_on");
@@ -461,65 +597,212 @@ function restore_map_state()
         level flag::wait_till_clear("displays_active");
         level._ss_sequence_matched = 1;
         sq_struct notify("ss_won");
+
+        wait(0.1);
+        level flag::set("ss1");
         wait(0.1);
     }
 
     if (has_moon_kval("release_complete"))
     {
-        if(!level flag::get(level._osc_flags[1]))
-        {
-            // Force hack
-            level flag::set(level._osc_flags[1]);
-            wait(0.1);
-        }
+        // So finnicky for lab buttons to properly trigger electric switch later
+        level flag::set(level._osc_flags[1]);
+        wait(0.1);
+        // Trigger success
+        level flag::set(level._osc_flags[9]);
+        wait(0.1);
+        // Cleanup any running older stuff?
+        level flag::set(level._osc_flags[8]);
+        wait(0.1);
 
-        // Progress button step more
-        if(!level flag::get(level._osc_flags[8]))
-        {
-            level flag::set(level._osc_flags[8]);
-            wait(0.05);
-        }
- 
-        // Mark all buttons as pressed
-        if(!level flag::get(level._osc_flags[9]))
-        {
-            level._osc_release = level._osc_rbs.size;
-            level flag::set(level._osc_flags[9]);
-            
-            // Close button covers
-            for(l = 0; l < level._osc_rbs.size; l++)
-            {
-                if(isdefined(level._osc_rbs[l].cover))
-                {
-                    level._osc_rbs[l].cover.angles = level._osc_rbs[l].cover_close;
-                }
-            }
-            
-            wait(0.1);
-        }        
+        level notify("sq_osc_over");
+        wait(0.1);
+    }
+
+    if(has_moon_kval("teleporter_breached"))
+    {
+        level flag::set("teleporter_breached");
+        wait(0.2);
     }
 
     if(has_moon_kval("complete_be_1"))
     {
-        // Force breach flag so step starts
-        level flag::set("teleporter_breached");
-        wait(0.2);
-
         // Detach ball from vehicle
         level._be Unlink();
 
-        // Move to (more or less) MPD
-        s = struct::get("be2_pos", "targetname");
-        level._be.origin = s.origin;
+        // Move to MPD pos
+        level._be.origin = (43.99, 3760.5, -541.3);
+        level._be.angles = (0, 180.8, 74.74);
+        // s = struct::get("be2_pos", "targetname");
+        // level._be.origin = s.origin;
 
         // Set flag and move it into position
         level flag::set("complete_be_1");
+        wait(0.1);
     }
+
+    if(has_moon_kval("sam_switch_thrown"))
+    {
+        // Fill tanks
+        while(level._active_tanks.size < 1)
+        {
+            wait(0.1);
+        }
+        foreach (tank in level._active_tanks)
+        {
+            tank.fill = tank.max_fill;
+        }
+        // Just brute force the timing of the electric switch for the MPD
+        elec_switch = getent("use_tank_switch", "targetname");
+        while (!level flag::get("sam_switch_thrown"))
+        {
+            elec_switch notify("trigger");
+            wait(0.2);
+        }
+        level waittill("walls_down");
+        level.archi.blocked_powerups["minigun"] = true;
+        level thread delayed_minigun_restore();
+    }
+
+    level flag::set("ap_restore_ee1");
+}
+
+function restore_ee2()
+{
+    // Wait for computer setup and ee part 1 to be done
+    level flag::wait_till_all(array("ap_restore_ee1", "ap_restore_computer"));
+
+    if (has_moon_kval("kill_press_monitor"))
+    {
+        richtofen = undefined;
+        for(i = 0; i < level.players.size; i++)
+        {
+            player = level.players[i];
+            ent_num = player.characterindex;
+            if(isdefined(player.zm_random_char))
+            {
+                ent_num = player.zm_random_char;
+            }
+            if(ent_num == 2)
+            {
+                richtofen = level.players[i];
+                break;
+            }
+        }
+
+        // Wipe charge stages to force finish on next end
+        while( !isdefined(level._charge_stages) )
+        {
+            wait(0.1);
+        }
+        level._charge_stages = [];
+
+        // Finish charge stage
+        level._charge_sound_ent notify("press");
+        wait(0.1);
+    }
+}
+
+function delayed_minigun_restore()
+{
+    wait(1);
+    level.archi.blocked_powerups["minigun"] = false;
+}
+
+function restore_computer()
+{
+    level flag::init("ap_restore_plates_grenade");
+
+    if (has_moon_kval("ctvg_tp_done"))
+    {
+        plates = getentarray("sq_cassimir_plates", "targetname");
+	    trig = getent("sq_cassimir_trigger", "targetname");
+
+        // Knock plates down
+        while(!level flag::get("ap_restore_plates_grenade"))
+        {
+            trig notify("damage", 1, level.players[0], (0, 0, 0), (0, 0, 0), "MOD_PROJECTILE", "", "");
+            wait(0.2);
+        }
+        WAIT_SERVER_FRAME
+        level notify("ctvg_tp_done");
+    }
+
+    if (has_moon_kval("c_built"))
+    {
+        level thread plates_grenade_watcher();
+        
+        // We NEED to wait for a player to go to the moon now, otherwise we break nml logic
+        targs = struct::get_array("sq_ctvg_tp2", "targetname");
+        for(i = 0; i < plates.size; i++)
+        {
+            plates[i] dontinterpolate();
+            plates[i].origin = targs[i].origin;
+            plates[i].angles = targs[i].angles;
+        }
+        level waittill("restart_round");
+        WAIT_SERVER_FRAME
+        level notify("ctvg_validation");
+        level flag::wait_till("c_built");
+    }
+
+    if (has_moon_kval("w_placed"))
+    {
+        // Brute force find the spawned wire?
+        entities = GetEntArray("script_model", "classname");
+        foreach(ent in entities)
+        {
+            if(ent.model == "p7_zm_moo_computer_rocket_launch_wire")
+            {
+                // Found wire
+                ent notify("pickedup_wire", level.players[0]);
+                break;
+            }
+        }
+        wait(0.1);
+        wire_struct = struct::get("sq_wire_final", "targetname");
+        wire_struct notify("placed_wire", level.players[0]);
+
+        level flag::wait_till("w_placed");
+    }
+
+    if(has_moon_kval("vg_placed"))
+    {
+        wait(0.1);
+        vg_struct = struct::get("sq_charge_vg_pos", "targetname");
+        vg_struct notify("vg_placed", level.players[0]);
+        WAIT_SERVER_FRAME
+    }
+
+    level flag::set("ap_restore_computer");
+}
+
+function restore_space_dog()
+{
+    sd_structs = struct::get_array("sd_start", "script_noteworthy");
+    foreach (sd_struct in sd_structs)
+    {
+        if (has_moon_kval(sd_struct.targetname))
+        {
+            t_toy = ArrayGetClosest(sd_struct.origin, GetEntArray("trigger_damage", "classname"), 1);
+            if (!isdefined(t_toy))
+            {
+                IPrintLn("Could not find toy trigger");
+            }
+            t_toy notify("microwaved");
+        }
+    }
+}
+
+function plates_grenade_watcher()
+{
+    level waittill("stage_1_done");
+    level flag::set("ap_restore_plates_grenade");
 }
 
 function restore_moon_kval(key)
 {
-    level.archi.moon_kvals[key] = archi_save::restore_val(key);
+    level.archi.moon_kvals[key] = archi_save::restore_val_bool(key);
 }
 
 function has_moon_kval(key)
@@ -529,4 +812,10 @@ function has_moon_kval(key)
         return true;
     }
     return false;
+}
+
+function show_be_pos()
+{
+    IPrintLn(level._be.origin);
+    IPrintLn(level._be.angles);
 }
