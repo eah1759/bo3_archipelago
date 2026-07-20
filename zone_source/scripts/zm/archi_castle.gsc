@@ -225,6 +225,33 @@ function setup_landing_pads()
     level thread _all_landing_pads_activated(landing_pads.size);
 }
 
+function setup_radio_trackers()
+{
+	for(i = 0; i < 5; i++)
+	{
+		radio_parts = struct::get_array("ee_groph_reels_" + i, "targetname");
+		if(i == 0)
+		{
+			radio_parts[0].var_df5776d8 thread _track_radio_shootable(i);
+			continue;
+		}
+        radio_parts[0] thread _track_radio(i);
+	}
+
+}
+
+function _track_radio(radio_num)
+{
+    self waittill("trigger_activated");
+    IPrintLnBold("ap_radio_vox_grop_groph_radio_stem_" + (radio_num + 1));
+}
+
+function _track_radio_shootable(radio_num)
+{
+    self waittill("damage", damage, attacker, dir, loc, type, model, tag, part, weapon, flags);
+    IPrintLnBold("ap_radio_vox_grop_groph_radio_stem_" + (radio_num + 1));
+}
+
 function setup_music_ee_trackers()
 {
     level thread _track_music_dead_again();
@@ -318,6 +345,7 @@ function setup_locations()
 
     setup_soul_catchers();
 
+    setup_radio_trackers();
     setup_music_ee_trackers();
 
     setup_weapon_ee_rune_prison();
