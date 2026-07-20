@@ -300,6 +300,7 @@ function setup_side_ee()
     level thread _track_margwa_head();
     level thread _octobomb_upgraded();
     level thread _doughnut_mines();
+    level thread _monitor_radios();
 }
 
 function setup_main_quest()
@@ -406,6 +407,23 @@ function _doughnut_mines()
 {
     level waittill("hash_25ff6e8", entity);
     archi_core::send_location(level.archi.mapString + " Unlock the Doughnut or Cream Cake Mines");
+}
+
+function _monitor_radios()
+{
+	radios = struct::get_array("audio_recording");
+	foreach(radio in radios)
+	{
+		radio thread _track_radios();
+	}
+}
+
+function _track_radios()
+{
+    //self is radio object idk man
+    self waittill("trigger_activated");
+    //test
+    IPrintLnBold("RADIO DEBUG: " + self.script_string);
 }
 
 function _patch_player_requirement()
