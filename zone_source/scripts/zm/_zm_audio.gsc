@@ -1692,12 +1692,82 @@ function is_last_zombie()
  
 function sndRadioSetup(alias_prefix, is_sequential = false, origin1, origin2, origin3, origin4, origin5)
 {
+	if(!isdefined(is_sequential))
+	{
+		is_sequential = 0;
+	}
+	radio = spawnstruct();
+	radio.counter = 1;
+	radio.alias_prefix = alias_prefix;
+	radio.isplaying = 0;
+	radio.Array = [];
+
+	//gonna just remove the redudent array checks
+	radio.Array[radio.Array.size] = origin1;
+	radio.Array[radio.Array.size] = origin2;
+	radio.Array[radio.Array.size] = origin3;
+	radio.Array[radio.Array.size] = origin4;
+	radio.Array[radio.Array.size] = origin5;
+
+	if(radio.Array.size > 0)
+	{
+		for(i = 0; i < radio.Array.size; i++)
+		{
+			level thread sndRadioWait(radio.Array[i], radio, is_sequential, i + 1);
+		}
+	}
 }
+
 function sndRadioWait(origin, radio, is_sequential, num)
 {	
+	temp_ent = spawn("script_origin", origin);
+	temp_ent thread secretUse("sndRadioHit", VectorScale((0, 0, 1), 255), &sndRadio_Override, radio);
+	temp_ent waittill("hash_678c47ee", player); //Wait until radio is triggered
+	if(!(isdefined(is_sequential) && is_sequential))
+	{
+		radio_num = num; //play the radio audio pre-defined iff is_sequential is not flagged.
+	}
+	else
+	{
+		radio_num = radio.counter; //play next radio in list iff is_sequential is flagged.
+	}
+	sound_alias = radio.alias_prefix + radio_num;
+	sound_variants = zm_spawner::get_number_variants(sound_alias);
+	level notify("ap_radio_" + sound_alias); //special sauce
+	if(sound_variants > 0)
+	{
+		radio.isplaying = 1;
+		for(i = 0; i < sound_variants; i++)
+		{
+			temp_ent playsound(sound_alias + "_" + i);
+			playbackTime = soundgetplaybacktime(sound_alias + "_" + i);
+			if(!isdefined(playbackTime))
+			{
+				playbackTime = 1;
+			}
+			if(playbackTime >= 0)
+			{
+				playbackTime = playbackTime * 0.001;
+			}
+			else
+			{
+				playbackTime = 1;
+			}
+			wait(playbackTime);
+		}
+	}
+	radio.counter++;
+	radio.isplaying = 0;
+	temp_ent delete();
 }
+
 function sndRadio_Override(arg1,arg2)
 {
+	if(isdefined(arg1) && arg1.isplaying == 1)
+	{
+		return 0;
+	}
+	return 1;
 }
 
 
