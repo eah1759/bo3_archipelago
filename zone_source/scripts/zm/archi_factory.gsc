@@ -114,6 +114,7 @@ function setup_locations()
     level flag::wait_till("initial_blackscreen_passed");
 
     level thread _track_music_boa();
+    level thread _setup_radios();
     level thread _any_teleporter_linked();
     level thread _all_teleporters_linked();
     level thread _flytrap_targets_shot();
@@ -125,6 +126,48 @@ function _track_music_boa()
 {
     level waittill("hash_a1b1dadb");
     archi_core::send_location(level.archi.mapString + " Music EE - Beauty of Annihilation Remix");
+}
+
+function _setup_radios()
+{
+    //track radios that use the sndRadioSetup override
+    for(i = 0; i < 5; i++)
+    {
+        level thread _track_radio("vox_maxis_maxis_radio" + (i+1));
+    }
+
+    //track giant special radios
+    orphans = GetEntArray("script_origin", "classname");
+    foreach(orphan in orphans)
+	{
+        if(isdefined(orphan.origin))
+        {
+            if(orphan.origin == (966, 805, 124))
+            {
+                orphan thread _track_special_radio("vox_maxis_player_radio1");
+            }
+            else if(orphan.origin == (-1197, -1466, 215))
+            {
+                orphan thread _track_special_radio("vox_maxis_player_radio2");
+            } 
+            else if(orphan.origin == (-94, -2324, 175))
+            {
+                orphan thread _track_special_radio("vox_maxis_player_radio3");
+            }
+        }
+	}
+}
+
+function _track_special_radio(radio_alias)
+{
+    self waittill("hash_678c47ee", player);
+    IPrintLnBold("ap_radio_" + radio_alias);
+}
+
+function _track_radio(radio_alias)
+{
+    level waittill("ap_radio_" + radio_alias);
+    IPrintLnBold("ap_radio_" + radio_alias);
 }
 
 function _any_teleporter_linked()
