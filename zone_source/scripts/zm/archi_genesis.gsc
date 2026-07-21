@@ -165,6 +165,7 @@ function setup_main_quest()
     level thread _all_power_stations(level.archi.mapString + " Main Quest - Override all 4 Corruption Engines");
     level thread _flag_to_location_thread("apotho_pack_freed", level.archi.mapString + " Main Quest - Free the Pack-A-Punch");
     level thread _track_music_thegift();
+    setup_radio_trackers();
 
     level thread _flag_to_location_thread("writing_on_the_wall_complete", level.archi.mapString + " Writing on the Wall");
 }
@@ -329,6 +330,23 @@ function _track_music_thegift()
 		}
 	}
     archi_core::send_location(level.archi.mapString + " Music EE - The Gift");
+}
+
+function setup_radio_trackers()
+{
+    radio_aliases = ["mob_1","mob_2","mob_3","origins_1","vurruckt_1","vurruckt_2","kino_1","vurruckt_3","eisendrache_1","shang_1","shang_2","shang_3","shang_4"];
+    
+    for(i = 0; i < level.a_s_radios.size; i++)
+    {
+        level.a_s_radios[i] thread _track_radio(radio_aliases[i]);
+    }
+}
+
+function _track_radio(radio_alias)
+{
+	self waittill("hash_e37d497d");
+    // radio_alias = level.var_22e09be4[self.script_noteworthy][0] // This doesn't work as rev will delete the name from the list before this runs. Would need to have seperate dedicated tracking for each radio group instead.
+    IPrintLnBold("ap_radio_" + radio_alias); 
 }
 
 function hope_wallbuy_override()
