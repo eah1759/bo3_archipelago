@@ -15,6 +15,7 @@
 #using scripts\zm\craftables\_zm_craftables;
 #using scripts\zm\_zm_spawner;
 #using scripts\zm\_zm_unitrigger;
+#using scripts\zm\_zm_utility;
 
 #using scripts\zm\archi_core;
 #using scripts\zm\archi_items;
@@ -225,6 +226,7 @@ function setup_side_ee()
     level thread _wearable_valkyrie_helmet(level.archi.mapString + " Unlock the Valkyrie Helmet");
     level thread _track_music_aceofspades();
     level thread _track_music_deadended();
+    setup_radio_trackers();
 }
 
 function track_player_challenges()
@@ -267,6 +269,49 @@ function track_player_challenge_monkey_bombs(location)
 
     self waittill("flag_player_collected_reward_5");
     archi_core::send_location(location);
+}
+
+function setup_radio_trackers()
+{
+	for(i = 1; i < 6; i++)
+	{
+		radio_parts = struct::get_array("ee_sophia_reels_" + i, "targetname");
+		if(i == 5)
+		{
+			radio_parts[0].var_de6d4fc0 thread _track_radio_shootable(i);
+			continue;
+		}
+        radio_parts[0] thread _track_radio(i);
+	}
+
+}
+
+function _track_radio(radio_num)
+{
+    while(1)
+    {
+        self waittill("trigger_activated", who);
+        if(!who zm_utility::is_player_looking_at(self.origin))
+        {
+            continue;
+        }
+        IPrintLnBold("ap_radio_vox_soph_sophia_log_" + (radio_num));
+        break;
+    }
+}
+
+function _track_radio_shootable(radio_num)
+{
+    while(1)
+    {
+        self waittill("damage", damage, attacker, dir, loc, type, model, tag, part, weapon, flags);
+        if(!isdefined(attacker) || !isPlayer(attacker))
+        {
+            continue;
+        }
+        IPrintLnBold("ap_radio_vox_soph_sophia_log_" + (radio_num));
+        break;
+    }
 }
 
 function _track_music_aceofspades()

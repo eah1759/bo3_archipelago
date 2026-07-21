@@ -248,8 +248,16 @@ function _track_radio(radio_num)
 
 function _track_radio_shootable(radio_num)
 {
-    self waittill("damage", damage, attacker, dir, loc, type, model, tag, part, weapon, flags);
-    IPrintLnBold("ap_radio_vox_grop_groph_radio_stem_" + (radio_num + 1));
+    while(1)
+    {
+        self waittill("damage", damage, attacker, dir, loc, type, model, tag, part, weapon, flags);
+        if(!isdefined(attacker) || !isPlayer(attacker))
+        {
+            continue;
+        }
+        IPrintLnBold("ap_radio_vox_grop_groph_radio_stem_" + (radio_num + 1));
+        break;
+    }
 }
 
 function setup_music_ee_trackers()
