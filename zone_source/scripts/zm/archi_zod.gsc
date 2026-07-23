@@ -420,9 +420,7 @@ function _setup_radios()
 
 function _track_radios()
 {
-    //self is radio object idk man
     self waittill("trigger_activated");
-    //test
     IPrintLnBold("ap_radio_" + self.script_string);
 }
 

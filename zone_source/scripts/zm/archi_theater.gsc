@@ -13,6 +13,7 @@
 #using scripts\shared\clientfield_shared;
 #using scripts\zm\_zm_perks;
 #using scripts\zm\_zm_score;
+#using scripts\zm\_zm_unitrigger;
 #using scripts\zm\_zm_weapons;
 #using scripts\zm\craftables\_zm_craftables;
 
@@ -120,6 +121,7 @@ function setup_locations()
     level thread _flag_to_location_thread("power_on", level.archi.mapString + " Turn on the Power");
     level thread _notify_to_location_thread("play_movie", level.archi.mapString + " Watch a Movie");
     level thread _flag_to_location_thread("snd_song_completed", level.archi.mapString + " Music EE - 115");
+    setup_radios();
     // level thread _notify_to_location_thread("zhd_knocker_success", level.archi.mapString + " Samantha's Sorrow");
 
     level thread _rocket_ee(level.archi.mapString + " Launch the Toy Rocket");
@@ -130,6 +132,31 @@ function _rocket_ee(location)
     rocket_stand = getent("trigger_jump", "targetname");
     rocket_stand waittill("hash_88782877");
     archi_core::send_location(location);
+}
+
+function setup_radios()
+{
+    radios = GetEntArray("audio_egg_radio", "targetname");
+    for(i = 0; i < radios.size; i++)
+    {
+        radios[i] thread _track_radio(i+1);
+    }
+
+    abcd_radio = struct::get("snd_monty_radio", "targetname");
+    abcd_radio thread _track_radio_hd();
+}
+
+function _track_radio(num)
+{
+    self waittill("trigger");
+    IPrintLnBold("ap_radio_vox_kino_radio_" + (level.radio_egg_counter+1));
+    IPrintLnBold("ap_radio_vox_kino_radio_" + num);
+}
+
+function _track_radio_hd()
+{
+    self waittill("trigger_activated");
+    IPrintLnBold("ap_radio_vox_abcd_radio");
 }
 
 function onplayerconnect()
