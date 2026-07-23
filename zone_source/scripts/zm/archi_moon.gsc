@@ -15,7 +15,6 @@
 #using scripts\zm\_zm_score;
 #using scripts\zm\_zm_weapons;
 #using scripts\zm\_zm_equipment;
-#using scripts\zm\zm_moon_amb;
 #using scripts\zm\craftables\_zm_craftables;
 
 #using scripts\zm\archi_core;
@@ -531,7 +530,7 @@ function _track_radio()
         self waittill("trigger_activated");
         if(isdefined(self.script_noteworthy))
         {
-            Breakout = self zm_moon_amb::checkfor_radio_override();
+            Breakout = self checkfor_radio_override();
             if(Breakout)
             {
                 break;
@@ -541,6 +540,29 @@ function _track_radio()
         break;
     }
     IPrintLnBold("ap_radio_vox_story_1_log_" + self.script_int);
+}
+
+function checkfor_radio_override() //yoinked from zm_moon_amb
+{
+	if(!isdefined(level.glass))
+	{
+		return 1;
+	}
+	for(i = 0; i < level.glass.size; i++)
+	{
+		if(level.glass[i].damage_state == 1)
+		{
+			for(j = 0; j < level.glass[i].fxpos_array.size; j++)
+			{
+				glass_origin = level.glass[i].fxpos_array[j].origin;
+				if(DistanceSquared(glass_origin, self.origin) < 2500)
+				{
+					return 1;
+				}
+			}
+		}
+	}
+	return 0;
 }
 
 function _track_radio_hd()
