@@ -296,6 +296,10 @@ function setup_locations()
     level thread _notify_to_location_thread("ap_music_aether", level.archi.mapString + " Music EE - Aether");
     level thread _notify_to_location_thread("ap_music_shepherd_of_fire", level.archi.mapString + " Music EE - Shepherd of Fire");
 
+    abcd_radio = struct::get("snd_monty_radio", "targetname");
+    abcd_radio thread _track_radio_hd();
+    setup_radios();
+
     level thread _notify_kval("elemental_staff_air_crafted", level.archi.mapString + " Wind Staff - Craft the Staff");
     level thread _flag_kval("air_puzzle_1_complete", level.archi.mapString + " Wind Staff - Solve the Crazy Place Puzzle");
     level thread _flag_kval("air_puzzle_2_complete", level.archi.mapString + " Wind Staff - Redirect all the Smoke Stacks");
@@ -421,6 +425,30 @@ function _watch_staff_upgraded(staff, location)
     }
     level notify("any_staff_upgraded");
     archi_core::send_location(location);
+}
+
+function setup_radios()
+{
+    //bruh
+    radio_meta_array = struct::get_array("maxis_audio_log", "targetname");
+    foreach(radio_meta in radio_meta_array)
+    {
+        radio_meta thread _track_radio();
+    }
+    IPrintLnBold("Count: " + radio_meta_array.size);
+    
+}
+
+function _track_radio()
+{
+    level flag::wait_till("maxis_audio_log_" + self.script_int);
+    IPrintLnBold("ap_radio_maxis_audio_log_" + self.script_int);
+}
+
+function _track_radio_hd()
+{
+    self waittill("trigger_activated");
+    IPrintLnBold("ap_radio_vox_abcd_radio");
 }
 
 // === AP Check Utilities ===
