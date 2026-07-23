@@ -15,6 +15,7 @@
 #using scripts\zm\_zm_score;
 #using scripts\zm\_zm_weapons;
 #using scripts\zm\_zm_equipment;
+#using scripts\zm\zm_moon_amb;
 #using scripts\zm\craftables\_zm_craftables;
 
 #using scripts\zm\archi_core;
@@ -463,6 +464,11 @@ function setup_locations()
     level thread _notify_to_location_thread("moon_sidequest_big_bang_achieved", level.archi.mapString + " Main Easter Egg - Nuke the Earth");
     level thread _notify_to_location_thread("moon_sidequest_big_bang_achieved", level.archi.mapString + " Main Easter Egg - Victory");
 
+    player = struct::get("sq_reel_to_reel", "targetname");
+    player thread _track_reels();
+    abcd_radio = struct::get("snd_monty_radio", "targetname");
+    abcd_radio thread _track_radio_hd();
+    setup_radios();
     level thread _notify_to_location_thread("ap_music_8bit_cominghome", level.archi.mapString + " Music EE - Coming Home 8-Bit");
     level thread _notify_to_location_thread("ap_music_8bit_redamned", level.archi.mapString + " Music EE - Redamned 8-Bit");
     level thread _notify_to_location_thread("ap_music_8bit_pareidolia", level.archi.mapString + " Music EE - Pareidolia 8-Bit");
@@ -510,6 +516,49 @@ function hackable_window()
     self waittill("blocker_hacked");
     archi_core::send_location(level.archi.mapString + " Hack a Broken Window");
     level notify("ap_window_hacked");
+}
+
+function setup_radios()
+{
+	radios = struct::get_array("egg_radios", "targetname");
+	Array::thread_all(radios, &_track_radio);
+}
+
+function _track_radio()
+{
+    while(1)
+    {
+        self waittill("trigger_activated");
+        if(isdefined(self.script_noteworthy))
+        {
+            Breakout = self zm_moon_amb::checkfor_radio_override();
+            if(Breakout)
+            {
+                break;
+            }
+            continue;
+        }
+        break;
+    }
+    IPrintLnBold("ap_radio_vox_story_1_log_" + self.script_int);
+}
+
+function _track_radio_hd()
+{
+    self waittill("trigger_activated");
+    IPrintLnBold("ap_radio_vox_abcd_radio");
+}
+
+function _track_reels()
+{
+    datalogs = Array("vox_story_2_log_1", "vox_story_2_log_2", "vox_story_2_log_3", "vox_story_2_log_4", "vox_story_2_log_5", "vox_story_2_log_6");
+    i = 0;
+    while(i < datalogs.size)
+    {
+        self waittill("placed", who);
+        IPrintLnBold("ap_reel_" + datalogs[i]);
+        i++;
+    }
 }
 
 // === AP Check Utilities ===
