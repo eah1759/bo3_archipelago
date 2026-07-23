@@ -417,25 +417,29 @@ function adjust_bgb_pack()
 
 function _setup_radios()
 {
-    //No way to grab the structs so fuck it let's just duplicate the triggers.
     locations = Array((-114.98, 5300.02, -615.31), (1104, 4637.37, -493.965), (-1175.08, 2711.62, -379.708), (-2139.84, 633.162, 141), (2804.92, 798.876, -144.977));
-    for(i = 0; i < locations.size; i++)
-	{
-		radio = spawnstruct();
-        radio.origin = locations[i];
-        radio zm_unitrigger::create_unitrigger();
-        radio thread _track_radio(locations[i], "vox_maxis_maxis_radio_" + (i+1));
-	}
+
+    //can't grab the structs or ents, so we'll have to check every registered trigger for matching origins :P
+    foreach(zone in level.zones)
+    {
+        foreach(trigger in zone.unitrigger_stubs)
+        {
+            foreach(loc in locations)
+            {
+                if(loc == trigger.origin)
+                {
+                    trigger.related_parent thread _track_radio(trigger.in_zone);
+                    break;
+                }
+            }
+        }
+    }
 }
 
-function _track_radio(origin, radio_alias)
+function _track_radio(zone)
 {
-    // Creating an identical trigger at each radio makes the new trigger take priority over the old one, at least until we de-register.
-    // This means we have to play the audio ourself, as the original radio trigger won't activate.
-    // We then intentionally keeping the trigger registered as unregistering it would allow the original radio tigger to be able to be activated, playing the radio audio twice.
     self waittill("trigger_activated");
-    IPrintLnBold("ap_radio_" + radio_alias);
-    playsoundatposition(radio_alias, origin);
+    IPrintLnBold("ap_radio_vox_maxis_maxis_radio_" + zone);
 }
 
 function _track_music_deadflowers()
