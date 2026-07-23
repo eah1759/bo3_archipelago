@@ -117,6 +117,15 @@ function setup_locations()
     level thread _notify_to_location_thread("i_said_were_closed_completed", level.archi.mapString + " Achievement - I said we're CLOSED!");
     level thread _notify_to_location_thread("ap_music_undone", level.archi.mapString + " Music EE - Undone");
     level thread _notify_to_location_thread("ap_music_sam", level.archi.mapString + " Samantha's Lullaby");
+
+    abcd_radio = struct::get("snd_monty_radio", "targetname");
+    abcd_radio thread _track_radio_hd();
+}
+
+function _track_radio_hd()
+{
+    self waittill("trigger_activated");
+    IPrintLnBold("ap_radio_vox_abcd_radio");
 }
 
 // === AP Check Utilities ===
