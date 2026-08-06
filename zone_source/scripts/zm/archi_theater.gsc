@@ -136,27 +136,28 @@ function _rocket_ee(location)
 
 function setup_radios()
 {
+    radio_strings = Array("Alleyway","Chandelier");
+
     radios = GetEntArray("audio_egg_radio", "targetname");
     for(i = 0; i < radios.size; i++)
     {
-        radios[i] thread _track_radio(i+1);
+        radios[i] thread _track_radio(radio_strings[i]);
     }
 
     abcd_radio = struct::get("snd_monty_radio", "targetname");
     abcd_radio thread _track_radio_hd();
 }
 
-function _track_radio(num)
+function _track_radio(radio_string)
 {
     self waittill("trigger");
-    IPrintLnBold("ap_radio_vox_kino_radio_" + (level.radio_egg_counter+1));
-    IPrintLnBold("ap_radio_vox_kino_radio_" + num);
+    archi_core::send_location(level.archi.mapString + " Radio - " + radio_string);
 }
 
 function _track_radio_hd()
 {
     self waittill("trigger_activated");
-    IPrintLnBold("ap_radio_vox_abcd_radio");
+    archi_core::send_location(level.archi.mapString + " Radio - Theater Balcony");
 }
 
 function onplayerconnect()

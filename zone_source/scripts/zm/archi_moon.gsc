@@ -465,8 +465,6 @@ function setup_locations()
 
     player = struct::get("sq_reel_to_reel", "targetname");
     player thread _track_reels();
-    abcd_radio = struct::get("snd_monty_radio", "targetname");
-    abcd_radio thread _track_radio_hd();
     setup_radios();
     level thread _notify_to_location_thread("ap_music_8bit_cominghome", level.archi.mapString + " Music EE - Coming Home 8-Bit");
     level thread _notify_to_location_thread("ap_music_8bit_redamned", level.archi.mapString + " Music EE - Redamned 8-Bit");
@@ -521,10 +519,15 @@ function setup_radios()
 {
 	radios = struct::get_array("egg_radios", "targetname");
 	Array::thread_all(radios, &_track_radio);
+
+    abcd_radio = struct::get("snd_monty_radio", "targetname");
+    abcd_radio thread _track_radio_hd();
 }
 
 function _track_radio()
 {
+    radio_strings = Array("Outside Receiving Bay","Lab Window","Tunnel 6","Crane","Biodome");
+
     while(1)
     {
         self waittill("trigger_activated");
@@ -539,7 +542,8 @@ function _track_radio()
         }
         break;
     }
-    IPrintLnBold("ap_radio_vox_story_1_log_" + self.script_int);
+
+    archi_core::send_location(level.archi.mapString + " Radio - " + radio_strings[self.script_int - 1]);
 }
 
 function checkfor_radio_override() //yoinked from zm_moon_amb
@@ -568,7 +572,7 @@ function checkfor_radio_override() //yoinked from zm_moon_amb
 function _track_radio_hd()
 {
     self waittill("trigger_activated");
-    IPrintLnBold("ap_radio_vox_abcd_radio");
+    archi_core::send_location(level.archi.mapString + " Radio - Receiving Bay");
 }
 
 function _track_reels()
@@ -578,7 +582,7 @@ function _track_reels()
     while(i < datalogs.size)
     {
         self waittill("placed", who);
-        IPrintLnBold("ap_reel_" + datalogs[i]);
+        archi_core::send_location(level.archi.mapString + " Audio Reel " + (i+1));
         i++;
     }
 }

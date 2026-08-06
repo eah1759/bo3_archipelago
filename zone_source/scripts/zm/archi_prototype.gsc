@@ -125,7 +125,7 @@ function setup_locations()
 function _track_radio_hd()
 {
     self waittill("trigger_activated");
-    IPrintLnBold("ap_radio_vox_abcd_radio");
+    archi_core::send_location(level.archi.mapString + " Radio - Monty");
 }
 
 // === AP Check Utilities ===

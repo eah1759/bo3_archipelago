@@ -227,26 +227,33 @@ function setup_landing_pads()
 
 function setup_radio_trackers()
 {
+    radio_strings = Array("Armory Window","Church","Near Projector","Lab","Clock Tower");
+
 	for(i = 0; i < 5; i++)
 	{
 		radio_parts = struct::get_array("ee_groph_reels_" + i, "targetname");
 		if(i == 0)
 		{
-			radio_parts[0].var_df5776d8 thread _track_radio_shootable(i);
+			radio_parts[0].var_df5776d8 thread _track_radio_shootable(radio_strings[i]);
 			continue;
 		}
-        radio_parts[0] thread _track_radio(i);
+        radio_parts[0] thread _track_radio(radio_strings[i]);
 	}
 
 }
 
-function _track_radio(radio_num)
+function _send_radio(radio_string)
 {
-    self waittill("trigger_activated");
-    IPrintLnBold("ap_radio_vox_grop_groph_radio_stem_" + (radio_num + 1));
+    archi_core::send_location(level.archi.mapString + " Radio - Armory Window");
 }
 
-function _track_radio_shootable(radio_num)
+function _track_radio(radio_string)
+{
+    self waittill("trigger_activated");
+    _send_radio(radio_string);
+}
+
+function _track_radio_shootable(radio_string)
 {
     while(1)
     {
@@ -255,7 +262,7 @@ function _track_radio_shootable(radio_num)
         {
             continue;
         }
-        IPrintLnBold("ap_radio_vox_grop_groph_radio_stem_" + (radio_num + 1));
+        _send_radio(radio_string);
         break;
     }
 }

@@ -144,30 +144,47 @@ function _setup_radios()
         {
             if(orphan.origin == (966, 805, 124))
             {
-                orphan thread _track_special_radio("vox_maxis_player_radio1");
+                orphan thread _track_special_radio("Under Lab A Stairs");
             }
             else if(orphan.origin == (-1197, -1466, 215))
             {
-                orphan thread _track_special_radio("vox_maxis_player_radio2");
+                orphan thread _track_special_radio("Lab B Barrel");
             } 
             else if(orphan.origin == (-94, -2324, 175))
             {
-                orphan thread _track_special_radio("vox_maxis_player_radio3");
+                orphan thread _track_special_radio("Near Lab C Perk Machine");
             }
         }
 	}
 }
 
-function _track_special_radio(radio_alias)
+function _track_special_radio(radio_string)
 {
     self waittill("hash_678c47ee", player);
-    IPrintLnBold("ap_radio_" + radio_alias);
+    archi_core::send_location(level.archi.mapString + " Radio - " + radio_string);
 }
 
 function _track_radio(radio_alias)
 {
     level waittill("ap_radio_" + radio_alias);
-    IPrintLnBold("ap_radio_" + radio_alias);
+    switch(radio_alias)
+    {
+        case "vox_maxis_maxis_radio1":
+            archi_core::send_location(level.archi.mapString + " Radio - Lab C Catwalk");
+            break;
+        case "vox_maxis_maxis_radio2":
+            archi_core::send_location(level.archi.mapString + " Radio - Near Bridge");
+            break;
+        case "vox_maxis_maxis_radio3":
+            archi_core::send_location(level.archi.mapString + " Radio - Furnace");
+            break;
+        case "vox_maxis_maxis_radio4":
+            archi_core::send_location(level.archi.mapString + " Radio - Near Pack-A-Punch");
+            break;
+        case "vox_maxis_maxis_radio5":
+            archi_core::send_location(level.archi.mapString + " Radio - Outside Lab A");
+            break;
+    }
 }
 
 function _any_teleporter_linked()

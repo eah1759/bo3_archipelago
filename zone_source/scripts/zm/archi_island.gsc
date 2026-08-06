@@ -439,7 +439,24 @@ function _setup_radios()
 function _track_radio(zone)
 {
     self waittill("trigger_activated");
-    IPrintLnBold("ap_radio_vox_maxis_maxis_radio_" + zone);
+    switch(zone)
+    {
+        case "jungle_lab_upper":
+            archi_core::send_location(level.archi.mapString + " Radio - Lab A");
+            break;
+        case "swamp_lab_inside":
+            archi_core::send_location(level.archi.mapString + " Radio - Lab B");
+            break;
+        case "zone_cliffside":
+            archi_core::send_location(level.archi.mapString + " Radio - Docks");
+            break;
+        case "zone_operating_rooms":
+            archi_core::send_location(level.archi.mapString + " Radio - KT-4 Station");
+            break;
+        case "zone_bunker_right":
+            archi_core::send_location(level.archi.mapString + " Radio - Purple Water");
+            break;
+    }
 }
 
 function _track_music_deadflowers()

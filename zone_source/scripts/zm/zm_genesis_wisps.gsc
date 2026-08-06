@@ -246,6 +246,8 @@ function function_3bcaa1c() //shad/abcd wisp
 		self waittill("trigger_activated", e_player);
 		if(level.var_c1feb276 != "off" && !level flag::get("abcd_speaking") && !level flag::get("shadowman_speaking"))
 		{
+			level.ap_wisp_trigger_origin = self.origin;
+			IPrintLnBold(self.origin);
             level notify("ap_wisp_" + level.var_c1feb276); // send the notifier out. "wisp_abcd"/"wisp_shad"
 			level thread namespace_c149ef1::function_10b9b50e(level.var_c1feb276);
 			self thread function_26ed5998(0);

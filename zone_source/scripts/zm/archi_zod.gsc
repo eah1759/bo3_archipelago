@@ -421,7 +421,45 @@ function _setup_radios()
 function _track_radios()
 {
     self waittill("trigger_activated");
-    IPrintLnBold("ap_radio_" + self.script_string);
+    switch(self.script_string)
+    {
+        case "shadowman_lawyer":
+            archi_core::send_location(level.archi.mapString + " Telephone - Stamin-up");
+            break;
+        case "lawyer":
+            archi_core::send_location(level.archi.mapString + " Telephone - Magician's Ritual");
+            break;
+        case "shadowman_partner":
+            archi_core::send_location(level.archi.mapString + " Telephone - Canals Perk");
+            break;
+        case "partner":
+            archi_core::send_location(level.archi.mapString + " Telephone - Detectives's Ritual");
+            break;
+        case "shadowman_producer":
+            archi_core::send_location(level.archi.mapString + " Telephone - Footlight Buildable Table");
+            break;
+        case "producer":
+            archi_core::send_location(level.archi.mapString + " Telephone - Femme Fatale's Ritual");
+            break;
+        case "shadowman_promoter":
+            archi_core::send_location(level.archi.mapString + " Telephone - Waterfront Perk");
+            break;
+        case "promoter":
+            archi_core::send_location(level.archi.mapString + " Telephone - Boxer's Ritual");
+            break;
+        case "reporter1":
+        case "reporter2":
+        case "reporter3":
+            IPrintLnBold(self.origin)
+            //archi_core::send_location(level.archi.mapString + " Telephone - Canals Train");
+            //archi_core::send_location(level.archi.mapString + " Telephone - Footlight Train");
+            //archi_core::send_location(level.archi.mapString + " Telephone - Waterfront Train");
+            break;
+        case "maxis":
+            archi_core::send_location(level.archi.mapString + " Maxis Quote - Rift Portal");
+            break;
+    }
+    //IPrintLnBold("ap_radio_" + self.script_string);
 }
 
 function _patch_player_requirement()

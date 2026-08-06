@@ -296,8 +296,6 @@ function setup_locations()
     level thread _notify_to_location_thread("ap_music_aether", level.archi.mapString + " Music EE - Aether");
     level thread _notify_to_location_thread("ap_music_shepherd_of_fire", level.archi.mapString + " Music EE - Shepherd of Fire");
 
-    abcd_radio = struct::get("snd_monty_radio", "targetname");
-    abcd_radio thread _track_radio_hd();
     setup_radios();
 
     level thread _notify_kval("elemental_staff_air_crafted", level.archi.mapString + " Wind Staff - Craft the Staff");
@@ -435,20 +433,23 @@ function setup_radios()
     {
         radio_meta thread _track_radio();
     }
-    IPrintLnBold("Count: " + radio_meta_array.size);
     
+    abcd_radio = struct::get("snd_monty_radio", "targetname");
+    abcd_radio thread _track_radio_hd();
 }
 
 function _track_radio()
 {
+    radio_strings = Array("Table Near Shiva Wallbuy","Table Near RK5 Wallbuy","Near Workshop Buildable Table","Odin","Thor","Freya");
+
     level flag::wait_till("maxis_audio_log_" + self.script_int);
-    IPrintLnBold("ap_radio_maxis_audio_log_" + self.script_int);
+    archi_core::send_location(level.archi.mapString + " Radio - " + radio_strings[self.script_int - 1]);
 }
 
 function _track_radio_hd()
 {
     self waittill("trigger_activated");
-    IPrintLnBold("ap_radio_vox_abcd_radio");
+    archi_core::send_location(level.archi.mapString + " Radio - Shelf Near Shiva Wallbuy");
 }
 
 // === AP Check Utilities ===

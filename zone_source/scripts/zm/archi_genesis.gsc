@@ -335,19 +335,18 @@ function _track_music_thegift()
 
 function setup_radio_trackers()
 {
-    radio_aliases = Array("mob_1","mob_2","mob_3","origins_1","vurruckt_1","vurruckt_2","kino_1","vurruckt_3","eisendrache_1","shang_1","shang_2","shang_3","shang_4");
+    radio_strings = Array("Mob of the Dead Cafeteria","Mob of the Dead Desk","Mob of the Dead Bed","Origins Shelf","Verruckt Green Tubes","Verruckt Shelf","Kino der Toten Shelf","Verruckt Under Tree","Der Eisendrache Casket","Shangri La Keeper Statue","Shangri La Broken Pillar","Shangri La Above Stamin-up","Shangri La Stairs");
     
     for(i = 0; i < level.a_s_radios.size; i++)
     {
-        level.a_s_radios[i] thread _track_radio(radio_aliases[i]);
+        level.a_s_radios[i] thread _track_radio(radio_strings[i]);
     }
 }
 
-function _track_radio(radio_alias)
+function _track_radio(radio_string)
 {
 	self waittill("hash_e37d497d");
-    // radio_alias = level.var_22e09be4[self.script_noteworthy][0] // This doesn't work as rev will delete the name from the list before this runs. Would need to have separate dedicated tracking for each radio group instead.
-    IPrintLnBold("ap_radio_" + radio_alias); 
+    archi_core::send_location(level.archi.mapString + " Radio - " + radio_string);
 }
 
 function setup_wisp_trackers()
@@ -365,54 +364,71 @@ function setup_wisp_trackers()
 
 function _track_wisp(wisp_alias) // "wisp_abcd" ir "wisp_shad"
 {
+    locations = Array((-114.98, 5300.02, -615.31), (1104, 4637.37, -493.965), (-1175.08, 2711.62, -379.708), (-2139.84, 633.162, 141));
+    location_names = Array("Spawn","Origins","Der Eisendrache","Verruckt");
 	while(1)
     {
         level waittill("ap_wisp_" + wisp_alias);
         vox_alias = level.var_8c92b387[wisp_alias][0][0][0];
-        IPrintLnBold("ap_" + wisp_alias + "_" + vox_alias);
+        location_name = "";
+        for(i = 0; i < locations.size; i++)
+        {
+            if(level.ap_wisp_trigger_origin == locations[i])
+            {
+                location_name = location_names[i];
+                break;
+            }
+        }
+        switch(vox_alias)
+        {
+            case "vox_abcd_maxis_trouble_0":
+            case "vox_abcd_the_infinite_0":
+            case "vox_abcd_apothicons_1_0":
+            case "vox_abcd_apothicons_2_0":
+                archi_core::send_location(level.archi.mapString + " Monty Wisps 1 - " + location_name);
+                break;
+            case "vox_abcd_explain_shadowman_0":
+            case "vox_abcd_explain_keepers_0":
+            case "vox_abcd_my_best_0":
+            case "vox_abcd_monty_warn_shadowman_0":
+                archi_core::send_location(level.archi.mapString + " Monty Wisps 2 - " + location_name);
+                break;
+            case "vox_abcd_monty_trouble_1":
+            case "vox_abcd_monty_reflects_0":
+            case "vox_abcd_monty_help_people_0":
+            case "vox_abcd_monty_really_concerned_0":
+                archi_core::send_location(level.archi.mapString + " Monty Wisps 3 - " + location_name);
+                break;
+            case "vox_shad_shadow_downed_1":
+            case "vox_shad_shadow_downed_3":
+            case "vox_shad_shadow_teasing_1":
+            case "vox_shad_shadow_first_battle_2":
+                archi_core::send_location(level.archi.mapString + " Shadowman Wisps 1 - " + location_name);
+                break;
+            case "vox_shad_shadow_downed_2":
+            case "vox_shad_shadow_teasing_2":
+            case "vox_shad_shadow_teasing_3":
+            case "vox_shad_shadow_second_battle_0":
+                archi_core::send_location(level.archi.mapString + " Shadowman Wisps 2 - " + location_name);
+                break;
+        }
     }
 }
-    // level.var_8c92b387["wisp_abcd"] = [];
-	// level.var_8c92b387["wisp_abcd"][0][0] = [];
-	// level.var_8c92b387["wisp_abcd"][0][0] = Array("vox_stub");
-	// level.var_8c92b387["wisp_abcd"][1] = [];
-	// level.var_8c92b387["wisp_abcd"][1][0] = Array("vox_abcd_maxis_trouble_0", "vox_abcd_maxis_trouble_1", "vox_abcd_maxis_trouble_2");
-	// level.var_8c92b387["wisp_abcd"][1][1] = Array("vox_abcd_the_infinite_0", "vox_abcd_the_infinite_1", "vox_abcd_the_infinite_2", "vox_abcd_the_infinite_3", "vox_abcd_the_infinite_4");
-	// level.var_8c92b387["wisp_abcd"][1][2] = Array("vox_abcd_apothicons_1_0", "vox_abcd_apothicons_1_1", "vox_abcd_apothicons_1_2");
-	// level.var_8c92b387["wisp_abcd"][1][3] = Array("vox_abcd_apothicons_2_0", "vox_abcd_apothicons_2_1", "vox_abcd_apothicons_2_2", "vox_abcd_apothicons_2_3", "vox_abcd_apothicons_2_4", "vox_abcd_apothicons_2_5");
-	// level.var_8c92b387["wisp_shad"] = [];
-	// level.var_8c92b387["wisp_shad"][0][0] = [];
-	// level.var_8c92b387["wisp_shad"][0][0] = Array("vox_stub");
-	// level.var_8c92b387["wisp_shad"][1] = [];
-	// level.var_8c92b387["wisp_shad"][1][0] = Array("vox_shad_shadow_downed_1");
-	// level.var_8c92b387["wisp_shad"][1][1] = Array("vox_shad_shadow_downed_3");
-	// level.var_8c92b387["wisp_shad"][1][2] = Array("vox_shad_shadow_teasing_1");
-	// level.var_8c92b387["wisp_shad"][1][3] = Array("vox_shad_shadow_first_battle_2", "vox_shad_shadow_first_battle_0", "vox_shad_shadow_first_battle_5", "vox_shad_shadow_first_battle_6");
-	// level.var_8c92b387["wisp_abcd"][2] = [];
-	// level.var_8c92b387["wisp_abcd"][2][0] = Array("vox_abcd_explain_shadowman_0", "vox_abcd_explain_shadowman_1", "vox_abcd_explain_shadowman_2", "vox_abcd_explain_shadowman_3");
-	// level.var_8c92b387["wisp_abcd"][2][1] = Array("vox_abcd_explain_keepers_0", "vox_abcd_explain_keepers_1", "vox_abcd_explain_keepers_2", "vox_abcd_explain_keepers_3", "vox_abcd_explain_keepers_4");
-	// level.var_8c92b387["wisp_abcd"][2][2] = Array("vox_abcd_my_best_0", "vox_abcd_my_best_1", "vox_abcd_my_best_2", "vox_abcd_my_best_3", "vox_abcd_my_best_4");
-	// level.var_8c92b387["wisp_abcd"][2][3] = Array("vox_abcd_monty_warn_shadowman_0", "vox_abcd_monty_warn_shadowman_1");
-	// level.var_8c92b387["wisp_abcd"][3] = [];
-	// level.var_8c92b387["wisp_abcd"][3][0] = Array("vox_abcd_monty_trouble_1", "vox_abcd_monty_trouble_2", "vox_abcd_monty_trouble_3", "vox_abcd_monty_trouble_4");
-	// level.var_8c92b387["wisp_abcd"][3][1] = Array("vox_abcd_monty_reflects_0", "vox_abcd_monty_reflects_1", "vox_abcd_monty_reflects_2", "vox_abcd_monty_reflects_3", "vox_abcd_monty_reflects_4");
-	// level.var_8c92b387["wisp_abcd"][3][2] = Array("vox_abcd_monty_help_people_0", "vox_abcd_monty_help_people_1", "vox_abcd_monty_help_people_2", "vox_abcd_monty_help_people_3", "vox_abcd_monty_help_people_4");
-	// var_1c099e34 = Array("vox_abcd_monty_concerned_0", "vox_abcd_monty_concerned_1", "vox_abcd_monty_concerned_2");
-	// level.var_8c92b387["wisp_abcd"][3][2] = ArrayCombine(level.var_8c92b387["wisp_abcd"][3][2], var_1c099e34, 0, 0);
-	// level.var_8c92b387["wisp_abcd"][3][3] = Array("vox_abcd_monty_really_concerned_0", "vox_abcd_monty_really_concerned_1", "vox_abcd_monty_really_concerned_2", "vox_abcd_monty_really_concerned_3", "vox_abcd_monty_really_concerned_4");
-	// level.var_8c92b387["wisp_shad"][2] = [];
-	// level.var_8c92b387["wisp_shad"][2][0] = Array("vox_shad_shadow_downed_2");
-	// level.var_8c92b387["wisp_shad"][2][1] = Array("vox_shad_shadow_teasing_2");
-	// level.var_8c92b387["wisp_shad"][2][2] = Array("vox_shad_shadow_teasing_3");
-	// level.var_8c92b387["wisp_shad"][2][3] = Array("vox_shad_shadow_second_battle_0", "vox_shad_shadow_second_battle_2", "vox_shad_shadow_second_battle_5", "vox_shad_shadow_second_battle_4", "vox_shad_shadow_second_battle_7", "vox_shad_shadow_second_battle_9");
 
 function _track_player_wisps(player_num)
 {
     while(1)
     {
         level waittill("ap_wisp_player_" + player_num);
+        if(level.ap_player_wisps[player_num] == 0)
+        {
+            archi_core::send_location(level.archi.mapString + " Player Wisps - Monty Fun Facts");
+        }
+        else
+        {
+            archi_core::send_location(level.archi.mapString + " Player Wisps - " + level.ap_player_wisps[player_num]);
+        }
         level.ap_player_wisps[player_num]++;
-        IPrintLnBold("ap_player_wisp_" + player_num + "_" + level.ap_player_wisps[player_num]);
     }
 }
 

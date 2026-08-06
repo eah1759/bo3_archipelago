@@ -273,20 +273,26 @@ function track_player_challenge_monkey_bombs(location)
 
 function setup_radio_trackers()
 {
+    radio_strings = Array("Bunker","Hatchery","Supply Depot","Dragon Command","Tank Factory");
+
 	for(i = 1; i < 6; i++)
 	{
 		radio_parts = struct::get_array("ee_sophia_reels_" + i, "targetname");
 		if(i == 5)
 		{
-			radio_parts[0].var_de6d4fc0 thread _track_radio_shootable(i);
+			radio_parts[0].var_de6d4fc0 thread _track_radio_shootable(radio_strings[i-1]);
 			continue;
 		}
-        radio_parts[0] thread _track_radio(i);
+        radio_parts[0] thread _track_radio(radio_strings[i-1]);
 	}
-
 }
 
-function _track_radio(radio_num)
+function _send_radio(radio_string)
+{
+    archi_core::send_location(level.archi.mapString + " Radio - " + radio_string);
+}
+
+function _track_radio(radio_string)
 {
     while(1)
     {
@@ -295,12 +301,12 @@ function _track_radio(radio_num)
         {
             continue;
         }
-        IPrintLnBold("ap_radio_vox_soph_sophia_log_" + (radio_num));
+        _send_radio(radio_string);
         break;
     }
 }
 
-function _track_radio_shootable(radio_num)
+function _track_radio_shootable(radio_string)
 {
     while(1)
     {
@@ -309,7 +315,7 @@ function _track_radio_shootable(radio_num)
         {
             continue;
         }
-        IPrintLnBold("ap_radio_vox_soph_sophia_log_" + (radio_num));
+        _send_radio(radio_string);
         break;
     }
 }
