@@ -420,6 +420,8 @@ function _setup_radios()
 
 function _track_radios()
 {
+    train_tele_names = Array("Canals Train", "Footlight Train", "Waterfront Train");
+    train_tele_locations = Array((685.087,-1815.96,568),(6138.09,-3152.96,568),(1413.09,-9158.04,568));
     self waittill("trigger_activated");
     switch(self.script_string)
     {
@@ -450,10 +452,14 @@ function _track_radios()
         case "reporter1":
         case "reporter2":
         case "reporter3":
-            IPrintLnBold(self.origin)
-            //archi_core::send_location(level.archi.mapString + " Telephone - Canals Train");
-            //archi_core::send_location(level.archi.mapString + " Telephone - Footlight Train");
-            //archi_core::send_location(level.archi.mapString + " Telephone - Waterfront Train");
+            for(i = 0; i < train_tele_locations.size; i++)
+            {
+                if(self.origin == train_tele_locations[i])
+                {
+                    archi_core::send_location(level.archi.mapString + " Telephone - " + train_tele_names[i]);
+                    break;
+                }
+            }
             break;
         case "maxis":
             archi_core::send_location(level.archi.mapString + " Maxis Quote - Rift Portal");
